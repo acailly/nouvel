@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zDemocracy</title>
+  </head>
+  <body>
+    <h1>Qui va faire la vaisselle ?</h1>
+    <form action="voted.html">
+      <label for="name">Votre nom :</label>
+      <input type="text" id="name" name="name" placeholder="Riri"></input>
+      <ul>
+        <li>
+          <p>Alice</p>
+          <div>
+            <input type="radio" id="alice_oui" name="alice" value="oui">
+            <label for="alice_oui">Oui</label>
+          </div>
+          <div>
+            <input type="radio" id="alice_pourquoipas" name="alice" value="pourquoipas">
+            <label for="alice_pourquoipas">Pourquoi pas</label>
+          </div>
+          <div>
+            <input type="radio" id="alice_bof" name="alice" value="bof">
+            <label for="alice_bof">Bof</label>
+          </div>
+          <div>
+            <input type="radio" id="alice_non" name="alice" value="non" checked>
+            <label for="alice_non">Non</label>
+          </div>
+        </li>
+        <li>
+          <p>Bob</p>
+          <div>
+            <input type="radio" id="bob_oui" name="bob" value="oui">
+            <label for="bob_oui">Oui</label>
+          </div>
+          <div>
+            <input type="radio" id="bob_pourquoipas" name="bob" value="pourquoipas" checked>
+            <label for="bob_pourquoipas">Pourquoi pas</label>
+          </div>
+          <div>
+            <input type="radio" id="bob_bof" name="bob" value="bof">
+            <label for="bob_bof">Bof</label>
+          </div>
+          <div>
+            <input type="radio" id="bob_non" name="bob" value="non">
+            <label for="bob_non">Non</label>
+          </div>          
+        </li>
+      </ul>    
+      <input type="submit" value="Valider les réponses"></input>
+    </form>
+  </body>
+</html>
