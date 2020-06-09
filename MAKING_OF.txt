@@ -1,0 +1,25 @@
+
+Première étape : La maquette HTML
+
+Une maquette HTML qui illustre le fonctionnement de l'application telle que je l'imagine
+Pas de CSS
+Pas de serveur, que du statique
+
+Ce fut rapide (moins d'une heure) et le fait d'intéragir avec le résultat m'a donné envie 
+de continuer (... même si c'était moche)
+
+Deuxième étape : Le serveur
+
+Ajout d'un serveur express qui va afficher les pages statiques précédement créées
+via le moteur de template EJS
+Je n'ai pas modifié les pages si ce n'est les url des liens et formulaires 
+(j'ai enlevé le .html, /options.html est devenu /options)
+
+Ce fut rapide encore une fois (moins d'une heure)
+Le rendu n'a pas changé mais maintenant j'ai un serveur et 
+un moteur de template fonctionnels
+
+
+
+
+
