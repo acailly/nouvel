@@ -8,16 +8,16 @@
   <body>
     <h1>zDemocracy</h1>
     <p>Une décision à prendre ?</p>
-    <form action="/options">
-      <input type="text" name="title" placeholder="Qui va faire la vaisselle ?"></input>
+    <form method="POST" action="/new">
+      <input type="text" name="title" value="Qui va faire la vaisselle ?"></input>
       <input type="submit" value="Ajouter des options"></input>
     </form>
     <p>ou</p>
     <p>Consulter les sondages récents :</p>
     <ul>
-      <li><a href="/vote">Est ce qu'on prend un chien ?</a></li>
-      <li><a href="/vote">Qui va sortir les poubelles ?</a></li>
-      <li><a href="/vote">La meilleure série du moment ?</a></li>
+      <% polls.filter(poll => poll.status === "open").slice(-2).forEach(function(poll){ %>
+        <li><a href="/polls/<%= poll.id%>/vote"><%= poll.title%></a></li>
+      <% }); %>
     </ul>
     <form action="/polls">
       <input type="submit" value="Voir plus de sondages"></input>

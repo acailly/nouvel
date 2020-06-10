@@ -19,7 +19,12 @@ Ce fut rapide encore une fois (moins d'une heure)
 Le rendu n'a pas changé mais maintenant j'ai un serveur et 
 un moteur de template fonctionnels
 
+Troisième étape : la logique
 
+Ajout de la logique dans les template pour afficher et modifier les sondages
+Le stockage des sondages se fait en mémoire
 
+Ca m'a pris plus de temps (TODO pour l'instant 1h30)
+J'ai maintenant une application fonctionnelle :-)
 
 

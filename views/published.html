@@ -8,12 +8,13 @@
   <body>
     <h1>Le sondage a été créé !</h1>
     <p>Copier le lien ci dessous et envoyer le aux participants</p>
-    <a href="/vote">https://zdemocracy.com/Yt6uv9</a>
+    <a href="/polls/<%= poll.id%>/vote">https://zdemocracy.com/<%= poll.id%></a>
     <p>Résumé du sondage :</p>
-    <p>Qui va faire la vaisselle ?</p>
+    <p><%= poll.title%></p>
     <ul>
-      <li>Alice</li>
-      <li>Bob</li>
+      <% poll.options.forEach(function(option){ %>
+        <li><%= option%></li>
+      <% }); %>
     </ul>
   </body>
 </html>
