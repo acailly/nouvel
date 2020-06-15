@@ -6,21 +6,25 @@
     <title>zDemocracy</title>
   </head>
   <body>
-    <h1>Qui va faire la vaisselle ?</h1>
-    <p>L'option qui l'emporte est Bob !</p>
+    <h1><%= poll.title %></h1>
+    <p>L'option qui l'emporte est <%= poll.winnerOption %> !</p>
     <form action="/">
       <input type="submit" value="Revenir à l'accueil"></input>
     </form>
     <p>Plus de détails :</p>
-    <ul>
-      <li>
-        <p>Alice : non</p>
-        <small>(1 oui, 3 pourquoi pas, 2 bof, 24 non)</small>
-      </li>
-      <li>
-        <p>Bob : pourquoi pas</p>
-        <small>(1 oui, 24 pourquoi pas, 2 bof, 3 non)</small>
-      </li>
+    <ul>      
+      <% poll.options.forEach(function(option, optionIndex){ %>
+        <li>
+          <p><%= option %> : <%= poll.optionResults[optionIndex].grade.name %></p>
+          <small>
+            (
+            <% grades.forEach(function(grade, gradeIndex){ %>
+              <%= poll.optionResults[optionIndex].voteCountByGrade[gradeIndex] %> <%= grade.name %>
+            <% }); %>
+            )
+          </small>
+        </li>
+      <% }); %>
     </ul>
   </body>
 </html>

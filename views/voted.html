@@ -6,22 +6,22 @@
     <title>zDemocracy</title>
   </head>
   <body>
-    <h1>Qui va faire la vaisselle ?</h1>
+    <h1><%= poll.title%></h1>
     <p>Votre vote a été enregistré !</p>
     <form action="/">
       <input type="submit" value="Revenir à l'accueil"></input>
     </form>
     <p>Les personnes suivantes ont participé</p>
-    <form action="/results">
+    <form method="POST" action="/polls/<%= poll.id%>/close">
       <p>
         Si vous n'attendez plus de vote, vous pouvez 
         <input type="submit" value="Clôre le sondage"></input>
       </p>
     </form>
     <ul>
-      <li>Riri</li>
-      <li>Fifi</li>
-      <li>Loulou</li>
+      <% poll.votes.forEach(function(vote){ %>
+        <li><%= vote.name%></li>
+      <% }); %>
     </ul>
   </body>
 </html>

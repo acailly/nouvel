@@ -7,28 +7,18 @@
   </head>
   <body>
     <h1><%= poll.title%></h1>
-    <form method="POST" action="/polls/<%= poll.id%>/voted">
+    <form method="POST" action="/polls/<%= poll.id%>/validate-vote">
       <label for="name">Votre nom :</label>
-      <input type="text" id="name" name="name" value="Riri"></input>
+      <input type="text" id="name" name="name" value="Loulou"></input>
       <ul>
         <% poll.options.forEach(function(option, optionIndex){ %>
           <p><%= option%></p>
-          <div>
-            <input type="radio" id="option_<%= optionIndex%>_oui" name="option_<%= optionIndex%>" value="oui">
-            <label for="option_<%= optionIndex%>_oui">Oui</label>
-          </div>
-          <div>
-            <input type="radio" id="option_<%= optionIndex%>_pourquoipas" name="option_<%= optionIndex%>" value="pourquoipas">
-            <label for="option_<%= optionIndex%>_pourquoipas">Pourquoi pas</label>
-          </div>
-          <div>
-            <input type="radio" id="option_<%= optionIndex%>_bof" name="option_<%= optionIndex%>" value="bof">
-            <label for="option_<%= optionIndex%>_bof">Bof</label>
-          </div>
-          <div>
-            <input type="radio" id="option_<%= optionIndex%>_non" name="option_<%= optionIndex%>" value="non" checked>
-            <label for="option_<%= optionIndex%>_non">Non</label>
-          </div>
+          <% grades.forEach(function(grade){ %>
+            <div>
+              <input type="radio" id="option_<%= optionIndex %>_<%= grade.value %>" name="option_<%= optionIndex%>" value="<%= grade.value %>" required>
+              <label for="option_<%= optionIndex%>_<%= grade.value %>"><%= grade.name %></label>
+            </div>  
+          <% }); %>
         <% }); %>
       </ul>    
       <input type="submit" value="Valider les réponses"></input>

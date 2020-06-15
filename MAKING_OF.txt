@@ -24,7 +24,18 @@ Troisième étape : la logique
 Ajout de la logique dans les template pour afficher et modifier les sondages
 Le stockage des sondages se fait en mémoire
 
-Ca m'a pris plus de temps (TODO pour l'instant 1h30)
 J'ai maintenant une application fonctionnelle :-)
 
+Ca m'a pris plus de temps (3h30), en particulier à cause 
+de l'implémentation du jugement majoritaire.
+
+
+Next :
+
+TODO Scinder les vues et les actions sans introduire de mécanisme particulier
+TODO Renommer les fichiers pour que leur rôle soit plus explicite
+TODO Ajouter la persistance fichier
+TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Valider la logique de jugement majoritaire avec un framework de test maison
+TODO Ajouter la delegation à un autre utilisateur
 
