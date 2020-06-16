@@ -1,5 +1,5 @@
 
-Première étape : La maquette HTML
+# Première étape : La maquette HTML
 
 Une maquette HTML qui illustre le fonctionnement de l'application telle que je l'imagine
 Pas de CSS
@@ -8,7 +8,7 @@ Pas de serveur, que du statique
 Ce fut rapide (moins d'une heure) et le fait d'intéragir avec le résultat m'a donné envie 
 de continuer (... même si c'était moche)
 
-Deuxième étape : Le serveur
+# Deuxième étape : Le serveur
 
 Ajout d'un serveur express qui va afficher les pages statiques précédement créées
 via le moteur de template EJS
@@ -19,7 +19,7 @@ Ce fut rapide encore une fois (moins d'une heure)
 Le rendu n'a pas changé mais maintenant j'ai un serveur et 
 un moteur de template fonctionnels
 
-Troisième étape : la logique
+# Troisième étape : la logique
 
 Ajout de la logique dans les template pour afficher et modifier les sondages
 Le stockage des sondages se fait en mémoire
@@ -29,8 +29,20 @@ J'ai maintenant une application fonctionnelle :-)
 Ca m'a pris plus de temps (3h30), en particulier à cause 
 de l'implémentation du jugement majoritaire.
 
+# Quatrième étape : Organisation de la persistence fichier
 
-Next :
+Ajout d'un dossier contenant deux exemples de sondages tels que j'imagine qu'ils seront stockés 
+une fois la persistence fichier mise en place
+
+Ca m'a pris 30min et ca me permet de me rassurer sur le côté utilisable 
+
+Le fait d'ajouter la notice d'utilisation directement dans le contenu de chaque fichier me plait beaucoup
+
+
+
+
+
+# Next :
 
 TODO Ajouter la persistance fichier
 TODO Scinder les vues et les actions sans introduire de mécanisme particulier
