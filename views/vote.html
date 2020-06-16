@@ -13,7 +13,7 @@
       <ul>
         <% poll.options.forEach(function(option, optionIndex){ %>
           <p><%= option%></p>
-          <% grades.forEach(function(grade){ %>
+          <% poll.grades.forEach(function(grade){ %>
             <div>
               <input type="radio" id="option_<%= optionIndex %>_<%= grade.value %>" name="option_<%= optionIndex%>" value="<%= grade.value %>" required>
               <label for="option_<%= optionIndex%>_<%= grade.value %>"><%= grade.name %></label>

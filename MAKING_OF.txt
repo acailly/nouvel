@@ -32,9 +32,9 @@ de l'implémentation du jugement majoritaire.
 
 Next :
 
+TODO Ajouter la persistance fichier
 TODO Scinder les vues et les actions sans introduire de mécanisme particulier
 TODO Renommer les fichiers pour que leur rôle soit plus explicite
-TODO Ajouter la persistance fichier
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Ajouter la delegation à un autre utilisateur

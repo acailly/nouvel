@@ -1,32 +1,31 @@
 var express = require("express");
 var ejs = require("ejs");
 
-// From absolute Yes to absolute No
-var grades = [
-  {
-    name: "Oui",
-    value: "oui",
-  },
-  {
-    name: "Pourquoi pas",
-    value: "pourquoipas",
-  },
-  {
-    name: "Bof",
-    value: "bof",
-  },
-  {
-    name: "Non",
-    value: "non",
-  },
-];
-
 var polls = [
   {
     id: "aaa",
     title: "Est ce qu'on prend un chien ?",
     status: "open",
     options: ["oui", "non"],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [
       {
         name: "Riri",
@@ -43,6 +42,25 @@ var polls = [
     title: "Qui va sortir les poubelles ?",
     status: "open",
     options: ["Alice", "Bob"],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [
       {
         name: "Riri",
@@ -59,6 +77,25 @@ var polls = [
     title: "La meilleure série du moment ?",
     status: "open",
     options: ["Casa de papel", "Game of thrones"],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [
       {
         name: "Riri",
@@ -75,6 +112,25 @@ var polls = [
     title: "De quelle couleur on repeint la chambre ?",
     status: "close",
     options: ["Bleu", "Rouge"],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [
       {
         name: "Riri",
@@ -104,6 +160,25 @@ var polls = [
     title: "Quand est ce qu'on prend l'apéro ?",
     status: "close",
     options: ["Maintenant", "Tout de suite"],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [
       {
         name: "Riri",
@@ -148,6 +223,25 @@ app.post("/new", function (req, res) {
     title,
     status: "draft",
     options: [],
+    // From absolute Yes to absolute No
+    grades: [
+      {
+        name: "Oui",
+        value: "oui",
+      },
+      {
+        name: "Pourquoi pas",
+        value: "pourquoipas",
+      },
+      {
+        name: "Bof",
+        value: "bof",
+      },
+      {
+        name: "Non",
+        value: "non",
+      },
+    ],
     votes: [],
   };
   polls.push(poll);
@@ -183,7 +277,7 @@ app.get("/polls/:id/published", function (req, res) {
 
 app.get("/polls/:id/vote", function (req, res) {
   const poll = polls.find((p) => p.id === req.params.id);
-  res.render("vote.html", { poll, grades });
+  res.render("vote.html", { poll });
 });
 
 app.post("/polls/:id/validate-vote", function (req, res) {
@@ -209,17 +303,17 @@ app.post("/polls/:id/close", function (req, res) {
   const optionResults = poll.options.map((option, optionIndex) => {
     const voteCount = poll.votes.length;
 
-    const voteCountByGrade = grades.map(() => 0);
+    const voteCountByGrade = poll.grades.map(() => 0);
     poll.votes.forEach((vote) => {
       const answer = vote.answers[optionIndex];
-      const gradeIndex = grades.findIndex((grade) => grade.value === answer);
+      const gradeIndex = poll.grades.findIndex((grade) => grade.value === answer);
       voteCountByGrade[gradeIndex]++;
     });
 
     let voteSum = 0;
     let optionGrade;
-    for (let gradeIndex = grades.length - 1; gradeIndex >= 0; gradeIndex--) {
-      optionGrade = grades[gradeIndex];
+    for (let gradeIndex = poll.grades.length - 1; gradeIndex >= 0; gradeIndex--) {
+      optionGrade = poll.grades[gradeIndex];
       voteSum += voteCountByGrade[gradeIndex];
       if (voteSum > voteCount / 2) {
         break;
@@ -231,8 +325,8 @@ app.post("/polls/:id/close", function (req, res) {
   poll.optionResults = optionResults;
 
   let winnerOption;
-  for (let gradeIndex = 0; gradeIndex < grades.length; gradeIndex++) {
-    const grade = grades[gradeIndex];
+  for (let gradeIndex = 0; gradeIndex < poll.grades.length; gradeIndex++) {
+    const grade = poll.grades[gradeIndex];
     const optionIndexesWithMatchingGrade = optionResults
       .map((optionResult, optionResultIndex) => {
         if (optionResult.grade.value === grade.value) {
@@ -264,7 +358,7 @@ app.post("/polls/:id/close", function (req, res) {
 
 app.get("/polls/:id/results", function (req, res) {
   const poll = polls.find((p) => p.id === req.params.id);
-  res.render("results.html", { poll, grades });
+  res.render("results.html", { poll });
 });
 
 app.use(function (req, res, next) {

@@ -18,7 +18,7 @@
           <p><%= option %> : <%= poll.optionResults[optionIndex].grade.name %></p>
           <small>
             (
-            <% grades.forEach(function(grade, gradeIndex){ %>
+            <% poll.grades.forEach(function(grade, gradeIndex){ %>
               <%= poll.optionResults[optionIndex].voteCountByGrade[gradeIndex] %> <%= grade.name %>
             <% }); %>
             )
