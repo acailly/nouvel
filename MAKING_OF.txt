@@ -34,7 +34,7 @@ de l'implémentation du jugement majoritaire.
 Ajout d'un dossier contenant deux exemples de sondages tels que j'imagine qu'ils seront stockés 
 une fois la persistence fichier mise en place
 
-Ca m'a pris 30min et ca me permet de me rassurer sur le côté utilisable 
+Ca m'a pris 1h et ca me permet de me rassurer sur le côté utilisable 
 
 Le fait d'ajouter la notice d'utilisation directement dans le contenu de chaque fichier me plait beaucoup
 

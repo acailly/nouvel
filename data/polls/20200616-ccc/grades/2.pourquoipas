@@ -1,0 +1,9 @@
+Pourquoi pas
+
+// The first line of this file contains the displayed name of the grade
+
+// The filename of this file contains the position and the id of the grade
+// Its format is <position>.<grade id>
+
+// Grade position goes from absolute Yes to absolute No
+// For example : yes, meh, no
