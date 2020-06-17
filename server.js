@@ -1,6 +1,212 @@
-var express = require("express");
-var ejs = require("ejs");
+const path = require('path')
 
+const express = require("express");
+const ejs = require("ejs");
+
+const folderCopy = require('./utils-file/folderCopy')
+const folderNew = require('./utils-file/folderNew')
+const folderFileList = require('./utils-file/folderFileList')
+const fileWriteContent = require('./utils-file/fileWriteContent')
+const fileWriteExtension = require('./utils-file/fileWriteExtension')
+const fileReadContent = require('./utils-file/fileReadContent')
+
+const pollsFolder = path.join(__dirname, "data", "polls")
+const templatesFolder = path.join(__dirname, "data", "templates")
+
+
+var app = express();
+app.use(express.urlencoded({ extended: true }));
+
+// from https://stackoverflow.com/questions/27383222/is-there-a-way-to-keep-the-file-extension-of-ejs-file-as-html
+app.engine(".html", ejs.__express);
+
+app.get("/", function (req, res) {
+  res.render("index.html", { polls: polls });
+});
+
+app.post("/new", function (req, res) {
+  const pollId = new Date().getTime().toString();
+  folderCopy(
+    path.join(templatesFolder, "poll"),
+    path.join(pollsFolder, pollId),
+  )
+
+  const pollTitle = req.body.title;
+  fileWriteContent(
+    path.join(pollsFolder, pollId, "title.txt"),
+    pollTitle
+  )
+
+  fileWriteExtension(
+    path.join(pollsFolder, pollId),
+    "status",
+    "draft"
+  )
+
+  folderNew(
+    path.join(pollsFolder, pollId, "options")
+  )
+
+  folderCopy(
+    path.join(templatesFolder, "grades", "jugement-majoritaire"),
+    path.join(pollsFolder, pollId, "grades")
+  )
+
+  folderNew(
+    path.join(pollsFolder, pollId, "votes")
+  )
+
+  res.redirect(302, `/polls/${pollId}/options`);
+});
+
+app.get("/polls/:id/options", function (req, res) {
+  const pollId = req.params.id
+
+  const pollTitle = fileReadContent(
+    path.join(pollsFolder, pollId, "title.txt")
+  )
+
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const pollOptions = optionsFiles.map(optionFile => {
+    return fileReadContent(optionFile)
+  })
+
+  res.render("options.html", { pollId, pollTitle, pollOptions });
+});
+
+app.post("/polls/:id/add-option", function (req, res) {
+  const pollId = req.params.id
+
+  const optionName = req.body.option;
+  
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const optionCount = optionsFiles.length
+  const optionPosition = optionCount + 1
+  const optionId = optionPosition
+
+  const optionFilename = `${optionPosition}.${optionId}`
+
+  fileWriteContent(
+    path.join(pollsFolder, pollId, "options", optionFilename),
+    optionName
+  )
+  
+  res.redirect(302, `/polls/${pollId}/options`);
+});
+
+app.get("/polls", function (req, res) {
+  res.render("polls.html", { polls: polls });
+});
+
+app.post("/polls/:id/publish", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  poll.status = "open";
+  res.redirect(302, `/polls/${poll.id}/published`);
+});
+
+app.get("/polls/:id/published", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  res.render("published.html", { poll });
+});
+
+app.get("/polls/:id/vote", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  res.render("vote.html", { poll });
+});
+
+app.post("/polls/:id/validate-vote", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  const name = req.body.name;
+  const answers = poll.options.map((option, optionIndex) => {
+    const optionAnswer = req.body[`option_${optionIndex}`];
+    return optionAnswer;
+  });
+  const vote = { name, answers };
+  poll.votes.push(vote);
+  res.redirect(302, `/polls/${poll.id}/voted`);
+});
+
+app.get("/polls/:id/voted", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  res.render("voted.html", { poll });
+});
+
+app.post("/polls/:id/close", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+
+  const optionResults = poll.options.map((option, optionIndex) => {
+    const voteCount = poll.votes.length;
+
+    const voteCountByGrade = poll.grades.map(() => 0);
+    poll.votes.forEach((vote) => {
+      const answer = vote.answers[optionIndex];
+      const gradeIndex = poll.grades.findIndex((grade) => grade.value === answer);
+      voteCountByGrade[gradeIndex]++;
+    });
+
+    let voteSum = 0;
+    let optionGrade;
+    for (let gradeIndex = poll.grades.length - 1; gradeIndex >= 0; gradeIndex--) {
+      optionGrade = poll.grades[gradeIndex];
+      voteSum += voteCountByGrade[gradeIndex];
+      if (voteSum > voteCount / 2) {
+        break;
+      }
+    }
+
+    return { grade: optionGrade, score: voteSum, voteCountByGrade };
+  });
+  poll.optionResults = optionResults;
+
+  let winnerOption;
+  for (let gradeIndex = 0; gradeIndex < poll.grades.length; gradeIndex++) {
+    const grade = poll.grades[gradeIndex];
+    const optionIndexesWithMatchingGrade = optionResults
+      .map((optionResult, optionResultIndex) => {
+        if (optionResult.grade.value === grade.value) {
+          return {
+            optionIndex: optionResultIndex,
+            optionScore: optionResult.score,
+          };
+        }
+        return undefined;
+      })
+      .filter((optionIndex) => optionIndex !== undefined);
+    if (optionIndexesWithMatchingGrade.length > 0) {
+      const sortedOptionIndexesWithMatchingGrade = optionIndexesWithMatchingGrade.sort(
+        (a, b) => {
+          return b.score - a.score;
+        }
+      );
+      const winnerOptionIndex =
+        sortedOptionIndexesWithMatchingGrade[0].optionIndex;
+      winnerOption = poll.options[winnerOptionIndex];
+      break;
+    }
+  }
+  poll.winnerOption = winnerOption;
+
+  poll.status = "close";
+  res.redirect(302, `/polls/${poll.id}/results`);
+});
+
+app.get("/polls/:id/results", function (req, res) {
+  const poll = polls.find((p) => p.id === req.params.id);
+  res.render("results.html", { poll });
+});
+
+app.use(function (req, res, next) {
+  res.status(404).render("404.html");
+});
+
+app.listen(8080);
+
+
+// TODO A SUPPRIMER
 var polls = [
   {
     id: "aaa",
@@ -204,165 +410,3 @@ var polls = [
     winnerOption: "Maintenant",
   },
 ];
-
-var app = express();
-app.use(express.urlencoded({ extended: true }));
-
-// from https://stackoverflow.com/questions/27383222/is-there-a-way-to-keep-the-file-extension-of-ejs-file-as-html
-app.engine(".html", ejs.__express);
-
-app.get("/", function (req, res) {
-  res.render("index.html", { polls: polls });
-});
-
-app.post("/new", function (req, res) {
-  const id = new Date().getTime().toString();
-  const title = req.body.title;
-  const poll = {
-    id,
-    title,
-    status: "draft",
-    options: [],
-    // From absolute Yes to absolute No
-    grades: [
-      {
-        name: "Oui",
-        value: "oui",
-      },
-      {
-        name: "Pourquoi pas",
-        value: "pourquoipas",
-      },
-      {
-        name: "Bof",
-        value: "bof",
-      },
-      {
-        name: "Non",
-        value: "non",
-      },
-    ],
-    votes: [],
-  };
-  polls.push(poll);
-  res.redirect(302, `/polls/${poll.id}/options`);
-});
-
-app.get("/polls/:id/options", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("options.html", { poll });
-});
-
-app.post("/polls/:id/add-option", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  const option = req.body.option;
-  poll.options.push(option);
-  res.redirect(302, `/polls/${poll.id}/options`);
-});
-
-app.get("/polls", function (req, res) {
-  res.render("polls.html", { polls: polls });
-});
-
-app.post("/polls/:id/publish", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  poll.status = "open";
-  res.redirect(302, `/polls/${poll.id}/published`);
-});
-
-app.get("/polls/:id/published", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("published.html", { poll });
-});
-
-app.get("/polls/:id/vote", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("vote.html", { poll });
-});
-
-app.post("/polls/:id/validate-vote", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  const name = req.body.name;
-  const answers = poll.options.map((option, optionIndex) => {
-    const optionAnswer = req.body[`option_${optionIndex}`];
-    return optionAnswer;
-  });
-  const vote = { name, answers };
-  poll.votes.push(vote);
-  res.redirect(302, `/polls/${poll.id}/voted`);
-});
-
-app.get("/polls/:id/voted", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("voted.html", { poll });
-});
-
-app.post("/polls/:id/close", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-
-  const optionResults = poll.options.map((option, optionIndex) => {
-    const voteCount = poll.votes.length;
-
-    const voteCountByGrade = poll.grades.map(() => 0);
-    poll.votes.forEach((vote) => {
-      const answer = vote.answers[optionIndex];
-      const gradeIndex = poll.grades.findIndex((grade) => grade.value === answer);
-      voteCountByGrade[gradeIndex]++;
-    });
-
-    let voteSum = 0;
-    let optionGrade;
-    for (let gradeIndex = poll.grades.length - 1; gradeIndex >= 0; gradeIndex--) {
-      optionGrade = poll.grades[gradeIndex];
-      voteSum += voteCountByGrade[gradeIndex];
-      if (voteSum > voteCount / 2) {
-        break;
-      }
-    }
-
-    return { grade: optionGrade, score: voteSum, voteCountByGrade };
-  });
-  poll.optionResults = optionResults;
-
-  let winnerOption;
-  for (let gradeIndex = 0; gradeIndex < poll.grades.length; gradeIndex++) {
-    const grade = poll.grades[gradeIndex];
-    const optionIndexesWithMatchingGrade = optionResults
-      .map((optionResult, optionResultIndex) => {
-        if (optionResult.grade.value === grade.value) {
-          return {
-            optionIndex: optionResultIndex,
-            optionScore: optionResult.score,
-          };
-        }
-        return undefined;
-      })
-      .filter((optionIndex) => optionIndex !== undefined);
-    if (optionIndexesWithMatchingGrade.length > 0) {
-      const sortedOptionIndexesWithMatchingGrade = optionIndexesWithMatchingGrade.sort(
-        (a, b) => {
-          return b.score - a.score;
-        }
-      );
-      const winnerOptionIndex =
-        sortedOptionIndexesWithMatchingGrade[0].optionIndex;
-      winnerOption = poll.options[winnerOptionIndex];
-      break;
-    }
-  }
-  poll.winnerOption = winnerOption;
-
-  poll.status = "close";
-  res.redirect(302, `/polls/${poll.id}/results`);
-});
-
-app.get("/polls/:id/results", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("results.html", { poll });
-});
-
-app.use(function (req, res, next) {
-  res.status(404).render("404.html");
-});
-
-app.listen(8080);

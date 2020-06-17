@@ -39,6 +39,15 @@ Ca m'a pris 1h et ca me permet de me rassurer sur le côté utilisable
 Le fait d'ajouter la notice d'utilisation directement dans le contenu de chaque fichier me plait beaucoup
 
 
+# Cinquième étape : Implémentation de la persistence fichier
+
+Le fait de stocker la documentation dans le fichier qui contient la données rend difficile l'implémentation 
+des fonctions d'écriture et de lecture
+
+Je pars sur le fait d'ajouter des fichiers readme.status, readme.title, readme.options... qui 
+contiennent la doc
+
+Ca m'a pris beaucoup plus de temps ! Environ (TODO) 2h+
 
 
 

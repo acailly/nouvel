@@ -6,17 +6,17 @@
     <title>zDemocracy</title>
   </head>
   <body>
-    <h1><%= poll.title%></h1>
-    <form method="POST" action="/polls/<%= poll.id%>/add-option">
-      <input type="text" name="option" value="Option <%= poll.options.length + 1%>"></input>
+    <h1><%= pollTitle%></h1>
+    <form method="POST" action="/polls/<%= pollId%>/add-option">
+      <input type="text" name="option" value="Option <%= pollOptions.length + 1%>"></input>
       <input type="submit" value="Ajouter une autre option"></input>
     </form>  
     <ul>
-      <% poll.options.forEach(function(option){ %>
+      <% pollOptions.forEach(function(option){ %>
         <li><%= option%></li>
       <% }); %>
     </ul>  
-    <form method="POST" action="/polls/<%= poll.id%>/publish">
+    <form method="POST" action="/polls/<%= pollId%>/publish">
       <input type="submit" value="Publier le sondage"></input>
     </form>
   </body>
