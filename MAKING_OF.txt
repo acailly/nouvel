@@ -47,7 +47,7 @@ des fonctions d'écriture et de lecture
 Je pars sur le fait d'ajouter des fichiers readme.status, readme.title, readme.options... qui 
 contiennent la doc
 
-Ca m'a pris beaucoup plus de temps ! Environ (TODO) 2h+
+Ca m'a pris beaucoup plus de temps ! Environ (TODO) 2h30+
 
 
 

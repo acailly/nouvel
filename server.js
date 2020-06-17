@@ -24,6 +24,10 @@ app.get("/", function (req, res) {
   res.render("index.html", { polls: polls });
 });
 
+app.get("/polls", function (req, res) {
+  res.render("polls.html", { polls: polls });
+});
+
 app.post("/new", function (req, res) {
   const pollId = new Date().getTime().toString();
   folderCopy(
@@ -98,19 +102,33 @@ app.post("/polls/:id/add-option", function (req, res) {
   res.redirect(302, `/polls/${pollId}/options`);
 });
 
-app.get("/polls", function (req, res) {
-  res.render("polls.html", { polls: polls });
-});
-
 app.post("/polls/:id/publish", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  poll.status = "open";
-  res.redirect(302, `/polls/${poll.id}/published`);
+  const pollId = req.params.id
+
+  fileWriteExtension(
+    path.join(pollsFolder, pollId), 
+    "status",
+    "open"
+  )
+  
+  res.redirect(302, `/polls/${pollId}/published`);
 });
 
 app.get("/polls/:id/published", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("published.html", { poll });
+  const pollId = req.params.id
+
+  const pollTitle = fileReadContent(
+    path.join(pollsFolder, pollId, "title.txt")
+  )
+
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const pollOptions = optionsFiles.map(optionFile => {
+    return fileReadContent(optionFile)
+  })
+  
+  res.render("published.html", { pollId, pollTitle, pollOptions });
 });
 
 app.get("/polls/:id/vote", function (req, res) {
