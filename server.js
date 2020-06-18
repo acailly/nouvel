@@ -7,8 +7,10 @@ const folderCopy = require('./utils-file/folderCopy')
 const folderNew = require('./utils-file/folderNew')
 const folderFileList = require('./utils-file/folderFileList')
 const fileWriteContent = require('./utils-file/fileWriteContent')
+const fileReadExtension = require('./utils-file/fileReadExtension')
 const fileWriteExtension = require('./utils-file/fileWriteExtension')
 const fileReadContent = require('./utils-file/fileReadContent')
+const extensionWithoutDot = require('./utils-file/extensionWithoutDot')
 
 const pollsFolder = path.join(__dirname, "data", "polls")
 const templatesFolder = path.join(__dirname, "data", "templates")
@@ -52,7 +54,7 @@ app.post("/new", function (req, res) {
   )
 
   folderCopy(
-    path.join(templatesFolder, "grades", "jugement-majoritaire"),
+    path.join(templatesFolder, "jugement-majoritaire", "grades"),
     path.join(pollsFolder, pollId, "grades")
   )
 
@@ -132,68 +134,183 @@ app.get("/polls/:id/published", function (req, res) {
 });
 
 app.get("/polls/:id/vote", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("vote.html", { poll });
+  const pollId = req.params.id
+
+  const pollTitle = fileReadContent(
+    path.join(pollsFolder, pollId, "title.txt")
+  )
+
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const pollOptions = optionsFiles.map(optionFile => {
+    return fileReadContent(optionFile)
+  })
+
+  const gradesFiles = folderFileList(
+    path.join(pollsFolder, pollId, "grades")
+  )
+  const pollGrades = gradesFiles.map(gradeFile => {
+    const gradeName = fileReadContent(gradeFile)
+    const gradeValue = extensionWithoutDot(gradeFile)
+    return {name: gradeName, value: gradeValue}
+  })
+
+  res.render("vote.html", { pollId, pollTitle, pollOptions, pollGrades });
 });
 
 app.post("/polls/:id/validate-vote", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
+  const pollId = req.params.id
+  
   const name = req.body.name;
-  const answers = poll.options.map((option, optionIndex) => {
+  
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const pollOptionsIds = optionsFiles.map(optionFile => {
+    return extensionWithoutDot(optionFile)
+  })
+
+  folderNew(
+    path.join(pollsFolder, pollId, "votes", name)
+  )
+
+  pollOptionsIds.map((optionId, optionIndex) => {
     const optionAnswer = req.body[`option_${optionIndex}`];
-    return optionAnswer;
+    fileWriteContent(
+      path.join(pollsFolder, pollId, "votes", name, `${optionId}.${optionAnswer}`),
+      ""
+    )
   });
-  const vote = { name, answers };
-  poll.votes.push(vote);
-  res.redirect(302, `/polls/${poll.id}/voted`);
+
+  res.redirect(302, `/polls/${pollId}/voted`);
 });
 
 app.get("/polls/:id/voted", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
-  res.render("voted.html", { poll });
+  const pollId = req.params.id
+
+  const pollTitle = fileReadContent(
+    path.join(pollsFolder, pollId, "title.txt")
+  )
+
+  const votersFolders = folderFileList(
+    path.join(pollsFolder, pollId, "votes")
+  )
+  const pollVoters = votersFolders.map(voterFolder => {
+    return path.basename(voterFolder);
+  })
+
+  res.render("voted.html", { pollId, pollTitle, pollVoters });
 });
 
 app.post("/polls/:id/close", function (req, res) {
-  const poll = polls.find((p) => p.id === req.params.id);
+  const pollId = req.params.id
 
-  const optionResults = poll.options.map((option, optionIndex) => {
-    const voteCount = poll.votes.length;
+  const gradesFiles = folderFileList(
+    path.join(pollsFolder, pollId, "grades")
+  )
+  const pollGradesValues = gradesFiles.map(gradeFile => {
+    const gradeValue = extensionWithoutDot(gradeFile)
+    return gradeValue
+  })
 
-    const voteCountByGrade = poll.grades.map(() => 0);
-    poll.votes.forEach((vote) => {
-      const answer = vote.answers[optionIndex];
-      const gradeIndex = poll.grades.findIndex((grade) => grade.value === answer);
+  const optionsFiles = folderFileList(
+    path.join(pollsFolder, pollId, "options")
+  )
+  const pollOptionsIds = optionsFiles.map(optionFile => {
+    return extensionWithoutDot(optionFile)
+  })
+
+  const votersFolders = folderFileList(
+    path.join(pollsFolder, pollId, "votes")
+  )
+  const pollVoters = votersFolders.map(voterFolder => {
+    return path.basename(voterFolder);
+  })
+
+  folderNew(
+    path.join(pollsFolder, pollId, "results")
+  )
+
+  pollOptionsIds.map((optionId) => {
+
+    folderNew(
+      path.join(pollsFolder, pollId, "results", optionId)
+    )
+        
+    const voteCount = pollVoters.length;
+
+    const voteCountByGrade = pollGradesValues.map(() => 0);
+    pollVoters.forEach((pollVoter) => {
+      const voterAnswer = fileReadExtension(
+        path.join(pollsFolder, pollId, "votes", pollVoter),
+        optionId
+      )
+      
+      const gradeIndex = pollGradesValues.findIndex((gradeValue) => gradeValue === voterAnswer);
       voteCountByGrade[gradeIndex]++;
-    });
+    });    
 
-    let voteSum = 0;
-    let optionGrade;
-    for (let gradeIndex = poll.grades.length - 1; gradeIndex >= 0; gradeIndex--) {
-      optionGrade = poll.grades[gradeIndex];
-      voteSum += voteCountByGrade[gradeIndex];
-      if (voteSum > voteCount / 2) {
+    let optionScore = 0;
+    let optionGradeValue;
+    for (let gradeIndex = pollGradesValues.length - 1; gradeIndex >= 0; gradeIndex--) {
+      optionGradeValue = pollGradesValues[gradeIndex];
+      optionScore += voteCountByGrade[gradeIndex];
+      if (optionScore > voteCount / 2) {
         break;
       }
     }
 
-    return { grade: optionGrade, score: voteSum, voteCountByGrade };
-  });
-  poll.optionResults = optionResults;
+    fileWriteContent(
+      path.join(pollsFolder, pollId, "results", optionId, `score.${optionScore}`),
+      ""
+    )
 
-  let winnerOption;
-  for (let gradeIndex = 0; gradeIndex < poll.grades.length; gradeIndex++) {
-    const grade = poll.grades[gradeIndex];
-    const optionIndexesWithMatchingGrade = optionResults
-      .map((optionResult, optionResultIndex) => {
-        if (optionResult.grade.value === grade.value) {
+    fileWriteContent(
+      path.join(pollsFolder, pollId, "results", optionId, `grade.${optionGradeValue}`),
+      ""
+    )
+
+    folderNew(
+      path.join(pollsFolder, pollId, "results", optionId, "by-grade")
+    )
+
+    pollGradesValues.forEach((pollGradeValue, pollGradeIndex) => {
+      const voteCountForCurrentGrade = voteCountByGrade[pollGradeIndex]
+
+      fileWriteContent(
+        path.join(
+          pollsFolder, pollId, "results", optionId, "by-grade", 
+          `${pollGradeValue}.${voteCountByGrade}`
+        ), ""
+      )
+    })
+  });
+
+  let winnerOptionId;
+  for (let gradeIndex = 0; gradeIndex < pollGradesValues.length; gradeIndex++) {
+    const gradeValue = pollGradesValues[gradeIndex];
+    const optionIndexesWithMatchingGrade = pollOptionsIds
+      .map((pollOptionId, pollOptionIndex) => {
+        const optionResultGradeValue = fileReadExtension(
+          path.join(pollsFolder, pollId, "results", pollOptionId), 
+          "grade"
+        )
+
+        const optionResultScore = fileReadExtension(
+          path.join(pollsFolder, pollId, "results", pollOptionId), 
+          "score"
+        )
+
+        if (optionResultGradeValue === gradeValue) {
           return {
-            optionIndex: optionResultIndex,
-            optionScore: optionResult.score,
+            optionIndex: pollOptionIndex,
+            optionScore: optionResultScore,
           };
         }
         return undefined;
       })
-      .filter((optionIndex) => optionIndex !== undefined);
+      .filter(v => v !== undefined);
     if (optionIndexesWithMatchingGrade.length > 0) {
       const sortedOptionIndexesWithMatchingGrade = optionIndexesWithMatchingGrade.sort(
         (a, b) => {
@@ -202,14 +319,23 @@ app.post("/polls/:id/close", function (req, res) {
       );
       const winnerOptionIndex =
         sortedOptionIndexesWithMatchingGrade[0].optionIndex;
-      winnerOption = poll.options[winnerOptionIndex];
+      winnerOptionId = pollOptionsIds[winnerOptionIndex];
       break;
     }
   }
-  poll.winnerOption = winnerOption;
 
-  poll.status = "close";
-  res.redirect(302, `/polls/${poll.id}/results`);
+  fileWriteContent(
+    path.join(pollsFolder, pollId, "results", `winner.${winnerOptionId}`),
+    ""
+  )
+
+  fileWriteExtension(
+    path.join(pollsFolder, pollId),
+    "status",
+    "close"
+  )
+
+  res.redirect(302, `/polls/${pollId}/results`);
 });
 
 app.get("/polls/:id/results", function (req, res) {

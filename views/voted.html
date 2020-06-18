@@ -6,21 +6,21 @@
     <title>zDemocracy</title>
   </head>
   <body>
-    <h1><%= poll.title%></h1>
+    <h1><%= pollTitle%></h1>
     <p>Votre vote a été enregistré !</p>
     <form action="/">
       <input type="submit" value="Revenir à l'accueil"></input>
     </form>
     <p>Les personnes suivantes ont participé</p>
-    <form method="POST" action="/polls/<%= poll.id%>/close">
+    <form method="POST" action="/polls/<%= pollId%>/close">
       <p>
         Si vous n'attendez plus de vote, vous pouvez 
         <input type="submit" value="Clôre le sondage"></input>
       </p>
     </form>
     <ul>
-      <% poll.votes.forEach(function(vote){ %>
-        <li><%= vote.name%></li>
+      <% pollVoters.forEach(function(voter){ %>
+        <li><%= voter%></li>
       <% }); %>
     </ul>
   </body>
