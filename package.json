@@ -4,13 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serviceworker-build": "npm run serviceworker-build-server && npm run serviceworker-build-client",
+    "serviceworker-build-server": "browserify server-serviceworker.js -o dist/express-service.js",
+    "serviceworker-build-client": "cp node_modules/express-service/dist/client.js serviceworker/index.html dist",
+    "serviceworker-serve": "http-server dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-service": "^1.7.0"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.1",
+    "http-server": "^0.12.3"
   }
 }

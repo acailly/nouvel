@@ -49,17 +49,32 @@ des fonctions d'écriture et de lecture
 Je pars sur le fait d'ajouter des fichiers status.readme.md, title.readme.md, options.readme.md... qui 
 contiennent la doc
 
+# Sixième étape : Embarquer le serveur node dans un service worker
+
+J'y ai passé environ TODO 30min +
+
+J'ai commencé par réutiliser ce projet : https://github.com/bahmutov/express-service
 
 
-# Next :
+
+
+# Next pour valider le concept :
 
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Ajouter la synchro git en tâche de fond
+TODO Ajouter du style
+TODO Générer un exécutable qui soit plus simple à lancer que node server.js
+TODO Tester Turbolinks pour ajouter un côté plus réactif ?
+
+# Refacto et fonctions bonus
+
 TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Ajouter la delegation à un autre utilisateur
 
 # Interrogations :
 
+TODO Est ce qu'on laisse le code et les données au même endroit ???
 TODO Comment scinder les vues et les actions sans introduire de mécanisme particulier
 TODO La persistence est verbeuse, est ce qu'une couche domaine doit être ajoutée par dessus ?
 TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ? 

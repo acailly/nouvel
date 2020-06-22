@@ -442,4 +442,4 @@ app.use(function (req, res, next) {
   res.status(404).render("404.html");
 });
 
-app.listen(8080);
+module.exports = app
