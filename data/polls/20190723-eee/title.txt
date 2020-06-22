@@ -1,3 +1,1 @@
 Quand est ce qu'on prend l'apéro ?
-
-// The first line of this file contains the title of the poll

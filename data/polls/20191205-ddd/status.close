@@ -1,8 +1,1 @@
-// The filename of this file tells the status of the poll
 
-// The format is "status.<insert status here>", for example: "status.open"
-
-// Status values are:
-// - draft: poll is not published yet 
-// - open: poll is published and participants can vote
-// - close: votes are closed and results are availables
