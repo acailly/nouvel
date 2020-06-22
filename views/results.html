@@ -6,20 +6,20 @@
     <title>zDemocracy</title>
   </head>
   <body>
-    <h1><%= poll.title %></h1>
-    <p>L'option qui l'emporte est <%= poll.winnerOption %> !</p>
+    <h1><%= pollTitle %></h1>
+    <p>L'option qui l'emporte est <%= pollWinnerOption %> !</p>
     <form action="/">
       <input type="submit" value="Revenir à l'accueil"></input>
     </form>
     <p>Plus de détails :</p>
     <ul>      
-      <% poll.options.forEach(function(option, optionIndex){ %>
+      <% pollOptions.forEach(function(option, optionIndex){ %>
         <li>
-          <p><%= option %> : <%= poll.optionResults[optionIndex].grade.name %></p>
+          <p><%= option %> : <%= pollOptionGrades[optionIndex] %></p>
           <small>
             (
-            <% poll.grades.forEach(function(grade, gradeIndex){ %>
-              <%= poll.optionResults[optionIndex].voteCountByGrade[gradeIndex] %> <%= grade.name %>
+            <% pollOptionResultsByGrade[optionIndex].forEach(function(gradeResult){ %>
+              <%= gradeResult.voteCount %> <%= gradeResult.name %>
             <% }); %>
             )
           </small>

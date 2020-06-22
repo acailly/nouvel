@@ -41,22 +41,25 @@ Le fait d'ajouter la notice d'utilisation directement dans le contenu de chaque 
 
 # Cinquième étape : Implémentation de la persistence fichier
 
+Ca m'a pris beaucoup plus de temps ! Environ 4h30
+
 Le fait de stocker la documentation dans le fichier qui contient la données rend difficile l'implémentation 
 des fonctions d'écriture et de lecture
 
-Je pars sur le fait d'ajouter des fichiers readme.status, readme.title, readme.options... qui 
+Je pars sur le fait d'ajouter des fichiers status.readme.md, title.readme.md, options.readme.md... qui 
 contiennent la doc
-
-Ca m'a pris beaucoup plus de temps ! Environ (TODO) 4h+
 
 
 
 # Next :
 
-TODO Ajouter la persistance fichier
-TODO Scinder les vues et les actions sans introduire de mécanisme particulier
-TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Ajouter la delegation à un autre utilisateur
 
+# Interrogations :
+
+TODO Comment scinder les vues et les actions sans introduire de mécanisme particulier
+TODO La persistence est verbeuse, est ce qu'une couche domaine doit être ajoutée par dessus ?
+TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ? 
