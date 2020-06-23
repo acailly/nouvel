@@ -51,7 +51,7 @@ contiennent la doc
 
 # Sixième étape : Embarquer le serveur node dans un service worker
 
-J'y ai passé environ TODO 30min +
+J'y ai passé environ TODO 2h +
 
 J'ai commencé par réutiliser ce projet : https://github.com/bahmutov/express-service
 
