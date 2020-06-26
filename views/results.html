@@ -4,27 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css"/>    
   </head>
   <body>
-    <h1><%= pollTitle %></h1>
-    <p>L'option qui l'emporte est <%= pollWinnerOption %> !</p>
-    <form action="/">
-      <input type="submit" value="Revenir à l'accueil"></input>
-    </form>
-    <p>Plus de détails :</p>
-    <ul>      
-      <% pollOptions.forEach(function(option, optionIndex){ %>
-        <li>
-          <p><%= option %> : <%= pollOptionGrades[optionIndex] %></p>
-          <small>
-            (
-            <% pollOptionResultsByGrade[optionIndex].forEach(function(gradeResult){ %>
-              <%= gradeResult.voteCount %> <%= gradeResult.name %>
-            <% }); %>
-            )
-          </small>
-        </li>
-      <% }); %>
-    </ul>
+    <section>
+      <h1><%= pollTitle %></h1>
+      <p>L'option qui l'emporte est <mark><%= pollWinnerOption %></mark> !</p>
+      <form action="/">
+        <input type="submit" value="Revenir à l'accueil"></input>
+      </form>
+      <h2>Détails des résultats</h2>
+      <ul>      
+        <% pollOptions.forEach(function(option, optionIndex){ %>
+          <li>
+            <h4><%= option %> : <%= pollOptionGrades[optionIndex] %></h4>
+            <small>
+              (
+              <% pollOptionResultsByGrade[optionIndex].forEach(function(gradeResult){ %>
+                <%= gradeResult.voteCount %> <%= gradeResult.name %>
+              <% }); %>
+              )
+            </small>
+          </li>
+        <% }); %>
+      </ul>
+    </section>
   </body>
 </html>

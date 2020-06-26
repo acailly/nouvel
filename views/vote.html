@@ -4,24 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css"/>    
   </head>
   <body>
-    <h1><%= pollTitle%></h1>
-    <form method="POST" action="/polls/<%= pollId%>/validate-vote">
-      <label for="name">Votre nom :</label>
-      <input type="text" id="name" name="name" value="Loulou"></input>
-      <ul>
-        <% pollOptions.forEach(function(option, optionIndex){ %>
-          <p><%= option%></p>
-          <% pollGrades.forEach(function(grade){ %>
-            <div>
-              <input type="radio" id="option_<%= optionIndex %>_<%= grade.value %>" name="option_<%= optionIndex%>" value="<%= grade.value %>" required>
-              <label for="option_<%= optionIndex%>_<%= grade.value %>"><%= grade.name %></label>
-            </div>  
+    <section>
+      <h1><%= pollTitle%></h1>
+      <form method="POST" action="/polls/<%= pollId%>/validate-vote">
+          <label for="name">Votre nom :</label>
+          <input type="text" id="name" name="name" value="Loulou"></input>
+          <% pollOptions.forEach(function(option, optionIndex){ %>
+            <fieldset>
+              <label for="option_<%= optionIndex%>"><%= option%></label>
+              <% pollGrades.forEach(function(grade){ %>
+                <label>
+                  <input type="radio" id="option_<%= optionIndex %>_<%= grade.value %>" name="option_<%= optionIndex%>" value="<%= grade.value %>" required>
+                  <%= grade.name %>
+                </label>
+              <% }); %>
+            </fieldset>
           <% }); %>
-        <% }); %>
-      </ul>    
-      <input type="submit" value="Valider les réponses"></input>
-    </form>
+          <input type="submit" value="Valider les réponses"></input>
+      </form>
+    </section>
   </body>
 </html>

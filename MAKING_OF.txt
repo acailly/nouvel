@@ -84,20 +84,37 @@ Les deux semblent fonctionner mais le fait d'interagir avec un dossier externe a
 Je pars sur nexe. 
 
 
+# Septième étape : Ajouter du style
+
+Au total j'ai du passer 3h à avoir une version desktop qui me plaisait
+
+L'idée est d'utiliser un framework classless
+
+Je commence par un au hasard qui me paraît pas trop moche : MVP.css (https://andybrewer.github.io/mvp/)
+... mais ca ne me convient pas, il met les <form> dans des cards à chaque fois et ca ne rend pas bien
+
+Je parcourt cette liste : https://github.com/dbohdan/classless-css
+
+J'essaie Tacit (https://github.com/yegor256/tacit)
+Ca me plait mieux, j'ai moins l'impression de me battre avec les choix imposés
+
+Il reste un problème : sous mobile il n'y a pas de marges autour de la <section>
+
 
 # Next pour valider le concept :
 
-TODO Générer un exécutable qui soit plus simple à lancer que node server.js
 TODO Ajouter la synchro git en tâche de fond
-TODO Ajouter du style
-TODO Tester Turbolinks pour ajouter un côté plus réactif ?
-TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Simplifier le code pour être serein sur le fait qu'un débutant le comprendra
 
 # Refacto et fonctions bonus
 
+TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Peaufiner le style sous mobile
+TODO Ajouter une favicon
 TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Ajouter la delegation à un autre utilisateur
+TODO Tester Turbolinks pour ajouter un côté plus réactif ?
 
 # Interrogations :
 

@@ -21,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 // from https://stackoverflow.com/questions/27383222/is-there-a-way-to-keep-the-file-extension-of-ejs-file-as-html
 app.engine(".html", ejs.__express);
 
+app.use(express.static('public'));
+
 app.get("/", function (req, res) {
   const pollsFolders = folderFileList(
     path.join(pollsFolder)

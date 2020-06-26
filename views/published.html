@@ -4,17 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css"/>    
   </head>
   <body>
-    <h1>Le sondage a été créé !</h1>
-    <p>Copier le lien ci dessous et envoyer le aux participants</p>
-    <a href="/polls/<%= pollId%>/vote">https://zdemocracy.com/<%= pollId%></a>
-    <p>Résumé du sondage :</p>
-    <p><%= pollTitle%></p>
-    <ul>
-      <% pollOptions.forEach(function(option){ %>
-        <li><%= option%></li>
-      <% }); %>
-    </ul>
+    <section>
+      <h1>Le sondage a été créé !</h1>
+      <p>Copier le lien ci dessous et envoyer le aux participants</p>
+      <a href="/polls/<%= pollId%>/vote">https://zdemocracy.com/<%= pollId%></a>
+      <h2>Résumé du sondage</h2>
+      <p><%= pollTitle%></p>
+      <ul>
+        <% pollOptions.forEach(function(option){ %>
+          <li><%= option%></li>
+        <% }); %>
+      </ul>
+    </section>
   </body>
 </html>

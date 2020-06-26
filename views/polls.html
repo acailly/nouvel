@@ -4,26 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css"/>  
   </head>
   <body>
-    <h1>Liste des sondages</h1>
-    <p>
-      <span>Aller aux</span>
-      <a href="#open">sondages en cours</a>,
-      <a href="#close">sondages terminés</a>
-      ou <a href="/">retourner à l'accueil</a>
-    </p>
-    <p id="open">Sondages en cours :</p>
-    <ul>
-      <% polls.filter(poll => poll.status === "open").forEach(function(poll){ %>
-        <li><a href="/polls/<%= poll.id%>/vote"><%= poll.title%></a></li>
-      <% }); %>
-    </ul>
-    <p id="close">Sondages terminés :</p>
-    <ul>
-      <% polls.filter(poll => poll.status === "close").forEach(function(poll){ %>
-        <li><a href="/polls/<%= poll.id%>/results"><%= poll.title%></a></li>
-      <% }); %>
-    </ul>
+    <section>
+      <h1>Liste des sondages</h1>
+      <p>
+        <span>Aller aux</span>
+        <a href="#open">sondages en cours</a>,
+        <a href="#close">sondages terminés</a>
+        <form action="/">
+          <label>ou</label>
+          <input type="submit" value="Retourner à l'accueil"></input>
+        </form>
+      </p>
+      <p id="open">Sondages en cours :</p>
+      <ul>
+        <% polls.filter(poll => poll.status === "open").forEach(function(poll){ %>
+          <li><a href="/polls/<%= poll.id%>/vote"><%= poll.title%></a></li>
+        <% }); %>
+      </ul>
+      <p id="close">Sondages terminés :</p>
+      <ul>
+        <% polls.filter(poll => poll.status === "close").forEach(function(poll){ %>
+          <li><a href="/polls/<%= poll.id%>/results"><%= poll.title%></a></li>
+        <% }); %>
+      </ul>
+    </section>
   </body>
 </html>
