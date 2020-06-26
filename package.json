@@ -4,10 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serviceworker-build": "npm run serviceworker-build-server && npm run serviceworker-build-client",
-    "serviceworker-build-server": "node serviceworker/build.js",
-    "serviceworker-build-client": "cp node_modules/express-service/dist/client.js serviceworker/index.html dist",
-    "serviceworker-serve": "http-server dist"
+    "start": "node server.js",
+    "nexe": "nexe",
+    "exe:build": "npm run exe:build-linux && npm run exe:build-win && npm run exe:build-mac",
+    "exe:build-linux": "nexe server.js -r \"views/**/*\" -t linux-x64-12.9.1 -o server-linux",
+    "exe:build-win": "nexe server.js -r \"views/**/*\" -t windows-x64-12.9.1 -o server-win",
+    "exe:build-mac": "nexe server.js -r \"views/**/*\" -t mac-x64-8.9.4 -o server-mac",
+    "serviceworker:build": "npm run serviceworker:build-server && npm run serviceworker:build-client",
+    "serviceworker:build-server": "node serviceworker/build.js",
+    "serviceworker:build-client": "cp node_modules/express-service/dist/client.js serviceworker/index.html dist/serviceworker",
+    "serviceworker:serve": "http-server dist"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +26,7 @@
   },
   "devDependencies": {
     "browserify": "^16.5.1",
-    "http-server": "^0.12.3"
+    "http-server": "^0.12.3",
+    "nexe": "^3.3.3"
   }
 }

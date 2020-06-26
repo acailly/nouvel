@@ -49,9 +49,9 @@ des fonctions d'écriture et de lecture
 Je pars sur le fait d'ajouter des fichiers status.readme.md, title.readme.md, options.readme.md... qui 
 contiennent la doc
 
-# Sixième étape : Embarquer le serveur node dans un service worker
+# 1ère tentation : Embarquer le serveur node dans un service worker
 
-J'y ai passé environ TODO 5h +
+J'y ai passé environ 5h 
 
 J'ai commencé par réutiliser ce projet : https://github.com/bahmutov/express-service
 
@@ -65,16 +65,33 @@ var nodeVer = typeof process !== 'undefined' && process.versions && process.vers
 + if (false && nodeVer) {
 (https://github.com/ashtuchkin/iconv-lite/issues/204)
 
+Mais j'ai toujours des erreurs...
+
+Est ce que je ne m'égare pas un peu ?
+
+Allez ! on laisse ca de côté.
+
+# Sixième étape : Générer un exécutable
+
+J'y ai passé environ 1H30
+
+Les outils que j'ai trouvé pour ca sont :
+
+- pkg (https://github.com/vercel/pkg)
+- nexe (https://github.com/nexe/nexe)
+
+Les deux semblent fonctionner mais le fait d'interagir avec un dossier externe a l'air plus galère avec pkg.
+Je pars sur nexe. 
 
 
 
 # Next pour valider le concept :
 
-TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
+TODO Générer un exécutable qui soit plus simple à lancer que node server.js
 TODO Ajouter la synchro git en tâche de fond
 TODO Ajouter du style
-TODO Générer un exécutable qui soit plus simple à lancer que node server.js
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
+TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 
 # Refacto et fonctions bonus
 

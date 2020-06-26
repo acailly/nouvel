@@ -31,6 +31,6 @@ browserify(path.join(__dirname, "server-serviceworker.js"), browserifyConfig)
   .bundle()
   .pipe(
     fs.createWriteStream(
-      path.join(__dirname, "..", "dist", "express-service.js")
+      path.join(__dirname, "..", "dist", "serviceworker", "express-service.js")
     )
   );
