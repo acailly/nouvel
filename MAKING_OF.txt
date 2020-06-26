@@ -51,9 +51,19 @@ contiennent la doc
 
 # Sixième étape : Embarquer le serveur node dans un service worker
 
-J'y ai passé environ TODO 2h +
+J'y ai passé environ TODO 5h +
 
 J'ai commencé par réutiliser ce projet : https://github.com/bahmutov/express-service
+
+J'ai fait les corrections manuelles suivantes :
+
+http.ServerResponse = Object.create({}, http.ServerResponseProto)
++ http.ServerResponse.prototype = http.ServerResponseProto
+
+var nodeVer = typeof process !== 'undefined' && process.versions && process.versions.node;
+- if (nodeVer) {
++ if (false && nodeVer) {
+(https://github.com/ashtuchkin/iconv-lite/issues/204)
 
 
 
