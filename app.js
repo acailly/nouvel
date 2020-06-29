@@ -12,8 +12,9 @@ const fileWriteExtension = require("./utils-file/fileWriteExtension");
 const fileReadContent = require("./utils-file/fileReadContent");
 const extensionWithoutDot = require("./utils-file/extensionWithoutDot");
 
-const pollsFolder = path.join(__dirname, "data", "polls");
-const templatesFolder = path.join(__dirname, "data", "templates");
+const rootDataFolder = path.join(__dirname, "..", "zDemocracy-lowtech-data")
+const pollsFolder = path.join(rootDataFolder, "polls");
+const templatesFolder = path.join(rootDataFolder, "templates");
 
 var app = express();
 app.use(express.urlencoded({ extended: true }));

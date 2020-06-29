@@ -1,1 +1,0 @@
-The first line of this file contains the title of the poll
