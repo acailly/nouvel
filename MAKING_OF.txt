@@ -100,10 +100,20 @@ Ca me plait mieux, j'ai moins l'impression de me battre avec les choix imposés
 
 Il reste un problème : sous mobile il n'y a pas de marges autour de la <section>
 
+# Huitième étape : Ajouter la synchro git
+
+Cette synchro est une manière de ne pas tout perdre si le serveur crash
+
+Ca m'a pris 1h MAIS seulement parce que j'avais déjà codé la synchronisation git dans un autre projet
+
+Cette étape a été l'occasion de séparer les données du code
+
+
+
+
 
 # Next pour valider le concept :
 
-TODO Ajouter la synchro git en tâche de fond
 TODO Simplifier le code pour être serein sur le fait qu'un débutant le comprendra
 
 # Refacto et fonctions bonus
