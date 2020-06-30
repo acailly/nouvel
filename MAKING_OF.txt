@@ -108,13 +108,17 @@ Ca m'a pris 1h MAIS seulement parce que j'avais déjà codé la synchronisation 
 
 Cette étape a été l'occasion de séparer les données du code
 
+# Neuvième étape : Justification des choix techniques
 
-
+Je prends 30 minutes pour poser par écrit la justification des choix techniques 
+dans le fichier CHOICES.txt 
 
 
 # Next pour valider le concept :
 
 TODO Simplifier le code pour être serein sur le fait qu'un débutant le comprendra
+TODO Simplifier le format du stockage fichier ?
+TODO Enlever les traces du serviceworker
 
 # Refacto et fonctions bonus
 
