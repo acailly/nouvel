@@ -122,22 +122,23 @@ Je prends 2h pour :
 - isoler le code de chaque route dans un fichier séparé situé dans /views ou /actions
 - renommé les fichiers .js pour mieux faire ressortir leur rôle
 - séparer l'application express du stockage fichier et de la synchronisation git
-- complété le README pour facilement entrer dans le projet
-
+- compléter le README pour facilement entrer dans le projet
+- factoriser l'entête des pages HTML dans /views/partials/head
 
 # Next pour valider le concept :
 
-TODO Factoriser le header layout des vues
-TODO Simplifier le format du stockage fichier ?
+TODO Héberger sur un RPi
 
 # Refacto et fonctions bonus
 
+TODO Simplifier le format du stockage fichier ?
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Peaufiner le style sous mobile
 TODO Ajouter une favicon
 TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
+TODO Gérer les cas d'égalité dans les résultats
 TODO Ajouter la delegation à un autre utilisateur
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
 
