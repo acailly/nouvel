@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css" />
+  </head>
+  <body>
+    <section>
+      <h1>zDemocracy</h1>
+      <p>Une décision à prendre ?</p>
+      <form method="POST" action="/new-poll">
+        <input type="text" name="title" value="Qui va faire la vaisselle ?" />
+        <input type="submit" value="Créer et ajouter des options" />
+      </form>
+      <p>ou</p>
+      <p>Consulter les sondages en cours récents :</p>
+      <ul>
+        <% polls.filter(poll => poll.status ===
+        "open").slice(-2).forEach(function(poll){ %>
+        <li><a href="/polls/<%= poll.id%>/vote"><%= poll.title%></a></li>
+        <% }); %>
+      </ul>
+      <form action="/polls">
+        <input type="submit" value="Voir plus de sondages" />
+      </form>
+    </section>
+  </body>
+</html>

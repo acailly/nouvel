@@ -4,23 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zDemocracy</title>
-    <link rel="stylesheet" href="/tacit-css.min.css"/>    
+    <link rel="stylesheet" href="/tacit-css.min.css" />
   </head>
   <body>
     <section>
       <h1><%= pollTitle%></h1>
       <p>Votre vote a été enregistré !</p>
       <form action="/">
-        <input type="submit" value="Revenir à l'accueil"></input>
+        <input type="submit" value="Revenir à l'accueil" />
       </form>
       <form method="POST" action="/polls/<%= pollId%>/close">
-        <label>Si vous n'attendez plus de vote, vous pouvez</label> 
-        <input type="submit" value="Clôre le sondage"></input>
+        <label>Si vous n'attendez plus de vote, vous pouvez</label>
+        <input type="submit" value="Clôre le sondage" />
       </form>
       <h2>Personnes ayant participé</h2>
       <ul>
         <% pollVoters.forEach(function(voter){ %>
-          <li><%= voter%></li>
+        <li><%= voter%></li>
         <% }); %>
       </ul>
     </section>

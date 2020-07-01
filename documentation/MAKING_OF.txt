@@ -113,15 +113,26 @@ Cette étape a été l'occasion de séparer les données du code
 Je prends 30 minutes pour poser par écrit la justification des choix techniques 
 dans le fichier CHOICES.txt 
 
+# Dixième étape : Ménage
+
+Je prends 2h pour :
+- nettoyer toute trace de mon essai pour embarquer express dans un service worker (on verra ca plus tard)
+- regrouper la doc dans un seul fichier nommé STRUCTURE.md, plus facile à maintenir
+- déplacer les variables globales en dur dans un fichier configuration.js à la racine
+- isoler le code de chaque route dans un fichier séparé situé dans /views ou /actions
+- renommé les fichiers .js pour mieux faire ressortir leur rôle
+- séparer l'application express du stockage fichier et de la synchronisation git
+- complété le README pour facilement entrer dans le projet
+
 
 # Next pour valider le concept :
 
-TODO Simplifier le code pour être serein sur le fait qu'un débutant le comprendra
+TODO Factoriser le header layout des vues
 TODO Simplifier le format du stockage fichier ?
-TODO Enlever les traces du serviceworker
 
 # Refacto et fonctions bonus
 
+TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Peaufiner le style sous mobile
 TODO Ajouter une favicon

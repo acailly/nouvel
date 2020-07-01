@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zDemocracy</title>
+    <link rel="stylesheet" href="/tacit-css.min.css" />
+  </head>
+  <body>
+    <section>
+      <h1><%= pollTitle%></h1>
+      <form method="POST" action="/polls/<%= pollId%>/add-option">
+        <input
+          type="text"
+          name="option"
+          value="Option <%= pollOptions.length + 1%>"
+        />
+        <input type="submit" value="Ajouter cette option" />
+      </form>
+      <ul>
+        <% pollOptions.forEach(function(option){ %>
+        <li><%= option%></li>
+        <% }); %>
+      </ul>
+      <form method="POST" action="/polls/<%= pollId%>/publish-poll">
+        <input type="submit" value="Publier le sondage" />
+      </form>
+    </section>
+  </body>
+</html>
