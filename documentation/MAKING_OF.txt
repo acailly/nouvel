@@ -129,10 +129,16 @@ Je prends 2h pour :
 
 Je pensais héberger l'application sur mon Raspberry Pi mais il semblerait qu'il soit HS :-/
 
-Pour aller vite et partager l'application a des collègues, j'ajoute une configuration localtunnel
+Pour aller vite et partager l'application a des collègues, j'ajoute une configuration localtunnel (https://github.com/localtunnel/localtunnel)
+Il se trouve que le service a l'air HS lui aussi 
+(https://github.com/localtunnel/localtunnel/issues/352)
 
-Ca me prend 30 min.
+En fait l'auteur ne semble plus maintenir le serveur utilisé : https://twitter.com/defunctzombie/status/1219768900537081856
 
+Je trouve sur une autre issue qui mentionne un host alternatif qui marche
+(https://github.com/localtunnel/localtunnel/issues/343) 
+
+Ca me prend 1h
 
 
 # Next pour valider le concept :
