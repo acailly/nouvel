@@ -143,11 +143,10 @@ Ca me prend 1h
 
 # Next pour valider le concept :
 
-TODO Héberger sur localtunnel
+TODO Héberger sur un endroit fixe (RPi ?)
 
 # Refacto et fonctions bonus
 
-TODO Héberger sur un RPi
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Simplifier le format du stockage fichier ?
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
