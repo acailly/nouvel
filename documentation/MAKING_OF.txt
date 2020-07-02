@@ -125,12 +125,24 @@ Je prends 2h pour :
 - compléter le README pour facilement entrer dans le projet
 - factoriser l'entête des pages HTML dans /views/partials/head
 
+# Onzième étape : Mise à disposition avec localtunnel
+
+Je pensais héberger l'application sur mon Raspberry Pi mais il semblerait qu'il soit HS :-/
+
+Pour aller vite et partager l'application a des collègues, j'ajoute une configuration localtunnel
+
+Ca me prend 30 min.
+
+
+
 # Next pour valider le concept :
 
-TODO Héberger sur un RPi
+TODO Héberger sur localtunnel
 
 # Refacto et fonctions bonus
 
+TODO Héberger sur un RPi
+TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Simplifier le format du stockage fichier ?
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
