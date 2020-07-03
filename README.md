@@ -1,6 +1,6 @@
 # zDemocracy-lowtech
 
-## Publicly available adress
+## Publicly available address
 
 https://zdemocracy.serverless.social/
 
