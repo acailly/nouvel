@@ -5,7 +5,8 @@ const configuration = require("../configuration");
 module.exports = async function () {
   const tunnel = await localtunnel({
     port: configuration.applicationServerPort,
-    host: "http://serverless.social" // See https://github.com/localtunnel/localtunnel/issues/343
+    host: configuration.tunnellingHost,
+    subdomain: configuration.tunnellingSubDomain
   });
 
   console.log(`The application is available at: ${tunnel.url}`);

@@ -138,15 +138,19 @@ En fait l'auteur ne semble plus maintenir le serveur utilisé : https://twitter.
 Je trouve sur une autre issue qui mentionne un host alternatif qui marche
 (https://github.com/localtunnel/localtunnel/issues/343) 
 
-Ca me prend 1h
+En attendant d'avoir un point fixe d'hébergement, je fais en sorte d'utiliser toujours le même sous domaine.
+Cela veut dire que l'application sera accessible à https://zdemocracy.serverless.social/ et 
+que n'importe qui peut l'héberger depuis son poste
+
+Ca me prend 1h30
 
 
 # Next pour valider le concept :
 
-TODO Héberger sur un endroit fixe (RPi ?)
 
 # Refacto et fonctions bonus
 
+TODO Héberger sur un endroit fixe (RPi ?)
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Simplifier le format du stockage fichier ?
 TODO Utiliser isomorphic git au lieu du git sur le pc ?

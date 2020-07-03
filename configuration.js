@@ -12,6 +12,11 @@ const applicationServerPort = 8080;
 const foldersToSync = [rootDataFolder];
 const syncPeriodInMs = 20000;
 
+// PUBLISH LOCALTUNNEL
+
+const tunnellingHost = "http://serverless.social"; // See https://github.com/localtunnel/localtunnel/issues/343
+const tunnellingSubDomain = "zdemocracy"
+
 const configuration = {
   rootDataFolder,
   pollsFolder,
@@ -19,6 +24,8 @@ const configuration = {
   applicationServerPort,
   foldersToSync,
   syncPeriodInMs,
+  tunnellingHost,
+  tunnellingSubDomain
 };
 
 module.exports = configuration;
