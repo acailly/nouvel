@@ -18,14 +18,10 @@
 · · ├── winner.json · · · · · · · · · · · · Elected option
 · · ├── [id of option 1] · · · · · · · · ·· Results for first option
 · · | ├── result.json · · · · · · · · · · · Grade and score obtained by first option
-· · | └── by-grade/ · · · · · · · · · · · · Results by grade for first option
-· · | · ├── [id of grade 1].json · · · · ·· Results for first grade in first option
-· · | · └── [id of grade 2].json · · · · ·· Results for second grade in first option
+· · | └── by-grade.json · · · · · · · · · · Results by grade for first option
 · · └── [id of option 2] · · · · · · · · ·· Results for second option
 · · · ├── result.json · · · · · · · · · · · Grade and score obtained by second option
-· · · └── by-grade/ · · · · · · · · · · · · Results by grade for second option
-· · · · ├── [id of grade 1].json · · · · ·· Results for first grade in second option
-· · · · └── [id of grade 2].json · · · · ·· Results for second grade in second option
+· · · └── by-grade.json · · · · · · · · · · Results by grade for second option
 
 ## Example of info.json
 
@@ -99,11 +95,11 @@ For example : yes, meh, no
 }
 ```
 
-## Example of results/[id of option 1]/by-grade/[id of grade 1].json
+## Example of results/[id of option 1]/by-grade.json
 
 ```
 {
-    "gradeId": "yes",
-    "score": 2
+    "yes": 2,
+    "no": 1
 }
 ```
