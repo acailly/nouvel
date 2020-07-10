@@ -17,10 +17,10 @@
 · └── results/ · · · · · · · · · · · · · ·· Results
 · · ├── winner.json · · · · · · · · · · · · Elected option
 · · ├── [id of option 1] · · · · · · · · ·· Results for first option
-· · | ├── result.json · · · · · · · · · · · Grade and score obtained by first option
+· · | ├── results.json · · · · · · · · · ·· Grade and score obtained by first option
 · · | └── by-grade.json · · · · · · · · · · Results by grade for first option
 · · └── [id of option 2] · · · · · · · · ·· Results for second option
-· · · ├── result.json · · · · · · · · · · · Grade and score obtained by second option
+· · · ├── results.json · · · · · · · · · ·· Grade and score obtained by second option
 · · · └── by-grade.json · · · · · · · · · · Results by grade for second option
 
 ## Example of info.json
