@@ -3,33 +3,29 @@
 ## General structure
 
 [id of the poll]/
-├── info.json - - - - - - - - - - - - - - General infos
-├── status.json - - - - - - - - - - - - - Current poll status
-├── grades/ - - - - - - - - - - - - - - - Grades used in this polls
-│ ├── [id of grade 1].json - - - - - - -- First grade
-│ └── [id of grade 2].json - - - - - - -- Second grade
-├── options/ - - - - - - - - - - - - - -- Options offered to voters
-│ ├── [id of option 1].json - - - - - - - First option
-│ └── [id of option 2].json - - - - - - - Second option
-├── votes/ - - - - - - - - - - - - - - -- Votes
-│ ├── [id of voter 1]/ - - - - - - - - -- Votes of voter 1
-│ | ├── [id of option 1].json - - - - - - Vote of voter 1 for first option
-│ | └── [id of option 2].json - - - - - - Vote of voter 1 for second option
-│ └── [id of voter 2]/ - - - - - - - - -- Votes of voter 2
-│ ├── [id of option 1].json - - - - - - - Vote of voter 2 for first option
-│ └── [id of option 2].json - - - - - - - Vote of voter 2 for second option
-└── results/ - - - - - - - - - - - - - -- Results
-├── winner.json - - - - - - - - - - - - - Elected option
-├── [id of option 1] - - - - - - - - - -- Results for first option
-| ├── result.json - - - - - - - - - - - - Grade and score obtained by first option
-| └── by-grade/ - - - - - - - - - - - - - Results by grade for first option
-| ├── [id of grade 1].json - - - - - - -- Results for first grade in first option
-| └── [id of grade 2].json - - - - - - -- Results for second grade in first option
-└── [id of option 2] - - - - - - - - - -- Results for second option
-├── result.json - - - - - - - - - - - - - Grade and score obtained by second option
-└── by-grade/ - - - - - - - - - - - - - - Results by grade for second option
-├── [id of grade 1].json - - - - - - - -- Results for first grade in second option
-└── [id of grade 2].json - - - - - - - -- Results for second grade in second option
+· ├── info.json · · · · · · · · · · · · · · General infos
+· ├── status.json · · · · · · · · · · · · · Current poll status
+· ├── grades/ · · · · · · · · · · · · · · · Grades used in this polls
+· │ ├── [id of grade 1].json · · · · · · ·· First grade
+· │ └── [id of grade 2].json · · · · · · ·· Second grade
+· ├── options/ · · · · · · · · · · · · · ·· Options offered to voters
+· │ ├── [id of option 1].json · · · · · · · First option
+· │ └── [id of option 2].json · · · · · · · Second option
+· ├── votes/ · · · · · · · · · · · · · · ·· Votes
+· │ ├── [id of voter 1].json · · · · · · ·· Votes of voter 1
+· │ └── [id of voter 2].json · · · · · · ·· Votes of voter 2
+· └── results/ · · · · · · · · · · · · · ·· Results
+· · ├── winner.json · · · · · · · · · · · · Elected option
+· · ├── [id of option 1] · · · · · · · · ·· Results for first option
+· · | ├── result.json · · · · · · · · · · · Grade and score obtained by first option
+· · | └── by-grade/ · · · · · · · · · · · · Results by grade for first option
+· · | · ├── [id of grade 1].json · · · · ·· Results for first grade in first option
+· · | · └── [id of grade 2].json · · · · ·· Results for second grade in first option
+· · └── [id of option 2] · · · · · · · · ·· Results for second option
+· · · ├── result.json · · · · · · · · · · · Grade and score obtained by second option
+· · · └── by-grade/ · · · · · · · · · · · · Results by grade for second option
+· · · · ├── [id of grade 1].json · · · · ·· Results for first grade in second option
+· · · · └── [id of grade 2].json · · · · ·· Results for second grade in second option
 
 ## Example of info.json
 
@@ -77,12 +73,12 @@ For example : yes, meh, no
 }
 ```
 
-## Example of votes/[id of voter 1]/[id of option 1].json
+## Example of votes/[id of voter 1].json
 
 ```
 {
-    "optionId": "blue",
-    "gradeId": "yes"
+    "blue": "yes",
+    "red": "no"
 }
 ```
 
