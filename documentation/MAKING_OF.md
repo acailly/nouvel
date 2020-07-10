@@ -213,7 +213,6 @@ Le localtunnel me laisse aussi entrevoir la solution P2P suivante :
 
 A voir...
 
-
 # 13 : Simplification de la persistance fichier
 
 C'est une tentative pour ajouter un tout petit peu de convention pour simplifier la manipulation des fichiers
@@ -233,13 +232,12 @@ On aboutit donc à une base clé / valeur persisté en base :
 
 Bonus, ca nous permet maintenant d'ajouter des fichiers non JSON dans les dossier sans que ca ne perturbe l'appli (des README spécifiques par exemple)
 
-TODO 1h +
-
+Cela m'a pris 4h30 au total
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Stocker les données dans le répertoire user de l'OS
-TODO Simplifier la persistance fichier
+TODO Faire en sorte que les templates soient dans le repo de code plutôt que dans le repo de data
 
 # Refacto et fonctions bonus
 
@@ -248,12 +246,11 @@ TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Peaufiner le style sous mobile (il n'y a pas de marge à gauche)
 TODO Ajouter une favicon
-TODO Renommer les fichiers pour que leur rôle soit plus explicite
 TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Gérer les cas d'égalité dans les résultats
 TODO Ajouter la delegation à un autre utilisateur (démocratie liquide)
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
-TODO Ajouter des fichier *.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
+TODO Ajouter des fichier \*.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
 
 # Interrogations :
 

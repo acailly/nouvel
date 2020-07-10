@@ -11,12 +11,9 @@ module.exports = function (keyFolder) {
 
   const files = fs.readdirSync(keyFolderPath);
 
-  const keyFiles = files
-    .filter((file) => path.extname(file) === ".json")
-    .map((file) => {
-      const fileNameWithoutExtension = path.basename(file, ".json");
-      return fileNameWithoutExtension;
-    });
+  const subFolders = files.filter((file) =>
+    fs.lstatSync(path.join(keyFolderPath, file)).isDirectory()
+  );
 
-  return keyFiles;
+  return subFolders;
 };

@@ -16,7 +16,7 @@
       </form>
       <ul>
         <% pollOptions.forEach(function(option){ %>
-        <li><%= option%></li>
+        <li><%= option.label%></li>
         <% }); %>
       </ul>
       <form method="POST" action="/polls/<%= pollId%>/publish-poll">

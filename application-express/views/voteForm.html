@@ -9,19 +9,19 @@
       <form id="vote" method="POST" action="/polls/<%= pollId%>/validate-vote">
         <label for="name">Votre nom :</label>
         <input type="text" id="name" name="name" value="Loulou" />
-        <% pollOptions.forEach(function(option, optionIndex){ %>
+        <% pollOptions.forEach(function(option){ %>
         <fieldset>
-          <label for="option_<%= optionIndex%>"><%= option%></label>
+          <label for="option_<%= option.id%>"><%= option.label%></label>
           <% pollGrades.forEach(function(grade){ %>
           <label>
             <input
               type="radio"
-              id="option_<%= optionIndex %>_<%= grade.value %>"
-              name="option_<%= optionIndex%>"
-              value="<%= grade.value %>"
+              id="option_<%= option.id %>_<%= grade.id %>"
+              name="option_<%= option.id%>"
+              value="<%= grade.id %>"
               required
             />
-            <%= grade.name %>
+            <%= grade.label %>
           </label>
           <% }); %>
         </fieldset>

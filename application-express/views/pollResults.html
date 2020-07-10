@@ -6,19 +6,21 @@
   <body>
     <section>
       <h1><%= pollTitle %></h1>
-      <p>L'option qui l'emporte est <mark><%= pollWinnerOption %></mark> !</p>
+      <p>
+        L'option qui l'emporte est <mark><%= pollWinnerOption.label %></mark> !
+      </p>
       <form action="/">
         <input type="submit" value="Revenir à l'accueil" />
       </form>
       <h2>Détails des résultats</h2>
       <ul>
-        <% pollOptions.forEach(function(option, optionIndex){ %>
+        <% pollOptions.forEach(function(option){ %>
         <li>
-          <h4><%= option %> : <%= pollOptionGrades[optionIndex] %></h4>
+          <h4><%= option.label %> : <%= pollOptionGrades[option.id] %></h4>
           <small>
-            ( <%
-            pollOptionResultsByGrade[optionIndex].forEach(function(gradeResult){
-            %> <%= gradeResult.voteCount %> <%= gradeResult.name %> <% }); %> )
+            ( <%pollGrades.forEach(function(grade){%> <%=
+            pollOptionResultsByGrade[option.id][grade.id] %> <%= grade.label %>
+            <% }); %> )
           </small>
         </li>
         <% }); %>

@@ -1,39 +1,27 @@
-const path = require("path");
-
-const configuration = require("../../configuration");
-
-const folderCopy = require("../../storage-file/folderCopy");
-const fileWriteContent = require("../../storage-file/fileWriteContent");
-const fileWriteExtension = require("../../storage-file/fileWriteExtension");
-const folderNew = require("../../storage-file/folderNew");
+const listKeys = require("../../storage-file/listKeys");
+const read = require("../../storage-file/read");
+const write = require("../../storage-file/write");
 
 module.exports = function (req, res) {
   const pollId = new Date().getTime().toString();
-  folderCopy(
-    path.join(configuration.templatesFolder, "poll"),
-    path.join(configuration.pollsFolder, pollId)
-  );
 
   const pollTitle = req.body.title;
-  fileWriteContent(
-    path.join(configuration.pollsFolder, pollId, "title.txt"),
-    pollTitle
-  );
+  write(`polls/${pollId}/info`, {
+    title: pollTitle,
+  });
 
-  fileWriteExtension(
-    path.join(configuration.pollsFolder, pollId),
-    "status",
-    "draft"
-  );
+  write(`polls/${pollId}/status`, {
+    id: "draft",
+    label: "Draft",
+  });
 
-  folderNew(path.join(configuration.pollsFolder, pollId, "options"));
-
-  folderCopy(
-    path.join(configuration.templatesFolder, "jugement-majoritaire", "grades"),
-    path.join(configuration.pollsFolder, pollId, "grades")
-  );
-
-  folderNew(path.join(configuration.pollsFolder, pollId, "votes"));
+  const templateGradeIds = listKeys(`templates/jugement-majoritaire/grades`);
+  templateGradeIds.forEach((gradeId) => {
+    const templateGrade = read(
+      `templates/jugement-majoritaire/grades/${gradeId}`
+    );
+    write(`polls/${pollId}/grades/${gradeId}`, templateGrade);
+  });
 
   res.redirect(302, `/polls/${pollId}/options`);
 };

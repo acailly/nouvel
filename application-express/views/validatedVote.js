@@ -1,23 +1,13 @@
-const path = require("path");
-
-const configuration = require("../../configuration");
-
-const folderFileList = require("../../storage-file/folderFileList");
-const fileReadContent = require("../../storage-file/fileReadContent");
+const listKeys = require("../../storage-file/listKeys");
+const read = require("../../storage-file/read");
 
 module.exports = function (req, res) {
   const pollId = req.params.id;
 
-  const pollTitle = fileReadContent(
-    path.join(configuration.pollsFolder, pollId, "title.txt")
-  );
+  const pollInfo = read(`polls/${pollId}/info`);
+  const pollTitle = pollInfo.title;
 
-  const votersFolders = folderFileList(
-    path.join(configuration.pollsFolder, pollId, "votes")
-  );
-  const pollVoters = votersFolders.map((voterFolder) => {
-    return path.basename(voterFolder);
-  });
+  const pollVoters = listKeys(`polls/${pollId}/votes`);
 
   res.render("validatedVote.html", { pollId, pollTitle, pollVoters });
 };

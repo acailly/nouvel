@@ -1,17 +1,18 @@
-const path = require("path");
-
-const configuration = require("../../configuration");
-
-const folderFileList = require("../../storage-file/folderFileList");
-const fileReadContent = require("../../storage-file/fileReadContent");
-const fileReadExtension = require("../../storage-file/fileReadExtension");
+const listSubFolders = require("../../storage-file/listSubFolders");
+const read = require("../../storage-file/read");
 
 module.exports = function (req, res) {
-  const pollsFolders = folderFileList(path.join(configuration.pollsFolder));
-  const polls = pollsFolders.map((pollFollder) => {
-    const pollId = path.basename(pollFollder);
-    const pollTitle = fileReadContent(path.join(pollFollder, "title.txt"));
-    const pollStatus = fileReadExtension(pollFollder, "status");
+  const pollsFolders = listSubFolders(`polls`);
+
+  const polls = pollsFolders.map((pollFolder) => {
+    const pollId = pollFolder;
+
+    const info = read(`polls/${pollId}/info`);
+    const pollTitle = info.title;
+
+    const status = read(`polls/${pollId}/status`);
+    const pollStatus = status.id;
+
     return {
       id: pollId,
       title: pollTitle,

@@ -1,23 +1,17 @@
-const path = require("path");
-
-const configuration = require("../../configuration");
-
-const folderFileList = require("../../storage-file/folderFileList");
-const fileReadContent = require("../../storage-file/fileReadContent");
+const listKeys = require("../../storage-file/listKeys");
+const read = require("../../storage-file/read");
 
 module.exports = function (req, res) {
   const pollId = req.params.id;
 
-  const pollTitle = fileReadContent(
-    path.join(configuration.pollsFolder, pollId, "title.txt")
-  );
+  const pollInfo = read(`polls/${pollId}/info`);
+  const pollTitle = pollInfo.title;
 
-  const optionsFiles = folderFileList(
-    path.join(configuration.pollsFolder, pollId, "options")
-  );
-  const pollOptions = optionsFiles.map((optionFile) => {
-    return fileReadContent(optionFile);
+  const optionIds = listKeys(`polls/${pollId}/options`);
+  const options = optionIds.map((optionId) => {
+    return read(`polls/${pollId}/options/${optionId}`);
   });
+  const pollOptions = options.sort((a, b) => a.position - b.position);
 
   res.render("publishedPoll.html", { pollId, pollTitle, pollOptions });
 };
