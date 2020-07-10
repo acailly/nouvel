@@ -185,7 +185,9 @@ Je me suis rendu compte en le codant que la persistance fichier n'était pas aus
 
 Je ne veux pas aller vers sqlite parce que ca empêcherai une synchro facile avec Git
 
-L'approche lowdb pourrait être un bon compromis comme le suggère Luc
+Lowdb est séduisante parce que le code a l'air hyper simple mais le côté monofichier me gêne là encore parce que je crains que ca bride la synchro Git
+
+Je vais essayer de simplifier la persistance fichier actuelle sans pour autant utiliser de lib externes pour l'instant
 
 ## L'hebergement
 
@@ -211,15 +213,37 @@ Le localtunnel me laisse aussi entrevoir la solution P2P suivante :
 
 A voir...
 
+
+# 13 : Simplification de la persistance fichier
+
+C'est une tentative pour ajouter un tout petit peu de convention pour simplifier la manipulation des fichiers
+
+Le fait d'aller lire explicitement des fichiers avec fileReadContent(path.join(...)) est lourd
+
+L'idée est de proposer des fonctions simples types read / write / delete / listKeys qui vont transposer ces appels en requête dans les fichiers
+
+L'idée est aussi de ne plus utiliser les extension de fichiers comme des valeurs, c'est plus lisible à condition que l'on sache a priori ce que l'extension de tel fichier est sensée contenir
+
+Je pars plutôt sur le fait d'utiliser uniquement des dossiers et des fichiers json
+
+On aboutit donc à une base clé / valeur persisté en base :
+
+- la clé est le chemin du fichier (/polls/poll1/info.json) auquel on a enlevé l'extension : /polls/poll1/info
+- la valeur est le contenu du fichier JSON
+
+Bonus, ca nous permet maintenant d'ajouter des fichiers non JSON dans les dossier sans que ca ne perturbe l'appli (des README spécifiques par exemple)
+
+TODO 1h +
+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Stocker les données dans le répertoire user de l'OS
-TODO Utiliser lowdb pour la persistance fichier
+TODO Simplifier la persistance fichier
 
 # Refacto et fonctions bonus
 
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
-TODO Simplifier le format du stockage fichier ?
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Peaufiner le style sous mobile (il n'y a pas de marge à gauche)
@@ -229,6 +253,7 @@ TODO Valider la logique de jugement majoritaire avec un framework de test maison
 TODO Gérer les cas d'égalité dans les résultats
 TODO Ajouter la delegation à un autre utilisateur (démocratie liquide)
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
+TODO Ajouter des fichier *.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
 
 # Interrogations :
 
