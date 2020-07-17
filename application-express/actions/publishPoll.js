@@ -1,4 +1,4 @@
-const write = require("../../storage-file/write");
+const {write} = require("../../storage");
 
 module.exports = function (req, res) {
   const pollId = req.params.id;

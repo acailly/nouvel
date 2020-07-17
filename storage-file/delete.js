@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const configuration = require("../../configuration");
+const configuration = require("../configuration");
 
 module.exports = function (key) {
   const keyPath = key.split("/");

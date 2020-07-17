@@ -234,6 +234,17 @@ Bonus, ca nous permet maintenant d'ajouter des fichiers non JSON dans les dossie
 
 Cela m'a pris 4h30 au total
 
+# 14 : Découplage et abstraction de la persistance fichier
+
+C'est peut être le début de la sur-complexification du projet ?
+
+J'ai fait en sorte que les fonctions de persistance (read, write, delete...) soient accessible dans un object unique (j'ai créé un index.js dans /storage-file) et j'ai importé ce fichier dans un fichier `storage.js` à la racine
+
+Ca permet d'utiliser la persistance via `require('./storage')` au lieu de `require('./storage-file/read')`
+
+Ca m'a pris 45 min
+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Stocker les données dans le répertoire user de l'OS
@@ -251,6 +262,7 @@ TODO Gérer les cas d'égalité dans les résultats
 TODO Ajouter la delegation à un autre utilisateur (démocratie liquide)
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
 TODO Ajouter des fichier \*.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
+TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
 
 # Interrogations :
 

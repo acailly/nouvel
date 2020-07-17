@@ -1,5 +1,4 @@
-const listKeys = require("../../storage-file/listKeys");
-const read = require("../../storage-file/read");
+const {listKeys, read} = require("../../storage");
 
 module.exports = function (req, res) {
   const pollId = req.params.id;
