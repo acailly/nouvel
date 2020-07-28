@@ -1,4 +1,4 @@
-# 1 : La maquette HTML
+# 1 : La maquette HTML - 1H
 
 Une maquette HTML qui illustre le fonctionnement de l'application telle que je l'imagine
 Pas de CSS
@@ -7,7 +7,7 @@ Pas de serveur, que du statique
 Ce fut rapide (moins d'une heure) et le fait d'intéragir avec le résultat m'a donné envie
 de continuer (... même si c'était moche)
 
-# 2 : Le serveur
+# 2 : Le serveur - 1H
 
 Ajout d'un serveur express qui va afficher les pages statiques précédement créées
 via le moteur de template EJS
@@ -18,7 +18,7 @@ Ce fut rapide encore une fois (moins d'une heure)
 Le rendu n'a pas changé mais maintenant j'ai un serveur et
 un moteur de template fonctionnels
 
-# 3 : la logique
+# 3 : la logique - 3H30
 
 Ajout de la logique dans les template pour afficher et modifier les sondages
 Le stockage des sondages se fait en mémoire
@@ -28,7 +28,7 @@ J'ai maintenant une application fonctionnelle :-)
 Ca m'a pris plus de temps (3h30), en particulier à cause
 de l'implémentation du jugement majoritaire.
 
-# 4 : Organisation de la persistence fichier
+# 4 : Organisation de la persistence fichier - 1H
 
 Ajout d'un dossier contenant deux exemples de sondages tels que j'imagine qu'ils seront stockés
 une fois la persistence fichier mise en place
@@ -37,7 +37,7 @@ Ca m'a pris 1h et ca me permet de me rassurer sur le côté utilisable
 
 Le fait d'ajouter la notice d'utilisation directement dans le contenu de chaque fichier me plait beaucoup
 
-# 5 : Implémentation de la persistence fichier
+# 5 : Implémentation de la persistence fichier - 4H30
 
 Ca m'a pris beaucoup plus de temps ! Environ 4h30
 
@@ -47,7 +47,7 @@ des fonctions d'écriture et de lecture
 Je pars sur le fait d'ajouter des fichiers status.readme.md, title.readme.md, options.readme.md... qui
 contiennent la doc
 
-# 1ère tentation : Embarquer le serveur node dans un service worker
+# 1ère tentation : Embarquer le serveur node dans un service worker - 5H
 
 J'y ai passé environ 5h
 
@@ -72,7 +72,7 @@ Est ce que je ne m'égare pas un peu ?
 
 Allez ! on laisse ca de côté.
 
-# 6 : Générer un exécutable
+# 6 : Générer un exécutable - 1H30
 
 J'y ai passé environ 1H30
 
@@ -84,7 +84,7 @@ Les outils que j'ai trouvé pour ca sont :
 Les deux semblent fonctionner mais le fait d'interagir avec un dossier externe a l'air plus galère avec pkg.
 Je pars sur nexe.
 
-# 7 : Ajouter du style
+# 7 : Ajouter du style - 3H
 
 Au total j'ai du passer 3h à avoir une version desktop qui me plaisait
 
@@ -100,7 +100,7 @@ Ca me plait mieux, j'ai moins l'impression de me battre avec les choix imposés
 
 Il reste un problème : sous mobile il n'y a pas de marges autour de la <section>
 
-# 8 : Ajouter la synchro git
+# 8 : Ajouter la synchro git - 1H
 
 Cette synchro est une manière de ne pas tout perdre si le serveur crash
 
@@ -108,12 +108,12 @@ Ca m'a pris 1h MAIS seulement parce que j'avais déjà codé la synchronisation 
 
 Cette étape a été l'occasion de séparer les données du code
 
-# 9 : Justification des choix techniques
+# 9 : Justification des choix techniques - 30m
 
 Je prends 30 minutes pour poser par écrit la justification des choix techniques
 dans le fichier CHOICES.txt
 
-# 10 : Ménage
+# 10 : Ménage - 2H
 
 Je prends 2h pour :
 
@@ -126,7 +126,7 @@ Je prends 2h pour :
 - compléter le README pour facilement entrer dans le projet
 - factoriser l'entête des pages HTML dans /views/partials/head
 
-# 11 : Mise à disposition avec localtunnel
+# 11 : Mise à disposition avec localtunnel - 1H30
 
 Je pensais héberger l'application sur mon Raspberry Pi mais il semblerait qu'il soit HS :-/
 
@@ -145,7 +145,7 @@ que n'importe qui peut l'héberger depuis son poste
 
 Ca me prend 1h30
 
-# 12 : Partage sur slack
+# 12 : Partage sur slack - 1H30
 
 Je partage la version en l'état sur slack pour récolter les avis.
 
@@ -213,7 +213,7 @@ Le localtunnel me laisse aussi entrevoir la solution P2P suivante :
 
 A voir...
 
-# 13 : Simplification de la persistance fichier
+# 13 : Simplification de la persistance fichier - 4H30
 
 C'est une tentative pour ajouter un tout petit peu de convention pour simplifier la manipulation des fichiers
 
@@ -234,7 +234,7 @@ Bonus, ca nous permet maintenant d'ajouter des fichiers non JSON dans les dossie
 
 Cela m'a pris 4h30 au total
 
-# 14 : Découplage et abstraction de la persistance fichier
+# 14 : Découplage et abstraction de la persistance fichier - 45m
 
 C'est peut être le début de la sur-complexification du projet ?
 
@@ -244,7 +244,7 @@ Ca permet d'utiliser la persistance via `require('./storage')` au lieu de `requi
 
 Ca m'a pris 45 min
 
-# 15 : Stockage des données dans le répertoire utilisateur
+# 15 : Stockage des données dans le répertoire utilisateur - 30m
 
 Le fait d'avoir à récupérer manuellement le repository git à côté du dossier de l'application avant de démarrer l'application est un frein à son utilisation, en particulier si l'application est distribuée sous forme d'exécutable
 
@@ -252,10 +252,32 @@ Je fais donc en sorte que la synchronisation git aille automatiquement cloner le
 
 Ca me prend 30min.
 
+# 16 : Combien de temps passé jusqu'à maintenant ? - 15m
+
+1H
++ 1H = 2H
++ 3H30 = 5H30
++ 1H = 6H30
++ 4H30 = 11H
++ 5H = 16H
++ 1H30 = 17H30
++ 3H = 20H30
++ 1H = 21H30
++ 30m = 22H
++ 2H = 24H
++ 1H30 = 25H30
++ 1H30 = 27H
++ 4H30 = 31H30
++ 45m = 32H15
++ 30m = 32H45
++ 15m = 33H
+
+33H ! Je n'avais pas l'impression d'avoir passé autant de temps.
+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Compter le temps passé jusqu'à maintenant
+TODO exposer via Tor ??
 
 # Refacto et fonctions bonus
 
