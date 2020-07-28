@@ -1,6 +1,9 @@
 const path = require("path");
 const os = require('os');
 
+// IDENTITY UUID
+const identityFile = path.join(os.homedir(), ".zDemocracy", "identity.json");
+
 // STORAGE FILE
 const rootDataFolder = path.join(os.homedir(), ".zDemocracy", "data");
 
@@ -17,6 +20,7 @@ const tunnellingHost = "http://serverless.social"; // See https://github.com/loc
 const tunnellingSubDomain = "zdemocracy";
 
 const configuration = {
+  identityFile,
   rootDataFolder,
   applicationServerPort,
   folderToSync,

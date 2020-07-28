@@ -275,9 +275,18 @@ Ca me prend 30min.
 33H ! Je n'avais pas l'impression d'avoir passé autant de temps.
 
 
+# 17 : Ajouter la notion d'identité - 30m
+
+Je pars sur une identité simple composée d'un UUID v4
+
+Ca me prend 30m
+
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO exposer via Tor ??
+TODO Utiliser l'identité dans l'adresse du local tunnel
+TODO Exposer le service git via le local tunnel
+TODO Ajouter une liste d'identity sur lesquelles faire un pull
+TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 
 # Refacto et fonctions bonus
 
@@ -295,7 +304,7 @@ TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
 
 # Interrogations :
 
-TODO Quel genre de déploiement/hebergement adopter : centralisé ou non, client lourd ou pas, serveur fixe ou tunneling...
+TODO Quel genre de déploiement/hebergement adopter : centralisé ou non, client lourd ou pas, serveur fixe ou tunneling, via Tor comme Briar...
 TODO La persistence fichier est verbeuse, est ce qu'une couche d'abstraction doit être ajoutée par dessus ?
 TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ?
 TODO Les templates doivent ils être dans le repo de code ou dans le repo de data ?

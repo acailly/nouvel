@@ -1,3 +1,7 @@
+const {get: getIdentity} = require('./identity')
+const identity = getIdentity();
+console.log(`Connected as ${identity.id}`)
+
 const startApplicationExpress = require("./application-express/start-application-express");
 startApplicationExpress();
 
