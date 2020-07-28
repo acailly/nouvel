@@ -244,11 +244,18 @@ Ca permet d'utiliser la persistance via `require('./storage')` au lieu de `requi
 
 Ca m'a pris 45 min
 
+# 15 : Stockage des données dans le répertoire utilisateur
+
+Le fait d'avoir à récupérer manuellement le repository git à côté du dossier de l'application avant de démarrer l'application est un frein à son utilisation, en particulier si l'application est distribuée sous forme d'exécutable
+
+Je fais donc en sorte que la synchronisation git aille automatiquement cloner le repository distant dans le répertoire utilisateur.
+
+Ca me prend 30min.
+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Stocker les données dans le répertoire user de l'OS
-TODO Faire en sorte que les templates soient dans le repo de code plutôt que dans le repo de data
+TODO Compter le temps passé jusqu'à maintenant
 
 # Refacto et fonctions bonus
 
@@ -269,3 +276,4 @@ TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
 TODO Quel genre de déploiement/hebergement adopter : centralisé ou non, client lourd ou pas, serveur fixe ou tunneling...
 TODO La persistence fichier est verbeuse, est ce qu'une couche d'abstraction doit être ajoutée par dessus ?
 TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ?
+TODO Les templates doivent ils être dans le repo de code ou dans le repo de data ?
