@@ -281,6 +281,44 @@ Je pars sur une identité simple composée d'un UUID v4
 
 Ca me prend 30m
 
+# 18 : Tentative d'exposer git-daemon via tunneling - 
+
+Je teste si j'arrive à exposer un repository via git-daemon et localtunnel pour ensuite le 
+cloner dans une autre repository
+
+Je me base principalement sur ce site : https://railsware.com/blog/taming-the-git-daemon-to-quickly-share-git-repository/
+
+D'abord testons juste git-daemon :
+
+```
+git daemon --base-path=. --export-all --reuseaddr --informative-errors --verbose
+```
+
+```
+git clone git://127.0.0.1/ ./test
+```
+
+Ca marche, cool !
+
+Maintenant essayons avec localtunnel :
+
+```
+npx localtunnel -h "https://serverless.social" --port 9418
+```
+
+```
+git clone git://lucky-tiger-95.serverless.social/ ./test
+```
+
+Ca ne marche pas...
+
+Arf, il semblerait que localtunnel ne supporte pas le raw tunneling :
+https://github.com/localtunnel/localtunnel/issues/297
+
+TODO Essayer de trouver une solution de hosting git http ?
+
+Ca me prend 30m+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Utiliser l'identité dans l'adresse du local tunnel
@@ -308,3 +346,4 @@ TODO Quel genre de déploiement/hebergement adopter : centralisé ou non, client
 TODO La persistence fichier est verbeuse, est ce qu'une couche d'abstraction doit être ajoutée par dessus ?
 TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ?
 TODO Les templates doivent ils être dans le repo de code ou dans le repo de data ?
+TODO Est ce qu'on pourrait utiliser les mêmes clés ssh pour l'identité et pour la connexion git ?
