@@ -281,7 +281,9 @@ Je pars sur une identité simple composée d'un UUID v4
 
 Ca me prend 30m
 
-# 18 : Tentative d'exposer git-daemon via tunneling - 
+# 18 : Tentative d'exposer git via tunneling - 1H30
+
+## git-daemon
 
 Je teste si j'arrive à exposer un repository via git-daemon et localtunnel pour ensuite le 
 cloner dans une autre repository
@@ -315,14 +317,79 @@ Ca ne marche pas...
 Arf, il semblerait que localtunnel ne supporte pas le raw tunneling :
 https://github.com/localtunnel/localtunnel/issues/297
 
-TODO Essayer de trouver une solution de hosting git http ?
+## dumb http
 
-Ca me prend 30m+
+En lisant la doc de Git, je trouve un autre moyen d'héberger un repo git simplement : 
+le protocole dumb HTTP
+(https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols)
+
+Je fais une copie de mon repo contenant les données :
+
+```
+git clone /home/azerty/.zDemocracy/data test-origin
+
+```
+
+Je me place dans le dossier .git
+
+
+```
+cd test-origin/.git
+```
+
+J'active le hook comme marqué dans la doc
+
+```
+cp hooks/post-update.sample hooks/post-update
+```
+
+Je lance la commande qui est normalement lancée par le hook (j'ai eu besoin de faire ça sinon ca marchait pas)
+Juste pour info cette commande va simplement mettre à jour (et créer si besoin) le fichier /info/refs en y consignant toutes les reférences (branches et tags) et les commits associés
+
+```
+git update-server-info
+```
+
+Je lance un serveur HTTP la dessus
+
+```
+npx http-server . -p 3333
+```
+
+Et j'essaie de cloner dans un autre répertoire
+
+```
+cd somewhere
+git clone http://127.0.0.1:3333/ ./test
+```
+
+Et ca marche !
+
+Maintenant, retentons avec localtunnel :
+
+```
+npx localtunnel -h "https://serverless.social" --port 3333
+```
+
+On clone
+
+```
+git clone https://young-duck-41.serverless.social ./test
+```
+
+Et ca marche !
+
+Ca m'a pris environ 1H30, reste à l'implémenter proprement
+
+# 19 : Exposer git via tunneling - 30min
+
+Je fait une petite commande qui créé le hook, lance `git update-server-info` et lance 
+un express sur le dossier .git du repository
+
+Ca me prend 30 minutes
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Utiliser l'identité dans l'adresse du local tunnel
-TODO Exposer le service git via le local tunnel
 TODO Ajouter une liste d'identity sur lesquelles faire un pull
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 

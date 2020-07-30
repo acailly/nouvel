@@ -15,9 +15,12 @@ const folderToSync = rootDataFolder;
 const remoteRepository = 'git@github.com:acailly/zDemocracy-lowtech-data.git';
 const syncPeriodInMs = 20000;
 
+// PUBLISH GIT DUMB HTTP
+const gitDumbHttpPort = 8081;
+
 // PUBLISH LOCALTUNNEL
 const tunnellingHost = "http://serverless.social"; // See https://github.com/localtunnel/localtunnel/issues/343
-const tunnellingSubDomain = "zdemocracy";
+const tunnellingLocalPort = 8081;
 
 const configuration = {
   identityFile,
@@ -26,8 +29,9 @@ const configuration = {
   folderToSync,
   remoteRepository,
   syncPeriodInMs,
+  gitDumbHttpPort,
   tunnellingHost,
-  tunnellingSubDomain,
+  tunnellingLocalPort
 };
 
 module.exports = configuration;
