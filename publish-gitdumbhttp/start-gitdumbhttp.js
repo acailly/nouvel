@@ -8,7 +8,7 @@ const configuration = require("../configuration");
 
 module.exports = function () {
   // Create the hook if it doesn't exists
-  const gitRepository = path.join(configuration.folderToSync, '.git');
+  const gitRepository = path.join(configuration.rootDataFolder, '.git');
   const hookFile = path.join(gitRepository, 'hooks', 'post-update');
   if (!fs.existsSync(hookFile)) {
     console.log("Post-update hook doesn't exist, create it");

@@ -388,6 +388,24 @@ un express sur le dossier .git du repository
 
 Ca me prend 30 minutes
 
+# 20 : Synchroniser depuis plusieurs repositories - 30min
+
+Je dois un peu changer le process de synchronisation
+
+Mon repository local n'a plus un seul repository origin, il a N repositories, certains en lecture seule et d'autres non
+
+Le process pour chaque repository est :
+
+- s'ajouter dans les remote si ce n'est pas deja le cas (remote add)
+- récupérer les changements (fetch)
+- integrer les changement dans master du repository local (merge) 
+- si le repository accepte l'écriture, envoyer les changements (push)
+
+TODO 30min
+TODO Ajouter une étape intermédiaire qui créé le repo git avant la synchro et le gitdumbhttp
+TODO Remplacer le git clone unique par un fetch sur multi remotes
+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Ajouter une liste d'identity sur lesquelles faire un pull

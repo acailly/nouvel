@@ -11,9 +11,15 @@ const rootDataFolder = path.join(os.homedir(), ".zDemocracy", "data");
 const applicationServerPort = 8080;
 
 // SYNCHRONIZATION GIT
-const folderToSync = rootDataFolder;
-const remoteRepository = 'git@github.com:acailly/zDemocracy-lowtech-data.git';
-const syncPeriodInMs = 20000;
+
+const repositoriesToSync = [
+  {
+    name: "github",
+    remoteRepository: 'git@github.com:acailly/zDemocracy-lowtech-data.git',
+    syncPeriodInMs: 20000,
+    enablePush: true
+  }
+]
 
 // PUBLISH GIT DUMB HTTP
 const gitDumbHttpPort = 8081;
@@ -26,9 +32,7 @@ const configuration = {
   identityFile,
   rootDataFolder,
   applicationServerPort,
-  folderToSync,
-  remoteRepository,
-  syncPeriodInMs,
+  repositoriesToSync,
   gitDumbHttpPort,
   tunnellingHost,
   tunnellingLocalPort
