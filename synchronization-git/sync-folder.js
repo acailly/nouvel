@@ -1,9 +1,7 @@
 const execShellCommand = require("./execShellCommand")
 
-async function syncFolder(folder) {
-  console.log("Syncing git - Starting for", folder);
-  console.log("Syncing git - Pull");
-  const pullOutput = await execShellCommand("git pull", folder);
+async function syncFolder(folder, repository) {
+  // Commit local changes
 
   console.log("Syncing git - Add");
   const addOutput = await execShellCommand("git add " + folder, folder);
@@ -15,12 +13,32 @@ async function syncFolder(folder) {
       'git commit -m ":white_check_mark: Automatic sync git"',
       folder
     );
-
-    console.log("Syncing git - Push");
-    const pushOutput = await execShellCommand("git push", folder);
   } else {
-    console.log("Syncing git - No changes");
+    console.log("Syncing git - No local changes");
   }
+  
+  // Merge distant changes
+  
+  console.log("Syncing git - Fetch");
+  const fetchOutput = await execShellCommand(
+    `git fetch ${repository.name} ${repository.branch}`, 
+    folder
+  );
+
+  console.log("Syncing git - Merge");
+  const mergeOutput = await execShellCommand(
+    `git merge ${repository.name}/${repository.branch}`, 
+    folder
+  );
+
+  // Push changes to distant
+
+  console.log("Syncing git - Push");
+  const pushOutput = await execShellCommand(
+    `git push ${repository.name} ${repository.branch}`, 
+    folder
+  );
+  
   console.log("Syncing git - Finished");
 }
 

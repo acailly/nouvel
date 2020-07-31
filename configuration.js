@@ -15,6 +15,7 @@ const applicationServerPort = 8080;
 const repositoriesToSync = [
   {
     name: "github",
+    branch: "master",
     remoteRepository: 'git@github.com:acailly/zDemocracy-lowtech-data.git',
     syncPeriodInMs: 20000,
     enablePush: true

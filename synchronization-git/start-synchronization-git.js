@@ -4,14 +4,14 @@ const configuration = require("../configuration");
 const syncRepository = require("./sync-repository");
 
 module.exports = function () {
-  console.log("Starting to synchronize on git:", configuration.rootDataFolder);
+  console.log("Syncing git - Starting to synchronize on git:", configuration.rootDataFolder);
 
   if (!fs.existsSync(configuration.rootDataFolder)) {
-    console.log("Folder doesn't exist, create it");
+    console.log("Syncing git - Storage folder doesn't exist, create it");
     mkdirp.sync(configuration.rootDataFolder);
   }
 
   configuration.repositoriesToSync.forEach(repository => {
-    syncRepository(repository)
+    syncRepository(configuration.rootDataFolder, repository)
   })
 };

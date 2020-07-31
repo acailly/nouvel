@@ -7,11 +7,27 @@ const express = require("express");
 const configuration = require("../configuration");
 
 module.exports = function () {
+  console.log("Git dumb http server - Starting");
+
+  if (!fs.existsSync(configuration.rootDataFolder)) {
+    console.log("Git dumb http server - Storage folder doesn't exist, create it");
+    mkdirp.sync(configuration.rootDataFolder);
+  }
+
+  const gitRepositoryPath = path.join(configuration.rootDataFolder, '.git')
+  if (!fs.existsSync(gitRepositoryPath)) {
+    console.log("Git dumb http server - Git repository doesn't exist, init it");
+    execSync(
+      `git init`,
+      configuration.rootDataFolder
+    );
+  }
+
   // Create the hook if it doesn't exists
   const gitRepository = path.join(configuration.rootDataFolder, '.git');
   const hookFile = path.join(gitRepository, 'hooks', 'post-update');
   if (!fs.existsSync(hookFile)) {
-    console.log("Post-update hook doesn't exist, create it");
+    console.log("Git dumb http server - Post-update hook doesn't exist, create it");
     const hookFileSample = path.join(gitRepository, 'hooks', 'post-update.sample');
     fs.copyFileSync(hookFileSample, hookFile)
 
