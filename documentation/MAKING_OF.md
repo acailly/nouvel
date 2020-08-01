@@ -406,6 +406,7 @@ Ca m'a pris 1H30
 
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Tester si un repo est accessible avant chaque synchro avec `git ls-remote --exit-code -h "$REPO_URL"` (https://superuser.com/a/833286)
 TODO Ajouter une liste d'identity sur lesquelles faire un pull
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 
