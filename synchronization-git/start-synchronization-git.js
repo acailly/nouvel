@@ -67,8 +67,7 @@ async function sync(folder, repositories) {
     const repository = repositories[repositoryIndex];
 
     if (!(await canFetchRepository(folder, repository))) {
-      console.log("No, cannot fetch", folder);
-      return;
+      continue;
     }
 
     await pullRemoteChanges(folder, repository);
@@ -100,7 +99,7 @@ async function commitCurrentChanges(folder) {
 }
 
 async function canFetchRepository(folder, repository) {
-  console.log("Syncing git - Can fetch?");
+  console.log("Syncing git - Can fetch", repository.name, "?");
 
   let canFetch = true;
 
@@ -111,6 +110,7 @@ async function canFetchRepository(folder, repository) {
       folder
     );
   } catch (e) {
+    console.log("Syncing git - No, cannot fetch", repository.name);
     canFetch = false;
   }
 

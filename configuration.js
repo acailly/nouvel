@@ -20,6 +20,20 @@ const repositoriesToSync = [
     remoteRepository: "git@github.com:acailly/zDemocracy-lowtech-data.git",
     enablePush: true,
   },
+  {
+    name: "mobile",
+    branch: "master",
+    remoteRepository:
+      "https://0e9c59c1-ce1a-4c49-9b39-b475adeb9032.serverless.social",
+    enablePush: false,
+  },
+  {
+    name: "desktop",
+    branch: "master",
+    remoteRepository:
+      "https://a9f28f2e-bdbe-42b5-a451-7f855e7aa091.serverless.social",
+    enablePush: false,
+  },
 ];
 
 // PUBLISH GIT DUMB HTTP
