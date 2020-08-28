@@ -404,6 +404,14 @@ Le process pour chaque repository est :
 
 Ca m'a pris 1H30
 
+# 21 : Nouvelle passe sur la synchronisation - ???
+
+
+
+TODO 30m +
+
+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Tester si un repo est accessible avant chaque synchro avec `git ls-remote --exit-code -h "$REPO_URL"` (https://superuser.com/a/833286)

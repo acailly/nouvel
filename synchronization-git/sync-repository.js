@@ -7,11 +7,7 @@ const syncFolder = require("./sync-folder");
 module.exports = async function (folder, repository) {
   console.log("Syncing git - Starting to synchronize with git remote:", repository.name);
 
-  const gitRepositoryPath = path.join(folder, ".git");
-  if (!fs.existsSync(gitRepositoryPath)) {
-    console.log("Syncing git - Git repository doesn't exist, init it");
-    await execShellCommand(`git init`, folder);
-  }
+  // Check remote repository is registered
 
   try {
     await execShellCommand(
@@ -25,6 +21,8 @@ module.exports = async function (folder, repository) {
       folder
     );
   }
+
+  // Starts syncing
 
   await syncFolder(folder, repository);
   setInterval(async () => {
