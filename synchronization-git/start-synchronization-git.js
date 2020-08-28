@@ -1,22 +1,31 @@
+const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const configuration = require("../configuration");
+const execShellCommand = require("./execShellCommand");
 
-module.exports = function () {
+module.exports = async function () {
+  await initializeGitRepositoryIfNecessary(configuration.rootDataFolder);
 
-  await initializeGitRepositoryIfNecessary(configuration.rootDataFolder)
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < configuration.repositoriesToSync.length;
+    repositoryIndex++
+  ) {
+    const repository = configuration.repositoriesToSync[repositoryIndex];
+    await registerRemoteRepositoryIfNecessary(
+      configuration.rootDataFolder,
+      repository
+    );
+  }
 
-  configuration.repositoriesToSync.forEach(async (repository) => {
-    await registerRemoteRepositoryIfNecessary(repository)
-  })
-
-  await sync(folder, configuration.repositoriesToSync);
+  await sync(configuration.rootDataFolder, configuration.repositoriesToSync);
   setInterval(async () => {
-    await sync(folder, configuration.repositoriesToSync);
-  }, repository.syncPeriodInMs || 10000);
+    await sync(configuration.rootDataFolder, configuration.repositoriesToSync);
+  }, configuration.gitSyncPeriodInMs || 10000);
 };
 
-async function initializeGitRepositoryIfNecessary(folder){
+async function initializeGitRepositoryIfNecessary(folder) {
   // Check that the data folder exists
 
   if (!fs.existsSync(folder)) {
@@ -33,12 +42,9 @@ async function initializeGitRepositoryIfNecessary(folder){
   }
 }
 
-async function registerRemoteRepositoryIfNecessary(repository){
+async function registerRemoteRepositoryIfNecessary(folder, repository) {
   try {
-    await execShellCommand(
-      `git remote get-url ${repository.name}`,
-      folder
-    );
+    await execShellCommand(`git remote get-url ${repository.name}`, folder);
   } catch (e) {
     console.log("Syncing git - Remote repository doesn't exist, add it");
     await execShellCommand(
@@ -48,26 +54,42 @@ async function registerRemoteRepositoryIfNecessary(repository){
   }
 }
 
-async function sync(folder, repositories){
-  console.log("Syncing git - Starting to synchronize on git:", configuration.rootDataFolder);
+async function sync(folder, repositories) {
+  console.log(
+    "Syncing git - Starting to synchronize on git:",
+    configuration.rootDataFolder
+  );
 
-  await commitCurrentChanges(folder)
+  await commitCurrentChanges(folder);
 
-  repositories.forEach(async (repository) => {
-    await pullRemoteChanges(folder, repository)
-    if(repository.enablePush){
-      await pushLocalChanges(folder, repository)
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < repositories.length;
+    repositoryIndex++
+  ) {
+    const repository = repositories[repositoryIndex];
+
+    if (!(await canFetchRepository(folder, repository))) {
+      return;
     }
-  })
+
+    await pullRemoteChanges(folder, repository);
+    if (repository.enablePush) {
+      await pushLocalChanges(folder, repository);
+    }
+  }
 
   console.log("Syncing git - Finished");
 }
 
-async function commitCurrentChanges(folder){
+async function commitCurrentChanges(folder) {
   console.log("Syncing git - Add");
   const addOutput = await execShellCommand("git add " + folder, folder);
 
-  const checkOutput = await execShellCommand("git diff --name-only --cached", folder);
+  const checkOutput = await execShellCommand(
+    "git diff --name-only --cached",
+    folder
+  );
   if (checkOutput) {
     console.log("Syncing git - Commit");
     const commitOutput = await execShellCommand(
@@ -79,26 +101,42 @@ async function commitCurrentChanges(folder){
   }
 }
 
-async function pullRemoteChanges(folder, repository){
+async function canFetchRepository(folder, repository) {
+  console.log("Syncing git - Can fetch?");
+
+  let canFetch = true;
+
+  try {
+    // https://superuser.com/a/833286
+    const canFetchOutput = await execShellCommand(
+      `git ls-remote --exit-code -h "${repository.remoteRepository}"`,
+      folder
+    );
+  } catch (e) {
+    canFetch = false;
+  }
+
+  return canFetch;
+}
+
+async function pullRemoteChanges(folder, repository) {
   console.log("Syncing git - Fetch");
   const fetchOutput = await execShellCommand(
-    `git fetch ${repository.name} ${repository.branch}`, 
+    `git fetch ${repository.name} ${repository.branch}`,
     folder
   );
 
   console.log("Syncing git - Merge");
   const mergeOutput = await execShellCommand(
-    `git merge ${repository.name}/${repository.branch}`, 
+    `git merge ${repository.name}/${repository.branch}`,
     folder
   );
 }
 
-async function pushLocalChanges(folder, repository){
+async function pushLocalChanges(folder, repository) {
   console.log("Syncing git - Push");
   const pushOutput = await execShellCommand(
-    `git push ${repository.name} ${repository.branch}`, 
+    `git push ${repository.name} ${repository.branch}`,
     folder
   );
 }
-
-

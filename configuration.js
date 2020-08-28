@@ -1,5 +1,5 @@
 const path = require("path");
-const os = require('os');
+const os = require("os");
 
 // IDENTITY UUID
 const identityFile = path.join(os.homedir(), ".zDemocracy", "identity.json");
@@ -12,15 +12,15 @@ const applicationServerPort = 8080;
 
 // SYNCHRONIZATION GIT
 
+const gitSyncPeriodInMs = 20000;
 const repositoriesToSync = [
   {
     name: "github",
     branch: "master",
-    remoteRepository: 'git@github.com:acailly/zDemocracy-lowtech-data.git',
-    syncPeriodInMs: 20000,
-    enablePush: true
-  }
-]
+    remoteRepository: "git@github.com:acailly/zDemocracy-lowtech-data.git",
+    enablePush: true,
+  },
+];
 
 // PUBLISH GIT DUMB HTTP
 const gitDumbHttpPort = 8081;
@@ -33,10 +33,11 @@ const configuration = {
   identityFile,
   rootDataFolder,
   applicationServerPort,
+  gitSyncPeriodInMs,
   repositoriesToSync,
   gitDumbHttpPort,
   tunnellingHost,
-  tunnellingLocalPort
+  tunnellingLocalPort,
 };
 
 module.exports = configuration;

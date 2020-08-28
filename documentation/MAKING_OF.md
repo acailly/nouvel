@@ -255,25 +255,25 @@ Ca me prend 30min.
 # 16 : Combien de temps passé jusqu'à maintenant ? - 15m
 
 1H
-+ 1H = 2H
-+ 3H30 = 5H30
-+ 1H = 6H30
-+ 4H30 = 11H
-+ 5H = 16H
-+ 1H30 = 17H30
-+ 3H = 20H30
-+ 1H = 21H30
-+ 30m = 22H
-+ 2H = 24H
-+ 1H30 = 25H30
-+ 1H30 = 27H
-+ 4H30 = 31H30
-+ 45m = 32H15
-+ 30m = 32H45
-+ 15m = 33H
+
+- 1H = 2H
+- 3H30 = 5H30
+- 1H = 6H30
+- 4H30 = 11H
+- 5H = 16H
+- 1H30 = 17H30
+- 3H = 20H30
+- 1H = 21H30
+- 30m = 22H
+- 2H = 24H
+- 1H30 = 25H30
+- 1H30 = 27H
+- 4H30 = 31H30
+- 45m = 32H15
+- 30m = 32H45
+- 15m = 33H
 
 33H ! Je n'avais pas l'impression d'avoir passé autant de temps.
-
 
 # 17 : Ajouter la notion d'identité - 30m
 
@@ -285,7 +285,7 @@ Ca me prend 30m
 
 ## git-daemon
 
-Je teste si j'arrive à exposer un repository via git-daemon et localtunnel pour ensuite le 
+Je teste si j'arrive à exposer un repository via git-daemon et localtunnel pour ensuite le
 cloner dans une autre repository
 
 Je me base principalement sur ce site : https://railsware.com/blog/taming-the-git-daemon-to-quickly-share-git-repository/
@@ -319,7 +319,7 @@ https://github.com/localtunnel/localtunnel/issues/297
 
 ## dumb http
 
-En lisant la doc de Git, je trouve un autre moyen d'héberger un repo git simplement : 
+En lisant la doc de Git, je trouve un autre moyen d'héberger un repo git simplement :
 le protocole dumb HTTP
 (https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols)
 
@@ -331,7 +331,6 @@ git clone /home/azerty/.zDemocracy/data test-origin
 ```
 
 Je me place dans le dossier .git
-
 
 ```
 cd test-origin/.git
@@ -383,7 +382,7 @@ Ca m'a pris environ 1H30, reste à l'implémenter proprement
 
 # 19 : Exposer git via tunneling - 30min
 
-Je fait une petite commande qui créé le hook, lance `git update-server-info` et lance 
+Je fait une petite commande qui créé le hook, lance `git update-server-info` et lance
 un express sur le dossier .git du repository
 
 Ca me prend 30 minutes
@@ -399,22 +398,28 @@ Le process pour chaque repository est :
 - commiter les changements locaux (commit)
 - s'ajouter dans les remote si ce n'est pas deja le cas (remote add)
 - récupérer les changements (fetch)
-- integrer les changement dans master du repository local (merge) 
+- integrer les changement dans master du repository local (merge)
 - si le repository accepte l'écriture, envoyer les changements (push)
 
 Ca m'a pris 1H30
 
 # 21 : Nouvelle passe sur la synchronisation - ???
 
+Nouvelle modification de la synchronisation.
 
+Le process devient :
 
-TODO 30m +
+- ajouter chaque repository dans les remote si ce n'est pas deja le cas (remote add)
+- commiter les changements locaux (commit)
+- pour chaque repository :
+  - récupérer les changements (fetch)
+  - integrer les changement dans master du repository local (merge)
+  - si le repository accepte l'écriture, envoyer les changements (push)
 
-
+TODO 1h15 +
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Tester si un repo est accessible avant chaque synchro avec `git ls-remote --exit-code -h "$REPO_URL"` (https://superuser.com/a/833286)
 TODO Ajouter une liste d'identity sur lesquelles faire un pull
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 

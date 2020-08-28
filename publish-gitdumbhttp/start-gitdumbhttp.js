@@ -10,30 +10,38 @@ module.exports = function () {
   console.log("Git dumb http server - Starting");
 
   if (!fs.existsSync(configuration.rootDataFolder)) {
-    console.log("Git dumb http server - Storage folder doesn't exist, create it");
+    console.log(
+      "Git dumb http server - Storage folder doesn't exist, create it"
+    );
     mkdirp.sync(configuration.rootDataFolder);
   }
 
-  const gitRepositoryPath = path.join(configuration.rootDataFolder, '.git')
+  const gitRepositoryPath = path.join(configuration.rootDataFolder, ".git");
   if (!fs.existsSync(gitRepositoryPath)) {
     console.log("Git dumb http server - Git repository doesn't exist, init it");
-    execSync(
-      `git init`,
-      configuration.rootDataFolder
-    );
+    const toto = execSync(`git init`, {
+      cwd: configuration.rootDataFolder,
+    });
+    console.log("DEBUG", toto.toString("utf8"));
   }
 
   // Create the hook if it doesn't exists
-  const gitRepository = path.join(configuration.rootDataFolder, '.git');
-  const hookFile = path.join(gitRepository, 'hooks', 'post-update');
+  const gitRepository = path.join(configuration.rootDataFolder, ".git");
+  const hookFile = path.join(gitRepository, "hooks", "post-update");
   if (!fs.existsSync(hookFile)) {
-    console.log("Git dumb http server - Post-update hook doesn't exist, create it");
-    const hookFileSample = path.join(gitRepository, 'hooks', 'post-update.sample');
-    fs.copyFileSync(hookFileSample, hookFile)
+    console.log(
+      "Git dumb http server - Post-update hook doesn't exist, create it"
+    );
+    const hookFileSample = path.join(
+      gitRepository,
+      "hooks",
+      "post-update.sample"
+    );
+    fs.copyFileSync(hookFileSample, hookFile);
 
     // Update server info
-    execSync('git update-server-info', {
-      cwd: gitRepository
+    execSync("git update-server-info", {
+      cwd: gitRepository,
     });
   }
 
