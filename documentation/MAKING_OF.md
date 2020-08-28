@@ -416,11 +416,13 @@ Le process devient :
   - integrer les changement dans master du repository local (merge)
   - si le repository accepte l'écriture, envoyer les changements (push)
 
-TODO 1h15 +
+... sauf que je n'arrive pas à cloner depuis d'autres repository à part github
+
+TODO 2h15 +
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Ajouter une liste d'identity sur lesquelles faire un pull
+TODO Faire marcher les pull depuis les autres identities
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 
 # Refacto et fonctions bonus

@@ -19,10 +19,9 @@ module.exports = function () {
   const gitRepositoryPath = path.join(configuration.rootDataFolder, ".git");
   if (!fs.existsSync(gitRepositoryPath)) {
     console.log("Git dumb http server - Git repository doesn't exist, init it");
-    const toto = execSync(`git init`, {
+    execSync(`git init`, {
       cwd: configuration.rootDataFolder,
     });
-    console.log("DEBUG", toto.toString("utf8"));
   }
 
   // Create the hook if it doesn't exists
@@ -50,5 +49,9 @@ module.exports = function () {
 
   app.use(express.static(path.join(configuration.rootDataFolder, ".git")));
 
+  console.log(
+    "Git dumb http server - Listening on port",
+    configuration.gitDumbHttpPort
+  );
   app.listen(configuration.gitDumbHttpPort);
 };
