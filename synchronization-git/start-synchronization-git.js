@@ -55,10 +55,7 @@ async function registerRemoteRepositoryIfNecessary(folder, repository) {
 }
 
 async function sync(folder, repositories) {
-  console.log(
-    "Syncing git - Starting to synchronize on git:",
-    configuration.rootDataFolder
-  );
+  console.log("Syncing git - Starting to synchronize on git:", folder);
 
   await commitCurrentChanges(folder);
 
@@ -70,6 +67,7 @@ async function sync(folder, repositories) {
     const repository = repositories[repositoryIndex];
 
     if (!(await canFetchRepository(folder, repository))) {
+      console.log("No, cannot fetch", folder);
       return;
     }
 
