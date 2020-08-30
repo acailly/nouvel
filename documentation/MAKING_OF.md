@@ -403,7 +403,7 @@ Le process pour chaque repository est :
 
 Ca m'a pris 1H30
 
-# 21 : Nouvelle passe sur la synchronisation - ???
+# 21 : Nouvelle passe sur la synchronisation - 2H45
 
 Nouvelle modification de la synchronisation.
 
@@ -419,11 +419,12 @@ Le process devient :
 
 ... sauf que je n'arrive pas à cloner depuis d'autres repository à part github
 
-TODO 2h30 +
+Finalement il manquait un appel à 'git update-server-info' à chaque synchronisation
+
+Ca m'a pris 2h45
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Faire marcher les pull depuis les autres identities
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 
 # Refacto et fonctions bonus

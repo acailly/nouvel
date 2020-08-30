@@ -78,6 +78,8 @@ async function sync(folder, repositories) {
     }
   }
 
+  await updateServerInfo(folder);
+
   console.log("Syncing git - Finished");
 }
 
