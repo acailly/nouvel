@@ -423,8 +423,22 @@ Finalement il manquait un appel à 'git update-server-info' à chaque synchronis
 
 Ca m'a pris 2h45
 
+# 22 : Faire une application de gestion de liste - ??
+
+Je fais une application simpliste qui permet de :
+
+- lister les éléments de la liste
+- en ajouter un nouveau
+- en supprimer un existant
+- en modifier un existant
+
+Cela va permettre de tester des cas de conflit et choisir la meilleure stratégie
+
+TODO 15m +
+
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
 TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
 
 # Refacto et fonctions bonus

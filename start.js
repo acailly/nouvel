@@ -2,8 +2,11 @@ const { get: getIdentity } = require("./identity");
 const identity = getIdentity();
 console.log(`Connected as ${identity.id}`);
 
-const startApplicationExpress = require("./application-express/start-application-express");
-startApplicationExpress();
+const startZDemocracyExpress = require("./zdemocracy-express/start-zdemocracy-express");
+startZDemocracyExpress();
+
+const startListExpress = require("./list-express/start-list-express");
+startListExpress();
 
 const startPublishingGitDumbHttp = require("./publish-gitdumbhttp/start-gitdumbhttp");
 startPublishingGitDumbHttp();

@@ -7,8 +7,11 @@ const identityFile = path.join(os.homedir(), ".zDemocracy", "identity.json");
 // STORAGE FILE
 const rootDataFolder = path.join(os.homedir(), ".zDemocracy", "data");
 
-// APPLICATION EXPRESS
-const applicationServerPort = 8080;
+// ZDEMOCRACY EXPRESS
+const zdemocracyServerPort = 8080;
+
+// LIST EXPRESS
+const listServerPort = 8082;
 
 // SYNCHRONIZATION GIT
 
@@ -46,7 +49,8 @@ const tunnellingLocalPort = 8081;
 const configuration = {
   identityFile,
   rootDataFolder,
-  applicationServerPort,
+  zdemocracyServerPort,
+  listServerPort,
   gitSyncPeriodInMs,
   repositoriesToSync,
   gitDumbHttpPort,

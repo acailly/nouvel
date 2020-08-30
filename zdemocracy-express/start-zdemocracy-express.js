@@ -46,5 +46,5 @@ module.exports = function () {
   app.get("/polls/:id/results", viewPollResults);
   app.use(view404);
 
-  app.listen(configuration.applicationServerPort);
+  app.listen(configuration.zdemocracyServerPort);
 };
