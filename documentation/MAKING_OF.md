@@ -411,6 +411,7 @@ Le process devient :
 
 - ajouter chaque repository dans les remote si ce n'est pas deja le cas (remote add)
 - commiter les changements locaux (commit)
+- mettre à jour les informations de server (update-server-info)
 - pour chaque repository :
   - récupérer les changements (fetch)
   - integrer les changement dans master du repository local (merge)
@@ -418,7 +419,7 @@ Le process devient :
 
 ... sauf que je n'arrive pas à cloner depuis d'autres repository à part github
 
-TODO 2h15 +
+TODO 2h30 +
 
 # Next pour avoir un exemple représentatif de l'approche :
 

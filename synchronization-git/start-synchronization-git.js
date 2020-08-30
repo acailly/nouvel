@@ -59,6 +59,8 @@ async function sync(folder, repositories) {
 
   await commitCurrentChanges(folder);
 
+  await updateServerInfo(folder);
+
   for (
     let repositoryIndex = 0;
     repositoryIndex < repositories.length;
@@ -96,6 +98,14 @@ async function commitCurrentChanges(folder) {
   } else {
     console.log("Syncing git - No local changes");
   }
+}
+
+async function updateServerInfo(folder) {
+  console.log("Syncing git - Update server info");
+  const updateServerInfoOutput = await execShellCommand(
+    "git update-server-info",
+    folder
+  );
 }
 
 async function canFetchRepository(folder, repository) {
