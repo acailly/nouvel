@@ -514,7 +514,7 @@ Dans tous les cas, il semble que la prochaine étape soit de valider le fait qu'
 
 Je choisis de browserifier l'application de liste que j'avais à peine entamé pour ne pas risquer de casser zDemocracy
 
-Ca me prend 15min+
+Ca me prend 30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
