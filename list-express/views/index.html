@@ -6,7 +6,15 @@
   <body>
     <section>
       <h1>Liste</h1>
-      <p>TODO</p>
+      <form method="POST" action="/new-item">
+        <input type="text" name="title" value="Item <%= items.length + 1%>" />
+        <input type="submit" value="Ajouter cet élément" />
+      </form>
+      <ul>
+        <% items.forEach(function(item){ %>
+        <li><%= item.title%></li>
+        <% }); %>
+      </ul>
     </section>
   </body>
 </html>

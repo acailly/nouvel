@@ -438,7 +438,7 @@ J'y passe 15min.
 
 Quelque jours plus tard...
 
-# 23 : Earthstar or not earthstar ? - ??
+# 23 : Earthstar or not earthstar ? - 2H
 
 Un projet issu de l'ecosystème SSB m'avait beaucoup inspiré pour ce projet : earthstar (https://github.com/earthstar-project/earthstar)
 
@@ -509,6 +509,12 @@ Ca veut dire qu'il faut dire adieu à Git pour basculer sur une solution immatur
 Une autre solution pour ajouter la synchronisation dans le browser serait d'utiliser isomorphic-git qui semble plus mature
 
 Dans tous les cas, il semble que la prochaine étape soit de valider le fait qu'on peut "browserifier" l'application telle que décrite ci-dessus, earthstar ou pas.
+
+# 24 : Browserifier l'application - ??
+
+Je choisis de browserifier l'application de liste que j'avais à peine entamé pour ne pas risquer de casser zDemocracy
+
+Ca me prend 15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

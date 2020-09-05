@@ -9,6 +9,7 @@ const viewIndex = require("./views/index");
 const view404 = require("./views/404");
 
 // ACTIONS
+const actionNewItem = require("./actions/newItem");
 
 module.exports = function () {
   const app = express();
@@ -22,6 +23,7 @@ module.exports = function () {
 
   // ROUTES
   app.get("/", viewIndex);
+  app.post("/new-item", actionNewItem);
   app.use(view404);
 
   app.listen(configuration.listServerPort);
