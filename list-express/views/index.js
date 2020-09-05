@@ -6,7 +6,5 @@ module.exports = function (req, res) {
     return read(`lists/example/${itemId}`);
   });
 
-  console.log("DEBUG", items);
-
   res.render("index.html", { items: items });
 };

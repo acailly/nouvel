@@ -514,7 +514,11 @@ Dans tous les cas, il semble que la prochaine étape soit de valider le fait qu'
 
 Je choisis de browserifier l'application de liste que j'avais à peine entamé pour ne pas risquer de casser zDemocracy
 
-Ca me prend 30min+
+Au bout de 3H j'arrive à charger la page d'accueil dans le browser et dans express, yes !
+
+TODO Faire fonctionner l'ajout d'un item
+
+Ca me prend 3H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

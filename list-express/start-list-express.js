@@ -15,11 +15,15 @@ module.exports = function () {
   const app = express();
   app.use(express.urlencoded({ extended: true }));
 
-  // from https://stackoverflow.com/questions/27383222/is-there-a-way-to-keep-the-file-extension-of-ejs-file-as-html
-  app.engine(".html", ejs.__express);
+  // from https://github.com/mde/ejs/wiki/Using-EJS-with-Express#custom-render-function
+  let ejsOptions = { async: true };
+  app.engine("html", async (path, data, cb) => {
+    let html = await ejs.renderFile(path, data, ejsOptions);
+    cb(null, html);
+  });
+  app.set("views", path.join(__dirname, "views"));
 
   app.use(express.static(path.join(__dirname, "public")));
-  app.set("views", path.join(__dirname, "views"));
 
   // ROUTES
   app.get("/", viewIndex);
