@@ -423,7 +423,7 @@ Finalement il manquait un appel à 'git update-server-info' à chaque synchronis
 
 Ca m'a pris 2h45
 
-# 22 : Faire une application de gestion de liste - ??
+# 22 : Faire une application de gestion de liste - 15min
 
 Je fais une application simpliste qui permet de :
 
@@ -434,7 +434,19 @@ Je fais une application simpliste qui permet de :
 
 Cela va permettre de tester des cas de conflit et choisir la meilleure stratégie
 
-TODO 15m +
+J'y passe 15min.
+
+Quelque jours plus tard...
+
+# 23 : Earthstar or not earthstar ? - ??
+
+Un projet issu de l'ecosystème SSB m'avait beaucoup inspiré pour ce projet : earthstar (https://github.com/earthstar-project/earthstar)
+
+Je vois un tweet mentionnant que la doc a été améliorée et je jette un oeil, c'est très proche de ce que je veux faire. D'où la question : est ce que je dois continuer ou contribuer à Earthstar ?
+
+Chaque solution a ses avantages, je prend le temps de reflechir.
+
+Ca me prend au moins TODO 15min
 
 # Next pour avoir un exemple représentatif de l'approche :
 
