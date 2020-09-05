@@ -445,16 +445,78 @@ Un projet issu de l'ecosystème SSB m'avait beaucoup inspiré pour ce projet : e
 Je vois un tweet mentionnant que la doc a été améliorée et je jette un oeil, c'est très proche de ce que je veux faire. D'où la question : est ce que je dois continuer ou contribuer à Earthstar ?
 
 Chaque solution a ses avantages, je prend le temps de reflechir.
+Ca me prend au moins 2H+
 
-Ca me prend au moins TODO 15min
+On bascule sur earthstar parce que :
+
+- ca serait cool de bosser sur un projet à plusieurs qui a déjà une petite communauté
+- il y a déjà des choses faites que j'aimerai ajouter (identité, signature, résolution de conflits par exemple)
+- le stockage fichier a l'air de pouvoir être ajouté
+- le fait de ne pas avoir besoin de Git mais d'un simple serveur http pourrait être un avantage
+
+On conserve une autre approche parce que :
+
+- ce projet ne repose que sur 1 personne
+- même si l'approche fait veux de simplicité, elle est plus complexe que la mienne pour l'instant, peut être trop ?
+- la synchronisation est basique, probablement moins efficace que Git (même si je n'ai pas testé)
+
+Cependant je me rend compte que dans les deux cas, une inconnue demeure : comment faire une application mobile qui partage un maximum de code avec mon application node + express + ejs ???
+
+C'était l'objet de ma première dérive juste après #5 où j'avais essayé d'embarquer express dans un service worker pour faire comme si on avait un serveur web directement en tâche de fond du navigateur
+
+Jusqu'à maintenant mes deux axes forts ont été :
+
+- Offline first
+- Pas de JS dans le browser (avec éventuellement une exception pour le service worker)
+
+Le premier point est validé par mon approche et earthstar, donc on peut le considérer comme OK.
+Le fait de ne pas utiliser de JS dans le browser implique d'avoir une logique client-serveur, quitte à ce que le serveur soit dans un service wokrker
+
+Mon approche consistant à mettre tout express dans un serviceworker était probablement trop extreme et difficilement maintenable
+
+Une autre approche serait d'utiliser le même routeur (celui d'express) dans le navigateur et dans l'appli express pour pouvoir utiliser la même interface :
+
+- Node/Express : HTML/CSS => router cross platform => express
+- Browser : HTML/CSS => router cross platform => service worker
+
+Une librairie candidate pour ce genre de manipulation serait Nighthawk : https://github.com/wesleytodd/nighthawk
+
+Mais faisons une pause. Pourquoi je ne veux pas de JS dans le browser ?
+
+Une première raison pourrait être pour la sécurité, comme le revendique Oasis par exemple : https://github.com/fraction/oasis
+Dans ce cas il suffirait d'utiliser l'appli node/express sur un PC si on est un peu parano
+
+La vraie raison est plutôt de rester simple !
+
+Dans ce cas, l'appli mobile pourrait simplement être une version de l'appli node/express "browserifiée" avec uniquement les briques compatibles avec le browser :
+
+- interface HTML /CSS (views via EJS)
+- routeur (via nighthawk)
+- la logique de l'appli (actions)
+- base de données (via une implementation fs dans le browser)
+
+et sans :
+
+- synchronisation via Git
+- la publication via git dumb http
+- la publication via localtunnel
+
+Et dans ce cas, utiliser earthstar permettrait d'inclure la synchronisation !
+(plus tout ce qui est déjà implémenté)
+
+Ca veut dire qu'il faut dire adieu à Git pour basculer sur une solution immature par contre...
+
+Une autre solution pour ajouter la synchronisation dans le browser serait d'utiliser isomorphic-git qui semble plus mature
+
+Dans tous les cas, il semble que la prochaine étape soit de valider le fait qu'on peut "browserifier" l'application telle que décrite ci-dessus, earthstar ou pas.
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
-TODO Tester un cas de conflit et modifier la commande Git pour qu'il merge automatiquement (en utilisant toujours la modif distante par exemple ?)
+TODO Browserifier l'application sans la synchro git et la publication
 
 # Refacto et fonctions bonus
 
+TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
