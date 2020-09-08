@@ -1,5 +1,7 @@
 const Nighthawk = require("nighthawk");
+// const { Router } = require("tiny-request-router");
 const ejs = require("ejs");
+const bodyParser = require("body-parser");
 
 registerServiceWorker();
 
@@ -10,33 +12,24 @@ const view404 = require("./views/404");
 // ACTIONS
 const actionNewItem = require("./actions/newItem");
 
-function start() {
-  const app = Nighthawk();
+// const router = new Router();
+// // ROUTES
+// router.get("/", viewIndex);
+// router.post("/new-item", actionNewItem);
 
-  // TODO ACY vvvv Not replaced yet vvvvv
+const app = Nighthawk();
 
-  // app.use(express.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: false }));
 
-  // // from https://github.com/expressjs/express/blob/master/lib/application.js#L274
-  // app.engine("html", ejs.renderFile);
+// Implements res.render() in browser
+app.use(universalRenderMiddleware());
 
-  // app.use(express.static(path.join(__dirname, "public")));
-  // app.set("views", path.join(__dirname, "views"));
+// ROUTES
+app.get("/", viewIndex);
+app.post("/new-item", actionNewItem);
+app.use(view404);
 
-  // TODO ACY ^^^^^^^^^^^^
-
-  // Implements res.render() in browser
-  app.use(universalRenderMiddleware());
-
-  // ROUTES
-  app.get("/", viewIndex);
-  app.post("/new-item", actionNewItem);
-  app.use(view404);
-
-  app.listen();
-}
-
-start();
+app.listen();
 
 function universalRenderMiddleware() {
   return (req, res, next) => {
@@ -44,25 +37,7 @@ function universalRenderMiddleware() {
     if (isBrowser) {
       // Warning! It is a partial implementation
       // Express doc is here: https://expressjs.com/fr/4x/api.html#res.render
-      res.render = async (view, locals) => {
-        const response = await fetch(`/views/${view}`);
-        const template = await response.text();
-
-        const compiledTemplate = ejs.compile(template, {
-          client: true,
-          async: true,
-        });
-        const html = await compiledTemplate(
-          locals,
-          null,
-          async (includedPath) => {
-            const includeResponse = await fetch(`/views/${includedPath}`);
-            const includedTemplate = await includeResponse.text();
-            return includedTemplate;
-          }
-        );
-        document.getElementById("root").innerHTML = html;
-      };
+      res.render = renderView;
     } else {
       // res.render() is already defined when running with node+express
     }
@@ -71,10 +46,72 @@ function universalRenderMiddleware() {
   };
 }
 
+async function renderView(view, data) {
+  const response = await fetch(`/views/${view}`);
+  const template = await response.text();
+
+  const compiledTemplate = ejs.compile(template, {
+    client: true,
+    async: true,
+  });
+  const html = await compiledTemplate(data, null, async (includedPath) => {
+    const includeResponse = await fetch(`/views/${includedPath}`);
+    const includedTemplate = await includeResponse.text();
+    return includedTemplate;
+  });
+  document.getElementById("root").innerHTML = html;
+}
+// window.renderView = renderView;
+
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js").then(function () {
       console.log("Service Worker Registered");
+
+      navigator.serviceWorker.onmessage = (event) => {
+        console.log("DEBUG onmessage", event.data);
+        if (event.data && event.data.type === "REQUEST") {
+          // const { method, pathname } = event.data;
+          // const match = router.match(method, pathname);
+          // if (match) {
+          //   console.log("DEBUG match!");
+          //   match.handler(match.params);
+          // }
+
+          const { method, originalUrl, path, url, body } = event.data;
+
+          if (method !== "POST") {
+            return;
+          }
+
+          const strippedPath = app._base ? path.replace(app._base, "") : path;
+
+          const requestUrl =
+            (strippedPath === "" ? "/" : strippedPath) + url.search + +url.hash;
+
+          // Create the request object
+          const req = new Nighthawk.Request();
+          req.app = app;
+          req.method = method;
+          req.originalUrl = originalUrl;
+          req.baseUrl = app._base;
+          req.path = strippedPath;
+          req.url = requestUrl;
+          req.body = body;
+
+          // Create the response object
+          const res = new Nighthawk.Response();
+          res.app = app;
+
+          app(req, res, function (e) {
+            if (e) {
+              throw e;
+            }
+          });
+        }
+      };
+
+      console.log("Listener Registered");
     });
   }
 }

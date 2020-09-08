@@ -535,13 +535,31 @@ Cette petite reflexion et recherche m'a pris 1H
 Je commence à tester d'intercepter les requêtes dans un serviceworker et de les rebalancer côté appli pour que le routeur les gère.
 
 Je m'aide des docs suivantes :
+
 - https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle
 - https://felixgerschau.com/how-to-communicate-with-service-workers/
 
+2H plus tard j'ai la tête explosée et je crois que j'arrive à une impasse
 
-TODO Faire fonctionner l'ajout d'un item
+Les routeur universels sont séduisants par leur simplicité mais ils ne prennent que rarement en compte les requêtes POST et quand ils le font ils ne gèrent pas le body
 
-Ca me prend 5H+
+Quitte à ne pas gérer les requêtes POST, Nighthawk a donc l'air d'être une meilleure option d'autant plus que l'on peut utiliser tous les middlewares d'Express, nottament pour gérer les fichiers statiques.
+
+Le routing de Nighthawk est déclenché quand l'url du navigateur est modifiée (évenemtn 'popstate') donc une requête POST passe innaperçue et n'est pas envoyée au routeur.
+
+L'astuce serait donc d'utiliser le service worker pour récupérer la requête POST et son body et le renvoyer à Nighthawk pour qu'il la traite.
+
+Ca veut dire récupérer une requête de l'API Fetch (https://developer.mozilla.org/fr/docs/Web/API/Request) et la transformer en requête Express (https://expressjs.com/fr/api.html#req)
+
+Nighthawk fait déjà un peu cela (https://github.com/wesleytodd/nighthawk/blob/master/lib/router.js#L242) mais pour l'instant je n'arrive pas à ajouter la gestion du body.
+
+L'application utilise un body urlencoded et non JSON.
+Quand j'esaie d'utiliser le middleware d'express qui gère ca (body-parser), j'ai les mêmes erreur que quand j'essayais de mettre tout express dans le service worker.
+
+Que faire ?
+D'autant qu'en faisant tout ca je me rend compte que les cas où la requête a du multi-form data et autres cas plus complexes ne seront pas gérés...
+
+Ca me prend 7H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
