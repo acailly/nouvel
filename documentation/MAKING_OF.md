@@ -532,9 +532,16 @@ Pour l'instant je garde nighthawk pour tester l'utilisation dans un serviceworke
 
 Cette petite reflexion et recherche m'a pris 1H
 
+Je commence à tester d'intercepter les requêtes dans un serviceworker et de les rebalancer côté appli pour que le routeur les gère.
+
+Je m'aide des docs suivantes :
+- https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle
+- https://felixgerschau.com/how-to-communicate-with-service-workers/
+
+
 TODO Faire fonctionner l'ajout d'un item
 
-Ca me prend 4H30+
+Ca me prend 5H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

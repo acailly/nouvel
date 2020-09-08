@@ -1,6 +1,8 @@
 const Nighthawk = require("nighthawk");
 const ejs = require("ejs");
 
+registerServiceWorker();
+
 // VIEWS
 const viewIndex = require("./views/index");
 const view404 = require("./views/404");
@@ -67,4 +69,12 @@ function universalRenderMiddleware() {
 
     next();
   };
+}
+
+function registerServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js").then(function () {
+      console.log("Service Worker Registered");
+    });
+  }
 }
