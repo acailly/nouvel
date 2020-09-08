@@ -516,9 +516,25 @@ Je choisis de browserifier l'application de liste que j'avais à peine entamé p
 
 Au bout de 3H j'arrive à charger la page d'accueil dans le browser et dans express, yes !
 
+Mais... les requêtes POST ne passent pas dans le routeur !
+
+Il faut que je trouve un moyen pour gerer les requêtes POST, et j'ai l'impression que le serviceworker est la seule solution.
+
+Je pars donc à la recherche d'un routeur universel qui puisse être utilisé à la fois dans express et un serviceworker
+
+Je tombe sur cette page qui me fait penser que si je trouve un routeur assez simple, il sera faisable de l'intégrer à express : https://router5.js.org/advanced/universal-routing#server-side-routing
+
+Je tombe sur cette page qui me fait penser qu'il n'est pas trop compliqué de capter les requêtes dans un service worker : https://github.com/berstend/service-worker-router#javascript
+
+La question : est ce que je garde nighthawk ou est ce que je passe sur un router de base conçu pour être universel comme https://github.com/berstend/tiny-request-router ?
+
+Pour l'instant je garde nighthawk pour tester l'utilisation dans un serviceworker
+
+Cette petite reflexion et recherche m'a pris 1H
+
 TODO Faire fonctionner l'ajout d'un item
 
-Ca me prend 3H30+
+Ca me prend 4H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
