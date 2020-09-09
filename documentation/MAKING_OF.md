@@ -554,12 +554,26 @@ Ca veut dire récupérer une requête de l'API Fetch (https://developer.mozilla.
 Nighthawk fait déjà un peu cela (https://github.com/wesleytodd/nighthawk/blob/master/lib/router.js#L242) mais pour l'instant je n'arrive pas à ajouter la gestion du body.
 
 L'application utilise un body urlencoded et non JSON.
-Quand j'esaie d'utiliser le middleware d'express qui gère ca (body-parser), j'ai les mêmes erreur que quand j'essayais de mettre tout express dans le service worker.
+Quand j'esaie d'utiliser le middleware d'express qui gère ca (body-parser), j'ai les mêmes erreur que quand j'essayais de mettre tout express dans le service worker (avec iconv-lite et les streams).
 
 Que faire ?
 D'autant qu'en faisant tout ca je me rend compte que les cas où la requête a du multi-form data et autres cas plus complexes ne seront pas gérés...
 
-Ca me prend 7H+
+J'essaie de faire un projet avec uniquement body-parser et de le browserifier pour vérifier que le souci vient bien de la.
+
+Après 1H j'ai mieux compris d'où venait le problème avec iconv-lite \o/
+
+En fait iconv-lite se base sur la présence ou non de process.versions.node pour charger les streams.
+Normalement, cette variable est désactivée quand on build avec Browserify.
+Sauf qu'on charge le shim de BrowserFS pour process, ce qui fait que process.versions.node est finalement définit.
+
+En ajoutant la ligne suivante cela semble supprimer cette erreur :
+
+```
+process.versions.node = undefined // to fix the iconv-lite error with streams
+```
+
+Ca me prend 8H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -1,3 +1,5 @@
+process.versions.node = undefined // to fix the iconv-lite error with streams
+
 const Nighthawk = require("nighthawk");
 // const { Router } = require("tiny-request-router");
 const ejs = require("ejs");
@@ -19,7 +21,7 @@ const actionNewItem = require("./actions/newItem");
 
 const app = Nighthawk();
 
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Implements res.render() in browser
 app.use(universalRenderMiddleware());
