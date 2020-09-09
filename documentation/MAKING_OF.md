@@ -573,7 +573,15 @@ En ajoutant la ligne suivante cela semble supprimer cette erreur :
 process.versions.node = undefined // to fix the iconv-lite error with streams
 ```
 
-Ca me prend 8H+
+J'arrive à utiliser body-parser avec browserify mais je dois toujours trouver un moyen de gérer les POST, et la perspective de modifier Nighthawk et ajouter ces transformations de format de requêtes me décourage... c'est alors que je retombe sur browser-express (https://github.com/williamcotton/browser-express) qui est un peu la même chose que Nighthawk (il revendique l'inspiration et à vrai dire c'est en grande partie du copier/coller) mais il affiche en plus une gestion du POST dans les exemples !
+
+Il utilise un serviceworker ? Non ! il utilise un petit hack qui permet de capter les évenements submit des formulaires. J'avais écarté cette idée en la classant trop vite dans la catégorie "bidouille pas très propre" mais finalement ca me paraît plus simple et viable que de se lancer dans l'utilisation d'un serviceworker.
+
+30 minutes de plus pour tester et... ca appelle bien la route POST \o/ ... et ensuite j'ai une autre erreur sur promisify qui n'est pas définit, mais au moins j'ai reglé ce problème.
+
+TODO Problème dans node_modules/mkdirp/lib/opts-arg.js, const {promisify} = require("util") renvoie undefined et require("util").promisify aussi...
+
+Ca me prend 8H45+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

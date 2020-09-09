@@ -1,11 +1,10 @@
 process.versions.node = undefined // to fix the iconv-lite error with streams
 
-const Nighthawk = require("nighthawk");
-// const { Router } = require("tiny-request-router");
+const browserExpress = require('browser-express');
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 
-registerServiceWorker();
+// registerServiceWorker();
 
 // VIEWS
 const viewIndex = require("./views/index");
@@ -14,12 +13,18 @@ const view404 = require("./views/404");
 // ACTIONS
 const actionNewItem = require("./actions/newItem");
 
+// const { Router } = require("tiny-request-router");
 // const router = new Router();
 // // ROUTES
 // router.get("/", viewIndex);
 // router.post("/new-item", actionNewItem);
 
-const app = Nighthawk();
+// const Nighthawk = require("nighthawk");
+// const app = Nighthawk();
+
+const app = browserExpress({  
+  interceptFormSubmit: true
+});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -31,7 +36,9 @@ app.get("/", viewIndex);
 app.post("/new-item", actionNewItem);
 app.use(view404);
 
-app.listen();
+app.listen({}, () => {
+  console.log('Browser-Express is started!');
+});
 
 function universalRenderMiddleware() {
   return (req, res, next) => {

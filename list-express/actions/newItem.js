@@ -1,6 +1,7 @@
-const { listKeys, read, write } = require("../../storage");
+const { write } = require("../../storage");
 
 module.exports = function (req, res) {
+  console.log("DEBUG", "POSTTTTTTTTTTTTTTTTTTTTT")
   const itemId = new Date().getTime().toString();
 
   const itemTitle = req.body.title;
