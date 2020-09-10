@@ -579,9 +579,11 @@ Il utilise un serviceworker ? Non ! il utilise un petit hack qui permet de capte
 
 30 minutes de plus pour tester et... ca appelle bien la route POST \o/ ... et ensuite j'ai une autre erreur sur promisify qui n'est pas définit, mais au moins j'ai reglé ce problème.
 
-TODO Problème dans node_modules/mkdirp/lib/opts-arg.js, const {promisify} = require("util") renvoie undefined et require("util").promisify aussi...
+Je prend 30 minutes pour isoler le problème sur promisify et je constate que c'est une histoire de dépendance transitive de browserify, ca s'annonce coton. Je poste une issue en espérant que quelqu'un m'explique la situation : https://github.com/browserify/browserify/issues/1978
 
-Ca me prend 8H45+
+J'essaie entre temps d'utiliser `npm-force-resolutions` mais sans succès (https://github.com/rogeriochaves/npm-force-resolutions).
+
+Ca me prend 9H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
