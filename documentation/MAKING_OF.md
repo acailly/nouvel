@@ -585,19 +585,20 @@ J'essaie entre temps d'utiliser `npm-force-resolutions` mais sans succès (https
 
 Finalement je trouve util.promisify qui semble fonctionner (https://github.com/ljharb/util.promisify)
 
-Je rajoute l'initialisation de BrowserFS que j'avais oublié et hourra !!!! 
+Je rajoute l'initialisation de BrowserFS que j'avais oublié et hourra !!!!
 J'arrive enfin à ajouter des éléments dans ma liste (donc les requêtes POST sont exécutées)
 
-Maintenant il faut que je fasse du ménage dans le code mais c'est prometteur :-)
+Je fais un peu de ménage dans le code et je teste de mettre BrowserFS en mode IndexedDB et paf ! encore un bug, une erreur "Error: ENOTSUP: Operation is not supported"
+Une issue semble être liée mais n'est pas résolue : https://github.com/jvilk/BrowserFS/issues/268
 
-TODO Virer les dépendances que je n'utilise pas au final
-TODO Isoler la partie commune de start-browser et start-express
+TODO A suivre...
 
-Ca me prend 9H15+
+Ca me prend 10H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Browserifier l'application sans la synchro git et la publication
+TODO Tester un autre système de fichier que memory
+TODO Extraire la partie config de express et browser-express
 
 # Refacto et fonctions bonus
 
