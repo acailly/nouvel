@@ -1,4 +1,14 @@
 process.versions.node = undefined // to fix the iconv-lite error with streams
+require('util.promisify/shim')(); // to use promisify
+
+BrowserFS.configure({
+  fs:'InMemory',
+}, function(e) {
+  if (e) {
+    throw e;
+  }
+  console.log('BrowserFS is ready-to-use!')
+} )
 
 const browserExpress = require('browser-express');
 const ejs = require("ejs");

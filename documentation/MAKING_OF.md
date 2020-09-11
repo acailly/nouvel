@@ -583,7 +583,17 @@ Je prend 30 minutes pour isoler le problème sur promisify et je constate que c'
 
 J'essaie entre temps d'utiliser `npm-force-resolutions` mais sans succès (https://github.com/rogeriochaves/npm-force-resolutions).
 
-Ca me prend 9H+
+Finalement je trouve util.promisify qui semble fonctionner (https://github.com/ljharb/util.promisify)
+
+Je rajoute l'initialisation de BrowserFS que j'avais oublié et hourra !!!! 
+J'arrive enfin à ajouter des éléments dans ma liste (donc les requêtes POST sont exécutées)
+
+Maintenant il faut que je fasse du ménage dans le code mais c'est prometteur :-)
+
+TODO Virer les dépendances que je n'utilise pas au final
+TODO Isoler la partie commune de start-browser et start-express
+
+Ca me prend 9H15+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -26,6 +26,7 @@
     "mkdirp": "^1.0.4",
     "nighthawk": "^2.3.0-0",
     "tiny-request-router": "^1.2.2",
+    "util.promisify": "^1.0.1",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
