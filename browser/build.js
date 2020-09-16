@@ -32,7 +32,7 @@ function build() {
   };
 
   browserify(
-    path.join(__dirname, "..", "start-list-browser.js"),
+    path.join(__dirname, "..", "start-browser.js"),
     browserifyConfig
   )
     .bundle()

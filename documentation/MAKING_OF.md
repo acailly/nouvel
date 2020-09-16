@@ -591,9 +591,11 @@ J'arrive enfin à ajouter des éléments dans ma liste (donc les requêtes POST 
 Je fais un peu de ménage dans le code et je teste de mettre BrowserFS en mode IndexedDB et paf ! encore un bug, une erreur "Error: ENOTSUP: Operation is not supported"
 Une issue semble être liée mais n'est pas résolue : https://github.com/jvilk/BrowserFS/issues/268
 
+Je fais une pause avec cette erreur et je prends 30 min pour refactorer le code.
+
 TODO A suivre...
 
-Ca me prend 10H+
+Ca me prend 10H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
