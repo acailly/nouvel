@@ -593,9 +593,11 @@ Une issue semble être liée mais n'est pas résolue : https://github.com/jvilk/
 
 Je fais une pause avec cette erreur et je prends 30 min pour refactorer le code.
 
-TODO A suivre...
+Je rejette un oeil à l'erreur, en fait c'est du au fait que mkdirSync n'est pas supporté par l'implémentation IndexedDB (qui est purement asynchrone)
 
-Ca me prend 10H30+
+Je m'engage donc dans une réécriture du stockage fichier en asynchrone avec async/await (ca me prend 1H30+)
+
+Ca me prend 12H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

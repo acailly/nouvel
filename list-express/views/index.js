@@ -7,5 +7,4 @@ module.exports = async function (req, res) {
   });
 
   res.render("index.html", { items: items });
-  // window.renderView("index.html", { items: items });
 };

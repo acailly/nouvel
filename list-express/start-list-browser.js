@@ -2,10 +2,12 @@ module.exports = function () {
 
   BrowserFS.configure(
     {
-      fs: "IndexedDB",
-      options: {
-        storeName: "app",
-      },
+      // fs: "IndexedDB",
+      fs: "InMemory",
+      // fs: "LocalStorage",
+      // options: {
+      //   storeName: "app",
+      // },
     },
     function (e) {
       if (e) {
