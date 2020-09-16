@@ -1,8 +1,9 @@
-const fs = require("fs");
+const fs = require("./fsPromisified");
 const path = require("path");
 const configuration = require("../configuration");
+const exists = require('./exists')
 
-module.exports = function (key) {
+module.exports = async function (key) {
   const keyPath = key.split("/");
   const keyFolders = keyPath.slice(0, -1);
   const keyFile = keyPath.slice(-1);
@@ -12,10 +13,10 @@ module.exports = function (key) {
     `${keyFile}.json`
   );
 
-  if (!fs.existsSync(filePath)) {
+  if (!(await exists(filePath))) {
     return null;
   }
 
-  const rawValue = fs.readFileSync(filePath);
+  const rawValue = await fs.readFile(filePath);
   return JSON.parse(rawValue);
 };

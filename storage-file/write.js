@@ -1,18 +1,19 @@
-const fs = require("fs");
+const fs = require("./fsPromisified");
 const path = require("path");
 const mkdirp = require("mkdirp");
 const configuration = require("../configuration");
+const exists = require('./exists')
 
-module.exports = function (key, value) {
+module.exports = async function (key, value) {
   const keyPath = key.split("/");
   const keyFolders = keyPath.slice(0, -1);
   const keyFile = keyPath.slice(-1);
   const fileDirectory = path.join(configuration.rootDataFolder, ...keyFolders);
   const filePath = path.join(fileDirectory, `${keyFile}.json`);
 
-  if (!fs.existsSync(fileDirectory)) {
-    mkdirp.sync(fileDirectory);
+  if (!(await exists(fileDirectory))) {
+    await mkdirp(fileDirectory);
   }
 
-  fs.writeFileSync(filePath, JSON.stringify(value));
+  await fs.writeFile(filePath, JSON.stringify(value));
 };

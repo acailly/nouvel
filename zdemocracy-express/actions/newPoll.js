@@ -1,25 +1,26 @@
 const {listKeys, read, write} = require("../../storage");
 
-module.exports = function (req, res) {
+module.exports = async function (req, res) {
   const pollId = new Date().getTime().toString();
 
   const pollTitle = req.body.title;
-  write(`polls/${pollId}/info`, {
+  await write(`polls/${pollId}/info`, {
     title: pollTitle,
   });
 
-  write(`polls/${pollId}/status`, {
+  await write(`polls/${pollId}/status`, {
     id: "draft",
     label: "Draft",
   });
 
-  const templateGradeIds = listKeys(`templates/jugement-majoritaire/grades`);
-  templateGradeIds.forEach((gradeId) => {
-    const templateGrade = read(
+  const templateGradeIds = await listKeys(`templates/jugement-majoritaire/grades`);
+  
+  for (const gradeId of templateGradeIds) {
+    const templateGrade = await read(
       `templates/jugement-majoritaire/grades/${gradeId}`
     );
-    write(`polls/${pollId}/grades/${gradeId}`, templateGrade);
-  });
+    await write(`polls/${pollId}/grades/${gradeId}`, templateGrade);
+  };
 
   res.redirect(302, `/polls/${pollId}/options`);
 };

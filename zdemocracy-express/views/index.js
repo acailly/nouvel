@@ -1,23 +1,25 @@
 const {listSubFolders, read} = require("../../storage");
 
 module.exports = function (req, res) {
-  const pollsFolders = listSubFolders(`polls`);
+  const pollsFolders = await listSubFolders(`polls`);
 
-  const polls = pollsFolders.map((pollFolder) => {
-    const pollId = pollFolder;
+  const polls = await Promise.all(
+    pollsFolders.map(async (pollFolder) => {
+      const pollId = pollFolder;
 
-    const info = read(`polls/${pollId}/info`);
-    const pollTitle = info.title;
+      const info = await read(`polls/${pollId}/info`);
+      const pollTitle = info.title;
 
-    const status = read(`polls/${pollId}/status`);
-    const pollStatus = status.id;
+      const status = await read(`polls/${pollId}/status`);
+      const pollStatus = status.id;
 
-    return {
-      id: pollId,
-      title: pollTitle,
-      status: pollStatus,
-    };
-  });
+      return {
+        id: pollId,
+        title: pollTitle,
+        status: pollStatus,
+      };
+    })
+  );
 
   res.render("index.html", { polls: polls });
 };

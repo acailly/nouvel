@@ -1,15 +1,16 @@
-const fs = require("fs");
+const fs = require("./fsPromisified");
 const path = require("path");
 const configuration = require("../configuration");
+const exists = require('./exists')
 
-module.exports = function (keyFolder) {
+module.exports = async function (keyFolder) {
   const keyFolderPath = path.join(configuration.rootDataFolder, keyFolder);
 
-  if (!fs.existsSync(keyFolderPath)) {
+  if (!(await exists(keyFolderPath))) {
     return [];
   }
 
-  const files = fs.readdirSync(keyFolderPath);
+  const files = await fs.readdir(keyFolderPath);
 
   const keyFiles = files
     .filter((file) => path.extname(file) === ".json")

@@ -1,9 +1,9 @@
 const {write} = require("../../storage");
 
-module.exports = function (req, res) {
+module.exports = async function (req, res) {
   const pollId = req.params.id;
 
-  write(`polls/${pollId}/status`, {
+  await write(`polls/${pollId}/status`, {
     id: "open",
     label: "Open",
   });

@@ -1,44 +1,42 @@
 const {listKeys, read, write} = require("../../storage");
 
-module.exports = function (req, res) {
+module.exports = async function (req, res) {
   const pollId = req.params.id;
 
-  const gradeIds = listKeys(`polls/${pollId}/grades`);
-  const grades = gradeIds.map((gradeId) => {
-    return read(`polls/${pollId}/grades/${gradeId}`);
-  });
+  const gradeIds = await listKeys(`polls/${pollId}/grades`);
+  const grades = await Promise.all(
+    gradeIds.map(async (gradeId) => {
+      return await read(`polls/${pollId}/grades/${gradeId}`);
+    })
+  );
 
-  const optionIds = listKeys(`polls/${pollId}/options`);
+  const optionIds = await listKeys(`polls/${pollId}/options`);
 
-  const voterIds = listKeys(`polls/${pollId}/votes`);
+  const voterIds = await listKeys(`polls/${pollId}/votes`);
 
-  optionIds.map((optionId) => {
+  for (const optionId of optionIds) {
     const voteCount = voterIds.length;
 
     const voteCountByGrade = {};
     gradeIds.forEach((gradeId) => {
       voteCountByGrade[gradeId] = 0;
     });
-    voterIds.forEach((voterId) => {
-      const voterAnswers = read(`polls/${pollId}/votes/${voterId}`);
+    for (const voterId of voterIds) {
+      const voterAnswers = await read(`polls/${pollId}/votes/${voterId}`);
       const voterAnswer = voterAnswers[optionId];
 
       voteCountByGrade[voterAnswer] += 1;
-    });
+    };
 
-    write(`polls/${pollId}/results/${optionId}/by-grade`, voteCountByGrade);
+    await write(`polls/${pollId}/results/${optionId}/by-grade`, voteCountByGrade);
 
     let optionScore = 0;
     let optionGradeId;
     const gradesFromNoToYes = grades.sort((a, b) => {
       return b.position - a.position;
     });
-    for (
-      let gradeIndex = 0;
-      gradeIndex < gradesFromNoToYes.length;
-      gradeIndex++
-    ) {
-      const grade = gradesFromNoToYes[gradeIndex];
+
+    for (const grade of gradesFromNoToYes) {
       optionGradeId = grade.id;
       optionScore += voteCountByGrade[grade.id];
       if (optionScore > voteCount / 2) {
@@ -46,37 +44,35 @@ module.exports = function (req, res) {
       }
     }
 
-    write(`polls/${pollId}/results/${optionId}/results`, {
+    await write(`polls/${pollId}/results/${optionId}/results`, {
       gradeId: optionGradeId,
       score: optionScore,
     });
-  });
+  };
 
   let winnerOptionId;
   const gradesFromYesToNo = grades.sort((a, b) => {
     return a.position - b.position;
   });
-  for (
-    let gradeIndex = 0;
-    gradeIndex < gradesFromYesToNo.length;
-    gradeIndex++
-  ) {
-    const grade = gradesFromYesToNo[gradeIndex];
-    const optionIdsWithMatchingGrade = optionIds
-      .map((optionId) => {
-        const optionResults = read(
-          `polls/${pollId}/results/${optionId}/results`
-        );
 
-        if (optionResults.gradeId === grade.id) {
-          return {
-            optionId: optionId,
-            optionResults: optionResults,
-          };
-        }
-        return undefined;
-      })
-      .filter((v) => v !== undefined);
+  for (const grade of gradesFromYesToNo) {
+    const optionIdsWithMatchingGrade = await Promise.all(
+      optionIds
+        .map(async (optionId) => {
+          const optionResults = await read(
+            `polls/${pollId}/results/${optionId}/results`
+          );
+
+          if (optionResults.gradeId === grade.id) {
+            return {
+              optionId: optionId,
+              optionResults: optionResults,
+            };
+          }
+          return undefined;
+        })
+        .filter((v) => v !== undefined)
+    );
     if (optionIdsWithMatchingGrade.length > 0) {
       const sortedOptionIdsWithMatchingGrade = optionIdsWithMatchingGrade.sort(
         (a, b) => {
@@ -88,11 +84,11 @@ module.exports = function (req, res) {
     }
   }
 
-  write(`polls/${pollId}/results/winner`, {
+  await write(`polls/${pollId}/results/winner`, {
     optionId: winnerOptionId,
   });
 
-  write(`polls/${pollId}/status`, {
+  await write(`polls/${pollId}/status`, {
     id: "close",
     label: "Close",
   });
