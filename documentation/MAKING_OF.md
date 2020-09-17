@@ -605,6 +605,14 @@ On a maintenant une application dans le navigateur qui sauvegarde les fichiers d
 
 Ca me prend 13H
 
+# 25 : Utiliser isomorphic-git - ??
+
+Prochaine étape : faire marcher git dans le navigateur
+
+Au passage l'utilisation de Git ne dépendra plus de l'implémentation locale.
+
+TODO Ca me prend 30min+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Utiliser isomorphic-git pour la partie Git

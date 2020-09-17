@@ -2,7 +2,10 @@ const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const configuration = require("../configuration");
-const execShellCommand = require("./execShellCommand");
+// const execShellCommand = require("./execShellCommand");
+const git = require('isomorphic-git')
+const fs = require('fs')
+const http = require('isomorphic-git/http/node')
 
 module.exports = async function () {
   await initializeGitRepositoryIfNecessary(configuration.rootDataFolder);
@@ -38,19 +41,26 @@ async function initializeGitRepositoryIfNecessary(folder) {
   const gitRepositoryPath = path.join(folder, ".git");
   if (!fs.existsSync(gitRepositoryPath)) {
     console.log("Syncing git - Git repository doesn't exist, init it");
-    await execShellCommand(`git init`, folder);
+    await git.init({fs, dir: folder })
+    // await execShellCommand(`git init`, folder);
   }
 }
 
 async function registerRemoteRepositoryIfNecessary(folder, repository) {
-  try {
-    await execShellCommand(`git remote get-url ${repository.name}`, folder);
-  } catch (e) {
+  const url = await git.config({fs, dir: folder, path: `remote.${repository.name}.url`})
+  //await execShellCommand(`git remote get-url ${repository.name}`, folder);
+  if(!url){
     console.log("Syncing git - Remote repository doesn't exist, add it");
-    await execShellCommand(
-      `git remote add ${repository.name} ${repository.remoteRepository}`,
-      folder
-    );
+    await git.addRemote({
+      fs,
+      dir: folder,
+      remote: repository.name,
+      url: repository.remoteRepository
+    })
+    // await execShellCommand(
+    //   `git remote add ${repository.name} ${repository.remoteRepository}`,
+    //   folder
+    // );
   }
 }
 
@@ -85,13 +95,15 @@ async function sync(folder, repositories) {
 
 async function commitCurrentChanges(folder) {
   console.log("Syncing git - Add");
-  const addOutput = await execShellCommand("git add " + folder, folder);
+  // const addOutput = await execShellCommand("git add " + folder, folder);
+  await git.add({ fs, dir: folder, filepath: folder })
 
-  const checkOutput = await execShellCommand(
-    "git diff --name-only --cached",
-    folder
-  );
-  if (checkOutput) {
+  // const checkOutput = await execShellCommand(
+  //   "git diff --name-only --cached",
+  //   folder
+  // );
+  const indexedFiles = await git.listFiles({ fs, dir: folder })
+  if (indexedFiles && indexedFiles.length) {
     console.log("Syncing git - Commit");
     const commitOutput = await execShellCommand(
       'git commit -m ":white_check_mark: Automatic sync git"',
