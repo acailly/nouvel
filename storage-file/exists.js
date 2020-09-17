@@ -1,11 +1,11 @@
-const fs = require("./fsPromisified");
+const fs = require("fs").promises;
 
 module.exports = async function (filePath) {
   try{
-      await fs.access(filePath, fs.constants.R_OK | fs.constants.W_OK)
-      return true
+    await fs.stat(filePath)
+    return true
   }
   catch(e){
-      return false
+    return false
   }
 };

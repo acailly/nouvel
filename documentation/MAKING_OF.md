@@ -510,7 +510,7 @@ Une autre solution pour ajouter la synchronisation dans le browser serait d'util
 
 Dans tous les cas, il semble que la prochaine étape soit de valider le fait qu'on peut "browserifier" l'application telle que décrite ci-dessus, earthstar ou pas.
 
-# 24 : Browserifier l'application - ??
+# 24 : Browserifier l'application - 13H
 
 Je choisis de browserifier l'application de liste que j'avais à peine entamé pour ne pas risquer de casser zDemocracy
 
@@ -600,15 +600,14 @@ Au bout d'2H je pense avoir terminé mais aucun élément ne s'ajoute quand je c
 
 Il semblerai que ca vienne du fait que fs.access() n'est pas implémentée : https://github.com/jvilk/BrowserFS/issues/128
 
-TODO Implémenter access() ? utiliser exists() ? 
-15min+
+30 min de plus pour utiliser stat() au lieu de access() et ca marche ! 
+On a maintenant une application dans le navigateur qui sauvegarde les fichiers dans la base indexeddb !
 
-Ca me prend 12H45+
+Ca me prend 13H
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Tester un autre système de fichier que memory
-TODO Extraire la partie config de express et browser-express
+TODO Utiliser isomorphic-git pour la partie Git
 
 # Refacto et fonctions bonus
 

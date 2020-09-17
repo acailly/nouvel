@@ -1,4 +1,4 @@
-const fs = require("./fsPromisified");
+const fs = require("fs").promises;
 const path = require("path");
 const mkdirp = require("mkdirp");
 const configuration = require("../configuration");

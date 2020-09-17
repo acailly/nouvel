@@ -1,22 +1,4 @@
 module.exports = function () {
-
-  BrowserFS.configure(
-    {
-      // fs: "IndexedDB",
-      fs: "InMemory",
-      // fs: "LocalStorage",
-      // options: {
-      //   storeName: "app",
-      // },
-    },
-    function (e) {
-      if (e) {
-        throw e;
-      }
-      console.log("BrowserFS is ready-to-use!");
-    }
-  );
-
   const browserExpress = require("browser-express");
   const app = browserExpress({
     interceptFormSubmit: true,
