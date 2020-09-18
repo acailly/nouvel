@@ -2,9 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const configuration = require("../configuration");
-// const execShellCommand = require("./execShellCommand");
+const execShellCommand = require("./execShellCommand");
 const git = require('isomorphic-git')
-const fs = require('fs')
 const http = require('isomorphic-git/http/node')
 
 module.exports = async function () {
@@ -47,7 +46,7 @@ async function initializeGitRepositoryIfNecessary(folder) {
 }
 
 async function registerRemoteRepositoryIfNecessary(folder, repository) {
-  const url = await git.config({fs, dir: folder, path: `remote.${repository.name}.url`})
+  const url = await git.getConfig({fs, dir: folder, path: `remote.${repository.name}.url`})
   //await execShellCommand(`git remote get-url ${repository.name}`, folder);
   if(!url){
     console.log("Syncing git - Remote repository doesn't exist, add it");
@@ -96,7 +95,7 @@ async function sync(folder, repositories) {
 async function commitCurrentChanges(folder) {
   console.log("Syncing git - Add");
   // const addOutput = await execShellCommand("git add " + folder, folder);
-  await git.add({ fs, dir: folder, filepath: folder })
+  await git.add({ fs, dir: folder, filepath: "." })
 
   // const checkOutput = await execShellCommand(
   //   "git diff --name-only --cached",
@@ -105,10 +104,19 @@ async function commitCurrentChanges(folder) {
   const indexedFiles = await git.listFiles({ fs, dir: folder })
   if (indexedFiles && indexedFiles.length) {
     console.log("Syncing git - Commit");
-    const commitOutput = await execShellCommand(
-      'git commit -m ":white_check_mark: Automatic sync git"',
-      folder
-    );
+    // const commitOutput = await execShellCommand(
+    //   'git commit -m ":white_check_mark: Automatic sync git"',
+    //   folder
+    // );
+    await git.commit({
+      fs,
+      dir: folder,
+      message: ':white_check_mark: Automatic sync git',
+      author: { // TODO ACY
+        name: 'Mr. Test',
+        email: 'mrtest@example.com',
+      },
+    })
   } else {
     console.log("Syncing git - No local changes");
   }
@@ -128,13 +136,28 @@ async function canFetchRepository(folder, repository) {
   let canFetch = true;
 
   try {
-    // https://superuser.com/a/833286
-    const canFetchOutput = await execShellCommand(
-      `git ls-remote --exit-code -h "${repository.remoteRepository}"`,
-      folder
-    );
+    // // https://superuser.com/a/833286
+    // const canFetchOutput = await execShellCommand(
+    //   `git ls-remote --exit-code -h "${repository.remoteRepository}"`,
+    //   folder
+    // );
+    await git.fetch({
+      fs,
+      http,
+      dir: folder,
+      corsProxy: 'https://cors.isomorphic-git.org',
+      remote: repository.name,
+      remoteRef: repository.branch,
+      onAuth(url) {
+        return {username: 'acailly', password: 'XXXX'}; // TODO ACY
+      },
+      depth: 1,
+      singleBranch: true,
+      tags: false,
+    })
   } catch (e) {
     console.log("Syncing git - No, cannot fetch", repository.name);
+    console.log("DEBUG", e);
     canFetch = false;
   }
 
@@ -143,22 +166,49 @@ async function canFetchRepository(folder, repository) {
 
 async function pullRemoteChanges(folder, repository) {
   console.log("Syncing git - Fetch");
-  const fetchOutput = await execShellCommand(
-    `git fetch ${repository.name} ${repository.branch}`,
-    folder
-  );
+  // const fetchOutput = await execShellCommand(
+  //   `git fetch ${repository.name} ${repository.branch}`,
+  //   folder
+  // );
+  await git.fetch({
+    fs,
+    http,
+    dir: folder,
+    corsProxy: 'https://cors.isomorphic-git.org',
+    remote: repository.name,
+    remoteRef: repository.branch
+  })
 
   console.log("Syncing git - Merge");
-  const mergeOutput = await execShellCommand(
-    `git merge ${repository.name}/${repository.branch}`,
-    folder
-  );
+  // const mergeOutput = await execShellCommand(
+  //   `git merge ${repository.name}/${repository.branch}`,
+  //   folder
+  // );
+  await git.merge({
+    fs,
+    dir: folder,
+    theirs: `remotes/${repository.name}/${repository.branch}`,
+    author: { // TODO ACY
+      name: 'Mr. Test',
+      email: 'mrtest@example.com',
+    },
+  })
 }
 
 async function pushLocalChanges(folder, repository) {
   console.log("Syncing git - Push");
-  const pushOutput = await execShellCommand(
-    `git push ${repository.name} ${repository.branch}`,
-    folder
-  );
+  // const pushOutput = await execShellCommand(
+  //   `git push ${repository.name} ${repository.branch}`,
+  //   folder
+  // );
+  await git.push({
+    fs,
+    http,
+    dir: folder,
+    remote: repository.name,
+    ref: repository.branch,
+    onAuth(url) {
+      return {username: 'acailly', password: 'XXXX'}; // TODO ACY
+    },
+  })
 }

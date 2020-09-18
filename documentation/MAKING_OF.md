@@ -605,13 +605,18 @@ On a maintenant une application dans le navigateur qui sauvegarde les fichiers d
 
 Ca me prend 13H
 
-# 25 : Utiliser isomorphic-git - ??
+# 25 : Utiliser isomorphic-git - 1H30
 
 Prochaine étape : faire marcher git dans le navigateur
 
 Au passage l'utilisation de Git ne dépendra plus de l'implémentation locale.
 
-TODO Ca me prend 30min+
+Au bout d'1H30min je me rend compte que isomorphic-git ne supporte pas le protocol dumb HTTP, celui que je voulais utiliser en mode client lourd local :-/
+
+J'ai l'impression que depuis que j'ai commencé à browserifié l'application, j'ai mis le doigts dans une complexité inévitable.
+
+Il faut que je fasse une pause pour réflechir à quelle direction je veux privilégier... 
+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

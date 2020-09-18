@@ -20,7 +20,8 @@ const repositoriesToSync = [
   {
     name: "github",
     branch: "master",
-    remoteRepository: "git@github.com:acailly/zDemocracy-lowtech-data.git",
+    // remoteRepository: "git@github.com:acailly/zDemocracy-lowtech-data.git",
+    remoteRepository: "https://github.com/acailly/zDemocracy-lowtech-data",
     enablePush: true,
   },
   {

@@ -14,5 +14,5 @@ startListExpress();
 // const startPublishingLocaltunnel = require("./publish-localtunnel/start-localtunnel");
 // startPublishingLocaltunnel();
 
-// const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
-// startSynchronizationGit();
+const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
+startSynchronizationGit();
