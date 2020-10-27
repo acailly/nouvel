@@ -600,7 +600,7 @@ Au bout d'2H je pense avoir terminé mais aucun élément ne s'ajoute quand je c
 
 Il semblerai que ca vienne du fait que fs.access() n'est pas implémentée : https://github.com/jvilk/BrowserFS/issues/128
 
-30 min de plus pour utiliser stat() au lieu de access() et ca marche ! 
+30 min de plus pour utiliser stat() au lieu de access() et ca marche !
 On a maintenant une application dans le navigateur qui sauvegarde les fichiers dans la base indexeddb !
 
 Ca me prend 13H
@@ -615,12 +615,33 @@ Au bout d'1H30min je me rend compte que isomorphic-git ne supporte pas le protoc
 
 J'ai l'impression que depuis que j'ai commencé à browserifié l'application, j'ai mis le doigts dans une complexité inévitable.
 
-Il faut que je fasse une pause pour réflechir à quelle direction je veux privilégier... 
+Il faut que je fasse une pause pour réflechir à quelle direction je veux privilégier...
 
+# 26 : Ajout de tinify - 15min
+
+On continue encore un peu
+
+A vrai dire la seule solution alternative à Git que je vois est WebDav
+Mais je préfère Git parce que :
+
+- il est "passif", pas besoin d'héberger un serveur, un simple dossier suffit
+- il s'applique directement à la couche fichier, pas besoin de coder une couche de synchronisation manuellement
+- il a l'air plus performant que WebDav (à vérifier) et garde un historique, ce qui peut être intéressant
+
+Du coup je rajoute le plugin `tinify` faire un peu baisser la taille du bundle dans le navigateur
+
+# A côté : webopen
+
+J'ai bien passé deux soirées à créer un utilitaire "webopen"
+
+Lien : https://github.com/acailly/webopen
+
+Ca utilise deskgap pour ouvrir une URL dans la vue native
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Utiliser isomorphic-git pour la partie Git
+TODO Refactorer la partie Git pour utiliser Git s'il est présent et isomorphic-git sinon
+TODO Ajouter une commande pour lancer l'appli via webopen
 
 # Refacto et fonctions bonus
 

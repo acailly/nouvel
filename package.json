@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "browserify": "^16.5.2",
-    "nexe": "^3.3.3"
+    "nexe": "^3.3.3",
+    "tinyify": "^3.0.0"
   }
 }
