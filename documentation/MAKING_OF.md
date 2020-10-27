@@ -638,9 +638,17 @@ Lien : https://github.com/acailly/webopen
 
 Ca utilise deskgap pour ouvrir une URL dans la vue native
 
+# 27 : Création de git-native et git-isomorphic - ???
+
+Je revoie le module synchronization-git pour qu'il utilise isomorphic-git quand la commande git n'est pas dispo
+
+TODO30min
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Refactorer la partie Git pour utiliser Git s'il est présent et isomorphic-git sinon
+TODO Sortir start-list-browser et start-list-express de list-express pour rendre list-express indépendant
+TODO Revoir les noms des différents modules : expose-gitdumbhttp/localtunnel, build-browser, serve-node/browser, identity-uuid, app-list/zdemocracy, storage-file, synchronization-git  
 TODO Ajouter une commande pour lancer l'appli via webopen
 
 # Refacto et fonctions bonus
