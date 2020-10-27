@@ -1,18 +1,24 @@
+const path = require("path");
+const configuration = require("./configuration");
+
 const { get: getIdentity } = require("./identity");
 const identity = getIdentity();
 console.log(`Connected as ${identity.id}`);
 
-// const startZDemocracyExpress = require("./zdemocracy-express/start-zdemocracy-express");
+// const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
 // startZDemocracyExpress();
 
-const startListExpress = require("./list-express/start-list-express");
-startListExpress();
+const appListPath = path.join(__dirname, "app-list");
+const appConfig = require("./app-list/app-config");
+const createNodeApp = require("./dist-node/create-app");
+createNodeApp(appListPath, appConfig, configuration.listServerPort);
 
-// const startPublishingGitDumbHttp = require("./publish-gitdumbhttp/start-gitdumbhttp");
+// const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
 // startPublishingGitDumbHttp();
 
-// const startPublishingLocaltunnel = require("./publish-localtunnel/start-localtunnel");
+// const startPublishingLocaltunnel = require("./expose-localtunnel/start-localtunnel");
 // startPublishingLocaltunnel();
 
 const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
+const createApp = require("./dist-browser/create-app");
 startSynchronizationGit();

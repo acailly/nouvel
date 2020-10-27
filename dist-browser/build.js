@@ -30,15 +30,11 @@ function build() {
       },
     },
   };
-  
-  browserify(
-    path.join(__dirname, "..", "start-browser.js"),
-    browserifyConfig
-  )
-    .plugin('tinyify')
+
+  browserify(path.join(__dirname, "..", "start-browser.js"), browserifyConfig)
+    // .plugin('tinyify')
     .bundle()
     .pipe(fs.createWriteStream(path.join(__dirname, "bundle.js")));
 }
 
 build();
-

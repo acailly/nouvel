@@ -642,10 +642,24 @@ Ca utilise deskgap pour ouvrir une URL dans la vue native
 
 Je revoie le module synchronization-git pour qu'il utilise isomorphic-git quand la commande git n'est pas dispo
 
+Ca me prend 1H30
+
+# 28 : Reorganisation des dossiers - 1H
+
+Je renomme les dossiers en les classant par intention :
+
+- app-\* : application
+- dist-[browser,node] : distribuer l'application
+- expose-[gitdumbhttp,localtunnel] : exposer les données de l'application
+- synchronization-[git] : synchroniser les données
+- git-[native,isomorphic] : implémentation de git
+- storage-[file] : stocker les données
+- identity-[uuid] : fournir une identité
+
+Ca me prend 1H
+
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Sortir start-list-browser et start-list-express de list-express pour rendre list-express indépendant
-TODO Revoir les noms des différents modules : expose-gitdumbhttp/localtunnel, build-browser, serve-node/browser, identity-uuid, app-list/zdemocracy, storage-file, synchronization-git
 TODO Terminer le POC de TODO List avec un repo Github
 
 # Refacto et fonctions bonus

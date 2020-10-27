@@ -24,7 +24,7 @@ BrowserFS.configure(
 
     // FIX : implement fs.promises
     const fs = require("fs");
-    fs.promises = require("./browser/fsPromisified");
+    fs.promises = require("./dist-browser/fsPromisified");
 
     //==== START THE APP ====
 
@@ -32,16 +32,17 @@ BrowserFS.configure(
     // const identity = getIdentity();
     // console.log(`Connected as ${identity.id}`);
 
-    // const startZDemocracyExpress = require("./zdemocracy-express/start-zdemocracy-express");
+    // const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
     // startZDemocracyExpress();
 
-    const startListBrowser = require("./list-express/start-list-browser");
-    startListBrowser();
+    const appConfig = require("./app-list/app-config");
+    const createBrowserApp = require("./dist-browser/create-app");
+    createBrowserApp(appConfig);
 
-    // const startPublishingGitDumbHttp = require("./publish-gitdumbhttp/start-gitdumbhttp");
+    // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
     // startPublishingGitDumbHttp();
 
-    // const startPublishingLocaltunnel = require("./publish-localtunnel/start-localtunnel");
+    // const startPublishingLocaltunnel = require("./expose-localtunnel/start-localtunnel");
     // startPublishingLocaltunnel();
 
     // const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");

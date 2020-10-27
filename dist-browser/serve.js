@@ -3,8 +3,12 @@ const express = require("express");
 
 function serve() {
   const args = process.argv.slice(2);
-  const appFolder = args[0]
-  const appRootDirectory = path.join(__dirname, "..", appFolder)
+  const appFolder = args[0];
+  if (!appFolder) {
+    throw new Error("Error: No arguments");
+  }
+
+  const appRootDirectory = path.join(__dirname, "..", appFolder);
 
   const app = express();
   app.use(express.urlencoded({ extended: true }));

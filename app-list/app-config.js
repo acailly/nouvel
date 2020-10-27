@@ -3,10 +3,6 @@ module.exports = function (app) {
   const bodyParser = require("body-parser");
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  // Implements res.render() in browser
-  const universalRenderMiddleware = require("./universal-render-middleware");
-  app.use(universalRenderMiddleware());
-
   // VIEWS
   const viewIndex = require("./views/index");
   const view404 = require("./views/404");
