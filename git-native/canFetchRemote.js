@@ -1,5 +1,5 @@
 const execShellCommand = require("./execShellCommand");
-module.exports = async (folder, remoteName, remoteUrl) => {
+module.exports = async (folder, remoteName, remoteUrl, remoteBranch) => {
   let canFetch = true;
 
   try {
@@ -12,4 +12,6 @@ module.exports = async (folder, remoteName, remoteUrl) => {
     console.log("Syncing git - No, cannot fetch", remoteName);
     canFetch = false;
   }
+
+  return canFetch;
 };
