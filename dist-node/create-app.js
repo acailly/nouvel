@@ -19,6 +19,6 @@ module.exports = function (folder, appConfig, port) {
   appConfig(app);
 
   app.listen(port, () => {
-    console.log("APP STARTED ON PORT", port);
+    console.log("APP STARTED ON PORT", port, ": http://localhost:", port);
   });
 };

@@ -51,7 +51,9 @@ const repositoriesStorageKey = "repositories";
 const gitDumbHttpPort = 8081;
 
 // PUBLISH LOCALTUNNEL
-const tunnellingHost = "http://serverless.social"; // See https://github.com/localtunnel/localtunnel/issues/343
+// See https://github.com/localtunnel/localtunnel/issues/343
+// See https://github.com/localtunnel/localtunnel/issues/352#issuecomment-707417061
+const tunnellingHost = "http://localtunnel.me";
 const tunnellingLocalPort = 8081;
 
 const configuration = {
