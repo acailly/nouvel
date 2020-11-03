@@ -1,7 +1,33 @@
 const path = require("path");
 const fs = require("fs");
-
 const browserify = require("browserify");
+const glob = require("glob");
+
+const args = process.argv.slice(2);
+const appFolder = args[0];
+if (!appFolder) {
+  throw new Error("Error: No arguments");
+}
+
+function generateFilesToCache(callback) {
+  const filesToCache1 = glob.sync("**/*.!(js)", {
+    cwd: path.join(__dirname),
+  });
+  const filesToCache2 = glob.sync("**/*.!(js)", {
+    cwd: path.join(__dirname, "..", appFolder),
+  });
+  const filesToCache3 = glob.sync("**/*.!(js)", {
+    cwd: path.join(__dirname, "..", appFolder, "public"),
+  });
+  const filesToCache = [...filesToCache1, ...filesToCache2, ...filesToCache3];
+  const generatedScript = `var filesToCache = ${JSON.stringify(
+    filesToCache,
+    null,
+    2
+  )}`;
+  fs.writeFileSync(path.join(__dirname, "filesToCache.js"), generatedScript);
+  callback();
+}
 
 function build() {
   let browserfsPath = require.resolve("browserfs");
@@ -32,9 +58,11 @@ function build() {
   };
 
   browserify(path.join(__dirname, "..", "start-browser.js"), browserifyConfig)
-    // .plugin('tinyify')
+    // .plugin('tinyify') // TODO ACY
     .bundle()
     .pipe(fs.createWriteStream(path.join(__dirname, "bundle.js")));
 }
 
-build();
+generateFilesToCache(() => {
+  build();
+});

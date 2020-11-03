@@ -721,7 +721,7 @@ Au final 2H15 pour avoir une appli qui peut configurer ses repositories Git \o/
 
 Prochaine étape : faire un build Desktop et un build Browser pour pouvoir tester l'édition conjointe de liste
 
-# 30 : L'heure du test - ??
+# 30 : L'heure du test - 2H
 
 Je prends 15 min pour trouver et mettre un nouveau host pour localtunnel
 
@@ -737,13 +737,29 @@ Je me plonge dans la gestion de l'historique faite par browser-express... pour m
 
 Cette correction m'évite en plus d'avoir à utiliser une balise div custom pour y accrocher l'HTML rendu, que du bonus !
 
-Je teste d'ouvrir l'appli sur mon smartphone, mais ca marche pas via localtunnel...
+Je teste d'ouvrir l'appli sur mon smartphone, mais c'est trop lent via localtunnel.
+En clonant l'appli sur mon smartphone j'arrive à lancer l'application.
+Ca me prend 10min de plus.
 
-TODO 1H50min+
+Prochaines étape :
+
+- tester la modification en même temps sur le même github
+- se débrouiller pour que l'appli browser n'ait plus besoin du serveur (cache PWA ?)
+
+# 31 : Offline dans le browser - 2H30
+
+J'ai ajouté un service worker dans l'application pour mettre en cache toutes les ressources non .js
+
+Ca m'a pris 2H30 mais ca marche bien :-)
+
+# 32 : Modification concurrente - ???
+
+TODO
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Terminer le POC de TODO List avec un repo Github
+TODO tester la modification en même temps sur le même github
+TODO se débrouiller pour que l'appli browser n'ait plus besoin du serveur (cache PWA ?)
 
 # Refacto et fonctions bonus
 

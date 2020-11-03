@@ -3,13 +3,13 @@ const express = require("express");
 const localtunnel = require("localtunnel");
 const configuration = require("../@configuration");
 
-async function serve() {
-  const args = process.argv.slice(2);
-  const appFolder = args[0];
-  if (!appFolder) {
-    throw new Error("Error: No arguments");
-  }
+const args = process.argv.slice(2);
+const appFolder = args[0];
+if (!appFolder) {
+  throw new Error("Error: No arguments");
+}
 
+async function serve() {
   const appRootDirectory = path.join(__dirname, "..", appFolder);
 
   const app = express();
@@ -32,21 +32,21 @@ async function serve() {
     );
   });
 
-  try {
-    const tunnel = await localtunnel({
-      port: port,
-      host: configuration.tunnellingHost,
-      subdomain: appFolder,
-    });
+  // try {
+  //   const tunnel = await localtunnel({
+  //     port: port,
+  //     host: configuration.tunnellingHost,
+  //     subdomain: appFolder,
+  //   });
 
-    console.log(`The application is available at: ${tunnel.url}`);
+  //   console.log(`The application is available at: ${tunnel.url}`);
 
-    tunnel.on("close", () => {
-      console.log("Tunnel closed");
-    });
-  } catch (e) {
-    console.error(e);
-  }
+  //   tunnel.on("close", () => {
+  //     console.log("Tunnel closed");
+  //   });
+  // } catch (e) {
+  //   console.error(e);
+  // }
 }
 
 serve();

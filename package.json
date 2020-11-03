@@ -11,7 +11,6 @@
     "exe:build-linux": "nexe server.js -r \"views/**/*\" -t linux-x64-12.9.1 -o server-linux",
     "exe:build-win": "nexe server.js -r \"views/**/*\" -t windows-x64-12.9.1 -o server-win",
     "exe:build-mac": "nexe server.js -r \"views/**/*\" -t mac-x64-8.9.4 -o server-mac",
-    "browser": "npm run browser:build && npm run browser:serve",
     "browser:build": "node ./dist-browser/build.js",
     "browser:serve": "node ./dist-browser/serve.js"
   },
@@ -32,6 +31,7 @@
   },
   "devDependencies": {
     "browserify": "^16.5.2",
+    "glob": "^7.1.6",
     "nexe": "^3.3.3",
     "tinyify": "^3.0.0"
   }
