@@ -20,8 +20,6 @@ module.exports = async (folder, remoteName, remoteUrl, remoteBranch) => {
       tags: false,
     });
   } catch (e) {
-    console.log("Syncing git - No, cannot fetch", remoteName);
-    console.log("DEBUG", e);
     canFetch = false;
   }
 

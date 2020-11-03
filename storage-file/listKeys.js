@@ -4,7 +4,7 @@ const configuration = require("../@configuration");
 const exists = require("./exists");
 
 module.exports = async function (keyFolder) {
-  const keyFolderPath = path.join(configuration.rootDataFolder, keyFolder);
+  const keyFolderPath = path.join(configuration.localStorageFolder, keyFolder);
 
   if (!(await exists(keyFolderPath))) {
     return [];

@@ -8,7 +8,7 @@ module.exports = async function (key) {
   const keyFolders = keyPath.slice(0, -1);
   const keyFile = keyPath.slice(-1);
   const filePath = path.join(
-    configuration.rootDataFolder,
+    configuration.localStorageFolder,
     ...keyFolders,
     `${keyFile}.json`
   );

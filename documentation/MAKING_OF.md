@@ -681,7 +681,34 @@ Je commence par renommer `storage.js` par `@storage.js` et je fait de même pour
 Cela permet de mieux voir les "aspects" partagés de l'application
 Ca me prend 15min
 
-TODO 15min+
+... et finalement je me rend compte qu'on stocke déjà des données en dehors du stockage puisqu'on stocke l'identité dans le fichier `~/.zDemocracy/identity.json`
+
+Du coup on pourrait stocker les secrets dans un fichier `~/.zDemocracy/secrets.json` ?
+Espérons que ca marche en mode PWA !
+
+Ca pourrait permettre de chiffrer ce fichier par la suite.
+Allez, on part sur la création de `@secrets.js` et de `secrets-plaintext`
+
+Ca me prend 5min
+
+Viens ensuite la question de comment l'utiliser dans la synchronisation Git
+
+L'idée est que, si les identifiants du repository Git ne sont pas renseignés, l'application les demandes
+
+Il faudrait donc une page pour renseigner les identifiants Git
+... et par la suite on aura surement besoin d'une page pour renseigner les différents repositories...
+... et on voudra surement stocker ces repositories ailleurs que dans la config...
+... et on retombe sur le fait de ne synchroniser qu'une sous partie du stockage !
+
+OK donc on va :
+
+- 1/ faire en sorte de synchroniser une sous partie du stockage
+- 2/ stocker les repositories dans une partie non synchronisées du stockage
+- 3/ créer une interface pour ajouter/supprimer un repository
+
+Le 1/ est fait en 30min
+
+TODO 50min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

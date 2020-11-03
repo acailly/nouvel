@@ -9,23 +9,23 @@ const configuration = require("../@configuration");
 module.exports = function () {
   console.log("Git dumb http server - Starting");
 
-  if (!fs.existsSync(configuration.rootDataFolder)) {
+  if (!fs.existsSync(configuration.localStorageFolder)) {
     console.log(
       "Git dumb http server - Storage folder doesn't exist, create it"
     );
-    mkdirp.sync(configuration.rootDataFolder);
+    mkdirp.sync(configuration.localStorageFolder);
   }
 
-  const gitRepositoryPath = path.join(configuration.rootDataFolder, ".git");
+  const gitRepositoryPath = path.join(configuration.localStorageFolder, ".git");
   if (!fs.existsSync(gitRepositoryPath)) {
     console.log("Git dumb http server - Git repository doesn't exist, init it");
     execSync(`git init`, {
-      cwd: configuration.rootDataFolder,
+      cwd: configuration.localStorageFolder,
     });
   }
 
   // Create the hook if it doesn't exists
-  const gitRepository = path.join(configuration.rootDataFolder, ".git");
+  const gitRepository = path.join(configuration.localStorageFolder, ".git");
   const hookFile = path.join(gitRepository, "hooks", "post-update");
   if (!fs.existsSync(hookFile)) {
     console.log(
@@ -47,7 +47,7 @@ module.exports = function () {
   const app = express();
   app.use(express.urlencoded({ extended: true }));
 
-  app.use(express.static(path.join(configuration.rootDataFolder, ".git")));
+  app.use(express.static(path.join(configuration.localStorageFolder, ".git")));
 
   console.log(
     "Git dumb http server - Listening on port",
