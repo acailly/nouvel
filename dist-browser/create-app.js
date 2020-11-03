@@ -1,8 +1,18 @@
 module.exports = function (appConfig) {
   const browserExpress = require("browser-express");
   const app = browserExpress({
+    // See https://github.com/wesleytodd/nighthawk/blob/9bd0f8f94649f648d09886a79a96b5cdec0d132f/README.md#listen-options
+    popstate: true,
+    // dispatch: true,
+    interceptLinks: true,
     interceptFormSubmit: true,
   });
+
+  // Log requests
+  // app.use((req, res, next) => {
+  //   console.log("DEBUG", "REQUEST", req);
+  //   next();
+  // });
 
   // Implements res.render() in browser
   const universalRenderMiddleware = require("./universal-render-middleware");

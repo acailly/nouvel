@@ -684,7 +684,7 @@ Ca me prend 15min
 ... et finalement je me rend compte qu'on stocke déjà des données en dehors du stockage puisqu'on stocke l'identité dans le fichier `~/.zDemocracy/identity.json`
 
 Du coup on pourrait stocker les secrets dans un fichier `~/.zDemocracy/secrets.json` ?
-Espérons que ca marche en mode PWA !
+Espérons que ca marche en mode Browser !
 
 Ca pourrait permettre de chiffrer ce fichier par la suite.
 Allez, on part sur la création de `@secrets.js` et de `secrets-plaintext`
@@ -719,16 +719,36 @@ Ca me prend 45min
 
 Au final 2H15 pour avoir une appli qui peut configurer ses repositories Git \o/
 
-Prochaine étape : faire un build Desktop et un build PWA pour pouvoir tester l'édition conjointe de liste
+Prochaine étape : faire un build Desktop et un build Browser pour pouvoir tester l'édition conjointe de liste
+
+# 30 : L'heure du test - ??
+
+Je prends 15 min pour trouver et mettre un nouveau host pour localtunnel
+
+Je prends 10min pour rajouter un menu vers les repositories depuis la page de la liste
+
+... et la je me rend compte que la navigation ne marche pas en Browser, il me semblait pourtant que c'était réglé !
+Je me replonge dans le code de browser-express et je me rends compte que toutes les options sont désactivées par défaut, dont la détéction du clic sur un lien
+J'active certaines options et ca marche mieux
+Ca m'a pris 45 min
+
+Je me rends compte aussi que le bouton précédent ne fonctionne pas.
+Je me plonge dans la gestion de l'historique faite par browser-express... pour me rendre compte au bout de 30min que c'est la fonction `render` que j'ai codé pour le browser qui n'utilise pas `res.send` et donc qui ne complète pas l'historique
+
+Cette correction m'évite en plus d'avoir à utiliser une balise div custom pour y accrocher l'HTML rendu, que du bonus !
+
+Je teste d'ouvrir l'appli sur mon smartphone, mais ca marche pas via localtunnel...
+
+TODO 1H50min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Terminer le POC de TODO List avec un repo Github (trouver un solution pour les mots de passe)
+TODO Terminer le POC de TODO List avec un repo Github
 
 # Refacto et fonctions bonus
 
-TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
+TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front

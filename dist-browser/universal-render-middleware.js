@@ -30,5 +30,5 @@ async function renderView(view, data) {
     const includedTemplate = await includeResponse.text();
     return includedTemplate;
   });
-  document.getElementById("root").innerHTML = html;
+  this.send(html);
 }
