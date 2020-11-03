@@ -709,7 +709,10 @@ OK donc on va :
 Le 1/ est fait en 30min
 Je prend 10min pour ajouter une option `syncEnabled` pour désactiver la synchro facilement
 
-TODO 1H+
+Je passe 30min sur l'étape 2 et je me rend compte qu'il vaut mieux stocker les identifiants git dans le stockage classique, ca va être plus simple
+Même si le module `secrets-plaintext` pourrait être utilisé pour autre chose, je préfère le supprimer pour l'instant
+
+TODO 1H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
