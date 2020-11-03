@@ -1,4 +1,4 @@
-const {listKeys, read} = require("../../storage");
+const { listKeys, read } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const pollId = req.params.id;
@@ -39,7 +39,7 @@ module.exports = async function (req, res) {
       (pollGrade) => pollGrade.id === pollOptionGradeId
     );
     pollOptionGrades[pollOptionId] = pollOptionGrade.label;
-  };
+  }
 
   const pollOptionResultsByGrade = {};
   for (const option of pollOptions) {
@@ -50,7 +50,7 @@ module.exports = async function (req, res) {
     );
 
     pollOptionResultsByGrade[pollOptionId] = optionResultsByGrade;
-  };
+  }
 
   res.render("pollResults.html", {
     pollTitle,

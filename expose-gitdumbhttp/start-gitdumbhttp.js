@@ -4,7 +4,7 @@ const execSync = require("child_process").execSync;
 
 const express = require("express");
 
-const configuration = require("../configuration");
+const configuration = require("../@configuration");
 
 module.exports = function () {
   console.log("Git dumb http server - Starting");

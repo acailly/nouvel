@@ -1,4 +1,4 @@
-const { listKeys, read } = require("../../storage");
+const { listKeys, read } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const itemIds = await listKeys(`lists/example`);

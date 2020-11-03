@@ -658,9 +658,34 @@ Je renomme les dossiers en les classant par intention :
 
 Ca me prend 1H
 
+# 29 : Gestion des secrets - ??
+
+Un point reste à élucider : comment gérer les secrets ? (login, motdepasse, token...)
+
+Ces secrets ne peuvent pas être définis à l'avance, il doivent pouvoir être renseignés par l'utilisateur
+
+Ils doivent donc être stockés par l'application, mais ils ne doivent pas être partagés aux autres utilisateurs, ils ne doivent pas se situer dans un endroit qui sera synchronisé avec Git.
+
+On dirait qu'il faut deux stockages : un qui contiendra les données de l'application et qui sera synchronisé avec les autres utilisateurs, et un qui contiendra les données personnelles de l'utilisateur et qui ne sera pas synchronisés avec les autres utilisateurs
+
+Or actuellement, une seul stockage est prévu, il est pointé par le fichier `storage.js` à la racine.
+
+Je vois deux solutions :
+
+- ajouter la possibilité de gérer plusieurs stockages
+- faire en sorte que la synchronisation puisse synchroniser une sous partie du stockage
+
+Dans un lecteur de flux RSS fait maison que j'utilise, je ne synchronise qu'un sous ensemble des données utilisées par l'application, je vais me lancer dans cette voie
+
+Je commence par renommer `storage.js` par `@storage.js` et je fait de même pour `@identity.js` et `@configuration.js`
+Cela permet de mieux voir les "aspects" partagés de l'application
+Ca me prend 15min
+
+TODO 15min+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Terminer le POC de TODO List avec un repo Github
+TODO Terminer le POC de TODO List avec un repo Github (trouver un solution pour les mots de passe)
 
 # Refacto et fonctions bonus
 

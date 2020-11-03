@@ -1,4 +1,4 @@
-const {listKeys, read, write} = require("../../storage");
+const { listKeys, read, write } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const pollId = new Date().getTime().toString();
@@ -13,14 +13,16 @@ module.exports = async function (req, res) {
     label: "Draft",
   });
 
-  const templateGradeIds = await listKeys(`templates/jugement-majoritaire/grades`);
-  
+  const templateGradeIds = await listKeys(
+    `templates/jugement-majoritaire/grades`
+  );
+
   for (const gradeId of templateGradeIds) {
     const templateGrade = await read(
       `templates/jugement-majoritaire/grades/${gradeId}`
     );
     await write(`polls/${pollId}/grades/${gradeId}`, templateGrade);
-  };
+  }
 
   res.redirect(302, `/polls/${pollId}/options`);
 };

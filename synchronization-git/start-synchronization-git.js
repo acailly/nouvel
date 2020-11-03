@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
-const configuration = require("../configuration");
+const configuration = require("../@configuration");
 const loadGit = require("./loadGit");
 
 module.exports = async function () {

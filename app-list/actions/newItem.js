@@ -1,4 +1,4 @@
-const { write } = require("../../storage");
+const { write } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const itemId = new Date().getTime().toString();
@@ -7,7 +7,7 @@ module.exports = async function (req, res) {
 
   await write(`lists/example/${itemId}`, {
     title: itemTitle,
-  })
+  });
 
   res.redirect(302, `/`);
 };

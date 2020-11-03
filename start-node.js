@@ -1,7 +1,7 @@
 const path = require("path");
-const configuration = require("./configuration");
+const configuration = require("./@configuration");
 
-const { get: getIdentity } = require("./identity");
+const { get: getIdentity } = require("./@identity");
 const identity = getIdentity();
 console.log(`Connected as ${identity.id}`);
 

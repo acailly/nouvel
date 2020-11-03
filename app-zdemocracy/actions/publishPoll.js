@@ -1,4 +1,4 @@
-const {write} = require("../../storage");
+const { write } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const pollId = req.params.id;

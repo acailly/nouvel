@@ -28,7 +28,7 @@ BrowserFS.configure(
 
     //==== START THE APP ====
 
-    // const { get: getIdentity } = require("./identity");
+    // const { get: getIdentity } = require("./@identity");
     // const identity = getIdentity();
     // console.log(`Connected as ${identity.id}`);
 

@@ -1,4 +1,4 @@
-const {listSubFolders, read} = require("../../storage");
+const {listSubFolders, read} = require("../../@storage");
 
 module.exports = function (req, res) {
   const pollsFolders = await listSubFolders(`polls`);

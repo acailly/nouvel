@@ -1,4 +1,4 @@
-const {listKeys, read, write} = require("../../storage");
+const { listKeys, read, write } = require("../../@storage");
 
 module.exports = async function (req, res) {
   const pollId = req.params.id;
@@ -26,9 +26,12 @@ module.exports = async function (req, res) {
       const voterAnswer = voterAnswers[optionId];
 
       voteCountByGrade[voterAnswer] += 1;
-    };
+    }
 
-    await write(`polls/${pollId}/results/${optionId}/by-grade`, voteCountByGrade);
+    await write(
+      `polls/${pollId}/results/${optionId}/by-grade`,
+      voteCountByGrade
+    );
 
     let optionScore = 0;
     let optionGradeId;
@@ -48,7 +51,7 @@ module.exports = async function (req, res) {
       gradeId: optionGradeId,
       score: optionScore,
     });
-  };
+  }
 
   let winnerOptionId;
   const gradesFromYesToNo = grades.sort((a, b) => {

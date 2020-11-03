@@ -1,8 +1,8 @@
 const fs = require("fs").promises;
 const path = require("path");
 const mkdirp = require("mkdirp");
-const configuration = require("../configuration");
-const exists = require('./exists')
+const configuration = require("../@configuration");
+const exists = require("./exists");
 
 module.exports = async function (key, value) {
   const keyPath = key.split("/");

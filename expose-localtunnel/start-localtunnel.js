@@ -1,15 +1,15 @@
 const localtunnel = require("localtunnel");
 
-const {get: getIdentity} = require('../identity')
+const { get: getIdentity } = require("../@identity");
 const identity = getIdentity();
 
-const configuration = require("../configuration");
+const configuration = require("../@configuration");
 
 module.exports = async function () {
   const tunnel = await localtunnel({
     port: configuration.tunnellingLocalPort,
     host: configuration.tunnellingHost,
-    subdomain: identity.id
+    subdomain: identity.id,
   });
 
   console.log(`The application is available at: ${tunnel.url}`);
