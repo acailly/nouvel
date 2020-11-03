@@ -5,6 +5,11 @@ const configuration = require("../@configuration");
 const loadGit = require("./loadGit");
 
 module.exports = async function () {
+  if (!configuration.syncEnabled) {
+    console.log("[synchronization-git] Synchronization is disabled");
+    return;
+  }
+
   const git = await loadGit();
   await initializeGitRepositoryIfNecessary(
     git,

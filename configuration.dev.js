@@ -18,6 +18,7 @@ const listServerPort = 8082;
 
 // SYNCHRONIZATION GIT
 
+const syncEnabled = false;
 const gitSyncPeriodInMs = 20000;
 const localSubfoldersToSync = ["lists"];
 const repositoriesToSync = [
@@ -57,6 +58,7 @@ const configuration = {
   localStorageFolder,
   zdemocracyServerPort,
   listServerPort,
+  syncEnabled,
   gitSyncPeriodInMs,
   localSubfoldersToSync,
   repositoriesToSync,

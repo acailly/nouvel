@@ -703,12 +703,13 @@ Il faudrait donc une page pour renseigner les identifiants Git
 OK donc on va :
 
 - 1/ faire en sorte de synchroniser une sous partie du stockage
-- 2/ stocker les repositories dans une partie non synchronisées du stockage
-- 3/ créer une interface pour ajouter/supprimer un repository
+- 2/ créer une interface pour ajouter/supprimer un repository
+- 3/ stocker les repositories dans une partie non synchronisées du stockage
 
 Le 1/ est fait en 30min
+Je prend 10min pour ajouter une option `syncEnabled` pour désactiver la synchro facilement
 
-TODO 50min+
+TODO 1H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
