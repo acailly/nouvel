@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const configuration = require("../@configuration");
+const { listKeys, read } = require("../@storage");
 const loadGit = require("./loadGit");
 
 module.exports = async function () {
@@ -11,39 +12,62 @@ module.exports = async function () {
   }
 
   const git = await loadGit();
-  await initializeGitRepositoryIfNecessary(
-    git,
-    configuration.localStorageFolder
-  );
-
-  for (
-    let repositoryIndex = 0;
-    repositoryIndex < configuration.repositoriesToSync.length;
-    repositoryIndex++
-  ) {
-    const repository = configuration.repositoriesToSync[repositoryIndex];
-    await registerRemoteRepositoryIfNecessary(
-      git,
-      configuration.localStorageFolder,
-      repository
-    );
-  }
 
   await sync(
     git,
     configuration.localStorageFolder,
-    configuration.localSubfoldersToSync,
-    configuration.repositoriesToSync
+    configuration.repositoriesStorageKey,
+    configuration.localSubfoldersToSync
   );
   setInterval(async () => {
     await sync(
       git,
       configuration.localStorageFolder,
-      configuration.localSubfoldersToSync,
-      configuration.repositoriesToSync
+      configuration.repositoriesStorageKey,
+      configuration.localSubfoldersToSync
     );
   }, configuration.gitSyncPeriodInMs || 10000);
 };
+
+async function sync(
+  git,
+  localStorageFolder,
+  repositoriesStorageKey,
+  localSubfoldersToSync
+) {
+  const repositoriesIds = await listKeys(repositoriesStorageKey);
+  const repositoriesToSync = await Promise.all(
+    repositoriesIds.map(async (repositoryId) => {
+      return await read(`${repositoriesStorageKey}/${repositoryId}`);
+    })
+  );
+
+  await prepareSync(git, localStorageFolder, repositoriesToSync);
+
+  await runSync(
+    git,
+    localStorageFolder,
+    localSubfoldersToSync,
+    repositoriesToSync
+  );
+}
+
+async function prepareSync(git, localStorageFolder, repositoriesToSync) {
+  await initializeGitRepositoryIfNecessary(git, localStorageFolder);
+
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < repositoriesToSync.length;
+    repositoryIndex++
+  ) {
+    const repository = repositoriesToSync[repositoryIndex];
+    await registerRemoteRepositoryIfNecessary(
+      git,
+      localStorageFolder,
+      repository
+    );
+  }
+}
 
 async function initializeGitRepositoryIfNecessary(git, localStorageFolder) {
   // Check that the local storage folder exists
@@ -71,9 +95,7 @@ async function registerRemoteRepositoryIfNecessary(
 ) {
   const url = await git.getRemoteUrl(localStorageFolder, repository.name);
   if (!url) {
-    console.log(
-      "[synchronization-git] Remote repository doesn't exist, add it"
-    );
+    console.log("[synchronization-git] register repository:", repository.name);
     await git.addRemote(
       localStorageFolder,
       repository.name,
@@ -82,7 +104,7 @@ async function registerRemoteRepositoryIfNecessary(
   }
 }
 
-async function sync(
+async function runSync(
   git,
   localStorageFolder,
   localSubfoldersToSync,
@@ -149,7 +171,9 @@ async function canFetchRepository(git, localStorageFolder, repository) {
     localStorageFolder,
     repository.name,
     repository.remoteRepository,
-    repository.branch
+    repository.branch,
+    repository.login,
+    repository.password
   );
   console.log("[synchronization-git]", canFetch ? "Yes" : "No");
   return canFetch;
@@ -165,5 +189,11 @@ async function pullRemoteChanges(git, localStorageFolder, repository) {
 
 async function pushLocalChanges(git, localStorageFolder, repository) {
   console.log("[synchronization-git] Push to repository:", repository.name);
-  await git.push(localStorageFolder, repository.name, repository.branch);
+  await git.push(
+    localStorageFolder,
+    repository.name,
+    repository.branch,
+    repository.login,
+    repository.password
+  );
 }

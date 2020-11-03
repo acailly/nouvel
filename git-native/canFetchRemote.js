@@ -1,5 +1,12 @@
 const execShellCommand = require("./execShellCommand");
-module.exports = async (folder, remoteName, remoteUrl, remoteBranch) => {
+module.exports = async (
+  folder,
+  remoteName,
+  remoteUrl,
+  remoteBranch,
+  username,
+  password
+) => {
   let canFetch = true;
 
   try {

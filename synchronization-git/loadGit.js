@@ -1,20 +1,18 @@
-async function loadGit() {
-  let git = null;
+const configuration = require("../@configuration");
 
-  const gitNative = require("../git-native");
-  const isGitNativeSupported = await gitNative.isSupported();
-  console.log(
-    "[synchronization-git] Is native Git supported?",
-    isGitNativeSupported
-  );
-  if (isGitNativeSupported) {
-    git = gitNative;
-  } else {
-    const gitIsomorphic = require("../git-isomorphic");
-    git = gitIsomorphic;
+async function loadGit() {
+  if (configuration.useNativeGit) {
+    const gitNative = require("../git-native");
+    const isGitNativeSupported = await gitNative.isSupported();
+    if (isGitNativeSupported) {
+      console.log("[synchronization-git] Use native Git");
+      return gitNative;
+    }
   }
 
-  return git;
+  console.log("[synchronization-git] Use isomorphic Git");
+  const gitIsomorphic = require("../git-isomorphic");
+  return gitIsomorphic;
 }
 
 module.exports = loadGit;

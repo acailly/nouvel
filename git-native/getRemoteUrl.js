@@ -1,3 +1,8 @@
 const execShellCommand = require("./execShellCommand");
-module.exports = (folder, remoteName) =>
-  execShellCommand(`git remote get-url ${remoteName}`, folder);
+module.exports = async (folder, remoteName) => {
+  try {
+    await execShellCommand(`git remote get-url ${remoteName}`, folder);
+  } catch (e) {
+    return;
+  }
+};

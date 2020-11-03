@@ -1,7 +1,14 @@
 const git = require("isomorphic-git");
 const http = require("isomorphic-git/http/node");
 const fs = require("fs");
-module.exports = async (folder, remoteName, remoteUrl, remoteBranch) => {
+module.exports = async (
+  folder,
+  remoteName,
+  remoteUrl,
+  remoteBranch,
+  username,
+  password
+) => {
   let canFetch = true;
 
   try {
@@ -13,7 +20,7 @@ module.exports = async (folder, remoteName, remoteUrl, remoteBranch) => {
       remote: remoteName,
       remoteRef: remoteBranch,
       onAuth(url) {
-        return { username: "acailly", password: "XXXX" }; // TODO ACY
+        return { username, password };
       },
       depth: 1,
       singleBranch: true,

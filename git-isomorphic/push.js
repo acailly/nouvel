@@ -1,7 +1,7 @@
 const git = require("isomorphic-git");
 const http = require("isomorphic-git/http/node");
 const fs = require("fs");
-module.exports = (folder, remoteName, remoteBranch) =>
+module.exports = (folder, remoteName, remoteBranch, username, password) =>
   git.push({
     fs,
     http,
@@ -9,6 +9,6 @@ module.exports = (folder, remoteName, remoteBranch) =>
     remote: remoteName,
     ref: remoteBranch,
     onAuth(url) {
-      return { username: "acailly", password: "XXXX" }; // TODO ACY
+      return { username, password };
     },
   });

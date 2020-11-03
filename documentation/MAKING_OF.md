@@ -658,7 +658,7 @@ Je renomme les dossiers en les classant par intention :
 
 Ca me prend 1H
 
-# 29 : Gestion des secrets - ??
+# 29 : Gestion des secrets - 2H15
 
 Un point reste à élucider : comment gérer les secrets ? (login, motdepasse, token...)
 
@@ -712,7 +712,14 @@ Je prend 10min pour ajouter une option `syncEnabled` pour désactiver la synchro
 Je passe 30min sur l'étape 2 et je me rend compte qu'il vaut mieux stocker les identifiants git dans le stockage classique, ca va être plus simple
 Même si le module `secrets-plaintext` pourrait être utilisé pour autre chose, je préfère le supprimer pour l'instant
 
-TODO 1H30+
+Maintenant je dois faire en sorte que la synchronization git aille chercher les repositories dans le stockage
+Au passage je rajoute une config `useNativeGit` permettant de désactiver l'utilisation du Git natif
+
+Ca me prend 45min
+
+Au final 2H15 pour avoir une appli qui peut configurer ses repositories Git \o/
+
+Prochaine étape : faire un build Desktop et un build PWA pour pouvoir tester l'édition conjointe de liste
 
 # Next pour avoir un exemple représentatif de l'approche :
 
