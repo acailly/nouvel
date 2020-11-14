@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <section>
+      <h1>Repositories</h1>
+      <form method="POST" action="/new-repository">
+        <fieldset>
+          <label for="name">Nom (sans espaces)</label>
+          <input type="text" id="name" name="name" placeholder="mon-repo" />
+        </fieldset>
+        <fieldset>
+          <label for="remoteRepository">Adresse</label>
+          <input
+            type="text"
+            id="remoteRepository"
+            name="remoteRepository"
+            placeholder="https://..."
+          />
+        </fieldset>
+        <fieldset>
+          <label for="branch">Branche</label>
+          <input type="text" id="branch" name="branch" placeholder="main" />
+        </fieldset>
+        <fieldset>
+          <label for="enablePush">Activer le push ?</label>
+          <input type="checkbox" id="enablePush" name="enablePush" />
+        </fieldset>
+        <fieldset>
+          <label for="login">Login</label>
+          <input type="text" id="login" name="login" placeholder="john.doe" />
+        </fieldset>
+        <fieldset>
+          <label for="password">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="*****"
+          />
+        </fieldset>
+        <input type="submit" value="Ajouter cet élément" />
+      </form>
+      <ul>
+        <% repositories.forEach(function(repository){ %>
+        <li>
+          <a href="<%= repository.remoteRepository%>"
+            ><%= repository.name%> (<%= repository.branch%>)</a
+          >
+        </li>
+        <% }); %>
+      </ul>
+    </section>
+  </body>
+</html>
