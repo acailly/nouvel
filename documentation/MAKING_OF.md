@@ -764,7 +764,16 @@ Je prend le temps de revoir les scripts de build pour générer l'appli browser 
 Au passage je renomme `dist-*` en `distrib-*`, `dist` étant souvent utilisé pour le résultat d'un build justement
 Ca me prend 45min et ca me permet de corriger un bug : je n'avais pas mis le bundle JS dans la liste des fichiers à mettre en cache :-)
 
-TODO 1H+
+Maintenant que l'appli est bien générée, je teste le déploiement avec `gh-pages` : les fichiers sont bien là mais l'appli ne s'ouvre pas
+
+Premier souci : l'url du bundle est absolue (`/bundle.js`), je la met relative (`bundle.js`)
+
+Deuxième souci, il semblerait que `browser-express` utilise des urls absolues également.
+Ca me prend 20min+ à corriger
+
+TODO Le reglage app.base() n'a pas l'air de marcher
+
+TODO 1H20min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

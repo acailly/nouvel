@@ -1,3 +1,5 @@
+const configuration = require("../@configuration");
+
 module.exports = function (appConfig) {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./serviceworker.js");
@@ -21,6 +23,9 @@ module.exports = function (appConfig) {
   // Implements res.render() in browser
   const universalRenderMiddleware = require("./universal-render-middleware");
   app.use(universalRenderMiddleware());
+
+  // Set base path for deploy
+  app.base(configuration.deployBasePath);
 
   appConfig(app);
 

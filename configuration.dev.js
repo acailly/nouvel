@@ -17,12 +17,45 @@ const zdemocracyServerPort = 8080;
 const listServerPort = 8082;
 
 // SYNCHRONIZATION GIT
-
 const syncEnabled = true;
 const useNativeGit = true;
 const gitSyncPeriodInMs = 20000;
 const localSubfoldersToSync = ["lists"];
 const repositoriesStorageKey = "repositories";
+
+// PUBLISH GIT DUMB HTTP
+const gitDumbHttpPort = 8081;
+
+// PUBLISH LOCALTUNNEL
+// See https://github.com/localtunnel/localtunnel/issues/343
+// See https://github.com/localtunnel/localtunnel/issues/352#issuecomment-707417061
+const tunnellingHost = "http://localtunnel.me";
+const tunnellingLocalPort = 8081;
+
+// DISTRIB BROWSER
+const deployBasePath = "/zDemocracy-lowtech";
+
+const configuration = {
+  identityFile,
+  secretsFile,
+  localStorageFolder,
+  zdemocracyServerPort,
+  listServerPort,
+  syncEnabled,
+  useNativeGit,
+  gitSyncPeriodInMs,
+  localSubfoldersToSync,
+  repositoriesStorageKey,
+  gitDumbHttpPort,
+  tunnellingHost,
+  tunnellingLocalPort,
+  deployBasePath,
+};
+
+module.exports = configuration;
+
+// TO NOT FORGET: examples of git repositories
+
 // const repositoriesToSync = [
 //   {
 //     name: "github",
@@ -46,30 +79,3 @@ const repositoriesStorageKey = "repositories";
 //     enablePush: false,
 //   },
 // ];
-
-// PUBLISH GIT DUMB HTTP
-const gitDumbHttpPort = 8081;
-
-// PUBLISH LOCALTUNNEL
-// See https://github.com/localtunnel/localtunnel/issues/343
-// See https://github.com/localtunnel/localtunnel/issues/352#issuecomment-707417061
-const tunnellingHost = "http://localtunnel.me";
-const tunnellingLocalPort = 8081;
-
-const configuration = {
-  identityFile,
-  secretsFile,
-  localStorageFolder,
-  zdemocracyServerPort,
-  listServerPort,
-  syncEnabled,
-  useNativeGit,
-  gitSyncPeriodInMs,
-  localSubfoldersToSync,
-  repositoriesStorageKey,
-  gitDumbHttpPort,
-  tunnellingHost,
-  tunnellingLocalPort,
-};
-
-module.exports = configuration;
