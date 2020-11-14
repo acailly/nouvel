@@ -24,7 +24,7 @@ BrowserFS.configure(
 
     // FIX : implement fs.promises
     const fs = require("fs");
-    fs.promises = require("./dist-browser/fsPromisified");
+    fs.promises = require("./distrib-browser/fsPromisified");
 
     //==== START THE APP ====
 
@@ -36,7 +36,7 @@ BrowserFS.configure(
     // startZDemocracyExpress();
 
     const appConfig = require("./app-list/app-config");
-    const createBrowserApp = require("./dist-browser/create-app");
+    const createBrowserApp = require("./distrib-browser/create-app");
     createBrowserApp(appConfig);
 
     // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");

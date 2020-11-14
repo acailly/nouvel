@@ -10,7 +10,7 @@ console.log(`Connected as ${identity.id}`);
 
 const appListPath = path.join(__dirname, "app-list");
 const appConfig = require("./app-list/app-config");
-const createNodeApp = require("./dist-node/create-app");
+const createNodeApp = require("./distrib-node/create-app");
 createNodeApp(appListPath, appConfig, configuration.listServerPort);
 
 // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
@@ -20,5 +20,5 @@ createNodeApp(appListPath, appConfig, configuration.listServerPort);
 // startPublishingLocaltunnel();
 
 const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
-const createApp = require("./dist-browser/create-app");
+const createApp = require("./distrib-browser/create-app");
 startSynchronizationGit();

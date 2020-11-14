@@ -754,16 +754,26 @@ Ca m'a pris 2H30 mais ca marche bien :-)
 
 # 32 : Modification concurrente - ???
 
-TODO
+Première étape : déployer l'appli de façon à facilement pouvoir la récupérer sur mobile
+
+Mais avant ca un petit bug avec Git qui me prend 15 min à corriger
+
+J'installe `gh-pages` et je le configure pour déployer les résultat du build situé dans... mince, le build est généré au milieu de pleins d'autres fichiers qui n'ont pas à être exposés
+
+Je prend le temps de revoir les scripts de build pour générer l'appli browser dans le dossier : `output/distrib-browser`
+Au passage je renomme `dist-*` en `distrib-*`, `dist` étant souvent utilisé pour le résultat d'un build justement
+Ca me prend 45min et ca me permet de corriger un bug : je n'avais pas mis le bundle JS dans la liste des fichiers à mettre en cache :-)
+
+TODO 1H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO tester la modification en même temps sur le même github
-TODO se débrouiller pour que l'appli browser n'ait plus besoin du serveur (cache PWA ?)
 
 # Refacto et fonctions bonus
 
 TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
+TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???
 TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
 TODO Utiliser isomorphic git au lieu du git sur le pc ?
