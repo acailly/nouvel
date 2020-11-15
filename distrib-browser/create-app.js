@@ -12,6 +12,8 @@ module.exports = function (appConfig) {
     // dispatch: true,
     interceptLinks: true,
     interceptFormSubmit: true,
+    // Set base path for deploy
+    base: configuration.deployBasePath,
   });
 
   // Log requests
@@ -23,9 +25,6 @@ module.exports = function (appConfig) {
   // Implements res.render() in browser
   const universalRenderMiddleware = require("./universal-render-middleware");
   app.use(universalRenderMiddleware());
-
-  // Set base path for deploy
-  app.base(configuration.deployBasePath);
 
   appConfig(app);
 
