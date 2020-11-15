@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const configuration = require("../@configuration");
 
 async function serve() {
   const outputPath = path.join(__dirname, "..", "output", "distrib-browser");
@@ -12,7 +13,12 @@ async function serve() {
   const port = 9999;
 
   app.listen(9999, () => {
-    console.log("APP STARTED ON PORT ", port, `: http://localhost:${port}`);
+    const baseUrl = configuration.deployBaseURL || "";
+    console.log(
+      "APP STARTED ON PORT ",
+      port,
+      `: http://localhost:${port}${baseUrl}`
+    );
   });
 }
 

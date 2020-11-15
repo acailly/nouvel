@@ -33,7 +33,7 @@ const tunnellingHost = "http://localtunnel.me";
 const tunnellingLocalPort = 8081;
 
 // DISTRIB BROWSER
-const deployBasePath = "/zDemocracy-lowtech";
+const deployBaseURL = "/zDemocracy-lowtech";
 
 const configuration = {
   identityFile,
@@ -49,7 +49,7 @@ const configuration = {
   gitDumbHttpPort,
   tunnellingHost,
   tunnellingLocalPort,
-  deployBasePath,
+  deployBaseURL,
 };
 
 module.exports = configuration;

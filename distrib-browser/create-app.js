@@ -13,7 +13,7 @@ module.exports = function (appConfig) {
     interceptLinks: true,
     interceptFormSubmit: true,
     // Set base path for deploy
-    base: configuration.deployBasePath,
+    base: configuration.deployBaseURL,
   });
 
   // Log requests
@@ -29,6 +29,6 @@ module.exports = function (appConfig) {
   appConfig(app);
 
   app.listen({}, () => {
-    console.log("APP STARTED");
+    console.log(`APP STARTED (base is ${configuration.deployBaseURL})`);
   });
 };

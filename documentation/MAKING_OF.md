@@ -769,11 +769,13 @@ Maintenant que l'appli est bien générée, je teste le déploiement avec `gh-pa
 Premier souci : l'url du bundle est absolue (`/bundle.js`), je la met relative (`bundle.js`)
 
 Deuxième souci, il semblerait que `browser-express` utilise des urls absolues également.
-Ca me prend 20min+ à corriger
+S'en suit 1H30min+ pour ajouter la gestion d'une base URL custom dans `universal-render-middleware`
 
-TODO Le reglage app.base() n'a pas l'air de marcher
+Mais ca ne marche toujours pas, `browser-express` va bien chercher les fichiers au bon endroit, l'application semble marcher correctement, mais dès la première navigation la base URL disparait de la barre d'addresse du navigateur.
+Ce qui fait que si on rafraichit la page, il échoue à recharger la page.
+Je cherche dans le code de `browser-express` pendant TODO 00min+
 
-TODO 1H20min+
+TODO 2H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

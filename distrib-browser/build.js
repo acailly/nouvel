@@ -3,6 +3,7 @@ const fs = require("fs");
 const browserify = require("browserify");
 const glob = require("glob");
 const mkdirp = require("mkdirp");
+const configuration = require("../@configuration");
 
 const args = process.argv.slice(2);
 const appFolder = args[0];
@@ -10,7 +11,14 @@ if (!appFolder) {
   throw new Error("Error: No arguments");
 }
 
-const outputPath = path.join(__dirname, "..", "output", "distrib-browser");
+const baseUrlPath = configuration.deployBaseURL || "";
+const outputPath = path.join(
+  __dirname,
+  "..",
+  "output",
+  "distrib-browser",
+  baseUrlPath
+);
 if (!fs.existsSync(outputPath)) {
   mkdirp.sync(outputPath);
 }
