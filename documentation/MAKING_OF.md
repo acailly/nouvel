@@ -752,7 +752,7 @@ J'ai ajouté un service worker dans l'application pour mettre en cache toutes le
 
 Ca m'a pris 2H30 mais ca marche bien :-)
 
-# 32 : Déployer sur Github pages - 3H
+# 32 : Deployer sur github pages - 3H
 
 Première étape : déployer l'appli de façon à facilement pouvoir la récupérer sur mobile
 
@@ -778,6 +778,12 @@ En cherchant plus loin je me rend compte que ce sont les appels à `redirect("/t
 Je patch la fonction redirect pour prendre en comtpe la base URL dans le browser, ca me prend 30min
 
 Et ca marche !!! L'appli est maintenant accessible sur le net !
+
+# 33 : Tester la modification en même temps - ??
+
+TODO Activer la synchro git sur la version Browser
+
+TODO 00min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
