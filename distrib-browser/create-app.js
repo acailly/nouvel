@@ -26,6 +26,10 @@ module.exports = function (appConfig) {
   const universalRenderMiddleware = require("./universal-render-middleware");
   app.use(universalRenderMiddleware());
 
+  // Monkey path res.redirect() in browser to handle base URL
+  const redirectWithBaseURLMiddleware = require("./redirect-with-base-url-middleware");
+  app.use(redirectWithBaseURLMiddleware());
+
   appConfig(app);
 
   app.listen({}, () => {

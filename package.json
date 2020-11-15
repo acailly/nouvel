@@ -14,7 +14,7 @@
     "exe:build-mac": "nexe server.js -r \"views/**/*\" -t mac-x64-8.9.4 -o server-mac",
     "browser:build": "node ./distrib-browser/build.js",
     "browser:serve": "node ./distrib-browser/serve.js",
-    "browser:deploy": "gh-pages -d output/distrib-browser"
+    "browser:deploy": "node ./distrib-browser/deploy.js"
   },
   "keywords": [],
   "author": "",

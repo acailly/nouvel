@@ -752,7 +752,7 @@ J'ai ajouté un service worker dans l'application pour mettre en cache toutes le
 
 Ca m'a pris 2H30 mais ca marche bien :-)
 
-# 32 : Modification concurrente - ???
+# 32 : Déployer sur Github pages - 3H
 
 Première étape : déployer l'appli de façon à facilement pouvoir la récupérer sur mobile
 
@@ -771,11 +771,13 @@ Premier souci : l'url du bundle est absolue (`/bundle.js`), je la met relative (
 Deuxième souci, il semblerait que `browser-express` utilise des urls absolues également.
 S'en suit 1H30min+ pour ajouter la gestion d'une base URL custom dans `universal-render-middleware`
 
-Mais ca ne marche toujours pas, `browser-express` va bien chercher les fichiers au bon endroit, l'application semble marcher correctement, mais dès la première navigation la base URL disparait de la barre d'addresse du navigateur.
-Ce qui fait que si on rafraichit la page, il échoue à recharger la page.
-Je cherche dans le code de `browser-express` pendant TODO 00min+
+Mais ca ne marche toujours pas, `browser-express` va bien chercher les fichiers au bon endroit, l'application semble marcher correctement, mais dès la première navigation la base URL disparait de la barre d'addresse du navigateur
+Ce qui fait que si on rafraichit la page, il échoue à recharger la page
 
-TODO 2H30min+
+En cherchant plus loin je me rend compte que ce sont les appels à `redirect("/toto")` dans les actions qui ne prennent pas en compte la base URL
+Je patch la fonction redirect pour prendre en comtpe la base URL dans le browser, ca me prend 30min
+
+Et ca marche !!! L'appli est maintenant accessible sur le net !
 
 # Next pour avoir un exemple représentatif de l'approche :
 
