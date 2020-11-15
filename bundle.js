@@ -211,7 +211,7 @@ module.exports = function (appConfig) {
   appConfig(app);
 
   app.listen({}, () => {
-    console.log("APP STARTED");
+    console.log(`APP STARTED (base is ${configuration.deployBasePath})`);
   });
 };
 
@@ -254,7 +254,7 @@ function universalRenderMiddleware() {
 module.exports = universalRenderMiddleware;
 
 async function renderView(view, data) {
-  const response = await fetch(`/views/${view}`);
+  const response = await fetch(`views/${view}`);
   const template = await response.text();
 
   const compiledTemplate = ejs.compile(template, {
@@ -262,7 +262,7 @@ async function renderView(view, data) {
     async: true,
   });
   const html = await compiledTemplate(data, null, async (includedPath) => {
-    const includeResponse = await fetch(`/views/${includedPath}`);
+    const includeResponse = await fetch(`views/${includedPath}`);
     const includedTemplate = await includeResponse.text();
     return includedTemplate;
   });
