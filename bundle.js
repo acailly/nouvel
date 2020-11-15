@@ -132,7 +132,7 @@ const tunnellingHost = "http://localtunnel.me";
 const tunnellingLocalPort = 8081;
 
 // DISTRIB BROWSER
-const deployBasePath = "/zDemocracy-lowtech";
+const deployBaseURL = "/zDemocracy-lowtech";
 
 const configuration = {
   identityFile,
@@ -148,7 +148,7 @@ const configuration = {
   gitDumbHttpPort,
   tunnellingHost,
   tunnellingLocalPort,
-  deployBasePath,
+  deployBaseURL,
 };
 
 module.exports = configuration;
@@ -195,7 +195,7 @@ module.exports = function (appConfig) {
     interceptLinks: true,
     interceptFormSubmit: true,
     // Set base path for deploy
-    base: configuration.deployBasePath,
+    base: configuration.deployBaseURL,
   });
 
   // Log requests
@@ -211,7 +211,7 @@ module.exports = function (appConfig) {
   appConfig(app);
 
   app.listen({}, () => {
-    console.log(`APP STARTED (base is ${configuration.deployBasePath})`);
+    console.log(`APP STARTED (base is ${configuration.deployBaseURL})`);
   });
 };
 
@@ -235,6 +235,7 @@ module.exports = Object.keys(fs).reduce((acc, fn) => {
 }, {});
 },{"fs":36,"util":196}],12:[function(require,module,exports){
 const ejs = require("ejs");
+const configuration = require("../@configuration");
 
 function universalRenderMiddleware() {
   return (req, res, next) => {
@@ -254,22 +255,29 @@ function universalRenderMiddleware() {
 module.exports = universalRenderMiddleware;
 
 async function renderView(view, data) {
-  const response = await fetch(`views/${view}`);
+  const baseURL = configuration.deployBaseURL || "";
+  const dataWithAdditionalConfig = { ...data, baseURL };
+
+  const response = await fetch(`${baseURL}/views/${view}`);
   const template = await response.text();
 
   const compiledTemplate = ejs.compile(template, {
     client: true,
     async: true,
   });
-  const html = await compiledTemplate(data, null, async (includedPath) => {
-    const includeResponse = await fetch(`views/${includedPath}`);
-    const includedTemplate = await includeResponse.text();
-    return includedTemplate;
-  });
+  const html = await compiledTemplate(
+    dataWithAdditionalConfig,
+    null,
+    async (includedPath) => {
+      const includeResponse = await fetch(`${baseURL}/views/${includedPath}`);
+      const includedTemplate = await includeResponse.text();
+      return includedTemplate;
+    }
+  );
   this.send(html);
 }
 
-},{"ejs":50}],13:[function(require,module,exports){
+},{"../@configuration":1,"ejs":50}],13:[function(require,module,exports){
 (function (global){
 'use strict';
 
