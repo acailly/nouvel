@@ -266,7 +266,7 @@ function monkeyPatchRedirect(redirect) {
     ) {
       editedArg2 = `${configuration.deployBaseURL}${arg2}`;
     }
-    return redirect(arg1, arg2);
+    return redirect(arg1, editedArg2);
   };
 }
 
