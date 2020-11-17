@@ -805,6 +805,8 @@ TODO Ajouter la delegation à un autre utilisateur (démocratie liquide)
 TODO Tester Turbolinks pour ajouter un côté plus réactif ?
 TODO Ajouter des fichier \*.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
 TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
+TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
+TODO Essayer d'ajouter un déploiement simple via Capacitor (à priori beaucoup plus léger que Cordova) : https://capacitorjs.com/
 
 # Interrogations :
 
