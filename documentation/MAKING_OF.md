@@ -781,9 +781,11 @@ Et ca marche !!! L'appli est maintenant accessible sur le net !
 
 # 33 : Tester la modification en même temps - ??
 
+Je prends 15min pour corriger un bug quand on initialise le projet sur un nouveau PC
+
 TODO Activer la synchro git sur la version Browser
 
-TODO 00min+
+TODO 15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

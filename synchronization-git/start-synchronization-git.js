@@ -42,7 +42,12 @@ async function sync(
     })
   );
 
-  await prepareSync(git, localStorageFolder, repositoriesToSync);
+  await prepareSync(
+    git,
+    localStorageFolder,
+    localSubfoldersToSync,
+    repositoriesToSync
+  );
 
   await runSync(
     git,
@@ -52,7 +57,12 @@ async function sync(
   );
 }
 
-async function prepareSync(git, localStorageFolder, repositoriesToSync) {
+async function prepareSync(
+  git,
+  localStorageFolder,
+  localSubfoldersToSync,
+  repositoriesToSync
+) {
   await initializeGitRepositoryIfNecessary(git, localStorageFolder);
 
   for (
@@ -66,6 +76,20 @@ async function prepareSync(git, localStorageFolder, repositoriesToSync) {
       localStorageFolder,
       repository
     );
+  }
+
+  for (const localSubfolder of localSubfoldersToSync) {
+    const fullLocalSubfolderPath = path.join(
+      localStorageFolder,
+      localSubfolder
+    );
+    if (!fs.existsSync(fullLocalSubfolderPath)) {
+      console.log(
+        "[synchronization-git] Local subfolder doesn't exist, create it:",
+        localSubfolder
+      );
+      mkdirp.sync(fullLocalSubfolderPath);
+    }
   }
 }
 
