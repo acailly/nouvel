@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
-const mkdirp = require("mkdirp");
+const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const exists = require("./exists");
 
@@ -15,7 +15,7 @@ module.exports = async function (key, value) {
   const filePath = path.join(fileDirectory, `${keyFile}.json`);
 
   if (!(await exists(fileDirectory))) {
-    await mkdirp(fileDirectory);
+    await makeDir(fileDirectory);
   }
 
   await fs.writeFile(filePath, JSON.stringify(value));

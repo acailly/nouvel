@@ -3,7 +3,7 @@ module.exports = async () => {
   let isSupported = true;
 
   try {
-    execShellCommand(`git --version`, ".");
+    await execShellCommand(`git --version`, ".");
   } catch (e) {
     isSupported = false;
   }

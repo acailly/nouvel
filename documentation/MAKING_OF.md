@@ -783,9 +783,15 @@ Et ca marche !!! L'appli est maintenant accessible sur le net !
 
 Je prends 15min pour corriger un bug quand on initialise le projet sur un nouveau PC
 
-TODO Activer la synchro git sur la version Browser
+J'active la synchro git sur la version Browser
 
-TODO 15min+
+10min de plus pour corriger un bug pour le choix de l'implémentation de Git
+
+Et revoila les bugs lié à mkdirSync qui n'est pas supporté par IndexedDB :-/
+Je les ai bien supprimé, mais j'ai laissé les appels à `mkdirp.sync()`
+Ca me prend 15min de réécrire ces appels en utilisant la dépendance `make-dir` à la place
+
+TODO 40min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

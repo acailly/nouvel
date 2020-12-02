@@ -13,7 +13,7 @@ module.exports = function () {
     console.log(
       "Git dumb http server - Storage folder doesn't exist, create it"
     );
-    mkdirp.sync(configuration.localStorageFolder);
+    makeDir.sync(configuration.localStorageFolder);
   }
 
   const gitRepositoryPath = path.join(configuration.localStorageFolder, ".git");

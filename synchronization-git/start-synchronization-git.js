@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const mkdirp = require("mkdirp");
+const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const { listKeys, read } = require("../@storage");
 const loadGit = require("./loadGit");
@@ -88,7 +88,7 @@ async function prepareSync(
         "[synchronization-git] Local subfolder doesn't exist, create it:",
         localSubfolder
       );
-      mkdirp.sync(fullLocalSubfolderPath);
+      await makeDir(fullLocalSubfolderPath);
     }
   }
 }
@@ -100,7 +100,7 @@ async function initializeGitRepositoryIfNecessary(git, localStorageFolder) {
     console.log(
       "[synchronization-git] Local storage folder doesn't exist, create it"
     );
-    mkdirp.sync(localStorageFolder);
+    await makeDir(localStorageFolder);
   }
 
   // Check that the git repository exists

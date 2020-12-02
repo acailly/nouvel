@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const mkdirp = require("mkdirp");
+const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const generate = require("./generate");
 
@@ -8,7 +8,7 @@ module.exports = function () {
   const identityFileDirectoryPath = path.dirname(configuration.identityFile);
   if (!fs.existsSync(identityFileDirectoryPath)) {
     console.log("Identity folder doesn't exist, create it");
-    mkdirp.sync(identityFileDirectoryPath);
+    makeDir.sync(identityFileDirectoryPath);
   }
 
   if (!fs.existsSync(configuration.identityFile)) {

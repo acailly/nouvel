@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const browserify = require("browserify");
 const glob = require("glob");
-const mkdirp = require("mkdirp");
+const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 
 const args = process.argv.slice(2);
@@ -20,7 +20,7 @@ const outputPath = path.join(
   baseUrlPath
 );
 if (!fs.existsSync(outputPath)) {
-  mkdirp.sync(outputPath);
+  makeDir.sync(outputPath);
 }
 
 const serviceWorkerFile = "serviceworker.js";
@@ -38,7 +38,7 @@ function exportAssets(callback) {
     const targetFile = path.join(outputPath, fileToCache);
     const targetDirectory = path.dirname(targetFile);
     if (!fs.existsSync(targetDirectory)) {
-      mkdirp.sync(targetDirectory);
+      makeDir.sync(targetDirectory);
     }
     fs.copyFileSync(path.join(genericAssetsPath, fileToCache), targetFile);
   }
@@ -54,7 +54,7 @@ function exportAssets(callback) {
     const targetFile = path.join(outputPath, fileToCache);
     const targetDirectory = path.dirname(targetFile);
     if (!fs.existsSync(targetDirectory)) {
-      mkdirp.sync(targetDirectory);
+      makeDir.sync(targetDirectory);
     }
     fs.copyFileSync(path.join(appAssetsPath, fileToCache), targetFile);
   }
@@ -70,7 +70,7 @@ function exportAssets(callback) {
     const targetFile = path.join(outputPath, fileToCache);
     const targetDirectory = path.dirname(targetFile);
     if (!fs.existsSync(targetDirectory)) {
-      mkdirp.sync(targetDirectory);
+      makeDir.sync(targetDirectory);
     }
     fs.copyFileSync(path.join(appPublicAssetsPath, fileToCache), targetFile);
   }
