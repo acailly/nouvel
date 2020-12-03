@@ -252,7 +252,7 @@ Je fais donc en sorte que la synchronisation git aille automatiquement cloner le
 
 Ca me prend 30min.
 
-# 16 : Combien de temps passé jusqu'à maintenant ? - 15m
+# 16 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 15m
 
 1H
 
@@ -779,7 +779,31 @@ Je patch la fonction redirect pour prendre en comtpe la base URL dans le browser
 
 Et ca marche !!! L'appli est maintenant accessible sur le net !
 
-# 33 : Tester la modification en même temps - ??
+# 33 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 10m
+
+A l'étape 16 on était à 33H
+
+- 30m = 16H30
+- 1H30 = 18H
+- 30min = 18H30
+- 1H30 = 20H
+- 2H45 = 22H45
+- 15min = 23H
+- 2H = 25H
+- 13H = 38H
+- 1H30 = 39H30
+- 15min = 39H45
+- 1H30 = 41H15
+- 1H = 42H15
+- 2H15 = 44H30
+- 2H = 46H30
+- 2H30 = 49H
+- 3H = 52H
+- 15min = 52H15
+
+52H15, soit l'équivalent de 6,5j de 8H de travail non stop
+
+# 34 : Tester la modification en même temps - ??
 
 Je voudrais tester la modification en même temps sur desktop et mobile, il faut donc que j'active la synchro git sur la version Browser
 
