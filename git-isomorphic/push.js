@@ -11,4 +11,5 @@ module.exports = (folder, remoteName, remoteBranch, username, password) =>
     onAuth(url) {
       return { username, password };
     },
+    corsProxy: "https://cors.isomorphic-git.org",
   });

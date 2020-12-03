@@ -781,9 +781,9 @@ Et ca marche !!! L'appli est maintenant accessible sur le net !
 
 # 33 : Tester la modification en même temps - ??
 
-Je prends 15min pour corriger un bug quand on initialise le projet sur un nouveau PC
+Je voudrais tester la modification en même temps sur desktop et mobile, il faut donc que j'active la synchro git sur la version Browser
 
-J'active la synchro git sur la version Browser
+Je prends 15min pour corriger un bug quand on initialise le projet sur un nouveau PC
 
 10min de plus pour corriger un bug pour le choix de l'implémentation de Git
 
@@ -791,7 +791,11 @@ Et revoila les bugs lié à mkdirSync qui n'est pas supporté par IndexedDB :-/
 Je les ai bien supprimé, mais j'ai laissé les appels à `mkdirp.sync()`
 Ca me prend 15min de réécrire ces appels en utilisant la dépendance `make-dir` à la place
 
-TODO 40min+
+Une fois cette correction effectuée je tente à nouveau de faire marcher la synchro git sur browser
+
+Je complète l'implémentation du merge pour gérer le cas du repo vide, mais j'ai toujours des comportements bizarres, je ne récupère qu'un seul commit dans l'historique et la synchro ajoute sans cesse de nouveau commits... ca fait 2h de plus passées la dessus
+
+TODO 2H40min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
