@@ -809,7 +809,7 @@ Je voudrais tester la modification en même temps sur desktop et mobile, il faut
 
 Je prends 15min pour corriger un bug quand on initialise le projet sur un nouveau PC
 
-10min de plus pour corriger un bug pour le choix de l'implémentation de Git
+15min de plus pour corriger un bug pour le choix de l'implémentation de Git
 
 Et revoila les bugs lié à mkdirSync qui n'est pas supporté par IndexedDB :-/
 Je les ai bien supprimé, mais j'ai laissé les appels à `mkdirp.sync()`
@@ -819,7 +819,13 @@ Une fois cette correction effectuée je tente à nouveau de faire marcher la syn
 
 Je complète l'implémentation du merge pour gérer le cas du repo vide, mais j'ai toujours des comportements bizarres, je ne récupère qu'un seul commit dans l'historique et la synchro ajoute sans cesse de nouveau commits... ca fait 2h de plus passées la dessus
 
-TODO 2H40min+
+Je décide de faire marcher isomorphic-git sur node avant de le faire marcher dans le browser, pour ne pas perdre de temps à chaque fois en rebuildant l'application, et aussi pour pouvoir débugger l'état du repository avec le vrai Git natif.
+Je me rends compte que la fonction `listFiles` que j'utilisais pour récupérer la liste des fichiers à commiter n'est peut être pas la bonne commande, ou en tout cas elle ne me rend pas les résultats attendus.
+Je galère, je teste des choses (nottament https://isomorphic-git.org/docs/en/statusMatrix#q-what-files-have-unstaged-changes et https://isomorphic-git.org/docs/en/statusMatrix#q-what-files-have-been-modified-since-the-last-commit qui me font découvrir la fonction `statusMatrix`)... et je me rends compte qu'il y a l'air d'y avoir un bug sous Windows sur l'affichage des status !!!
+Je renseigne une issue ici : https://github.com/isomorphic-git/isomorphic-git/issues/1275
+Ca m'a pris 1H45 de plus, et pour l'instant je suis bloqué :-/
+
+TODO 4H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
