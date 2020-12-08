@@ -825,9 +825,9 @@ Je galère, je teste des choses (nottament https://isomorphic-git.org/docs/en/st
 Je renseigne une issue ici : https://github.com/isomorphic-git/isomorphic-git/issues/1275
 Ca m'a pris 1H45 de plus, et pour l'instant je suis bloqué :-/
 
-Je continue sur Linux en attendant, car le problème ne s'y produit pas. 30min de plus.
+Je continue sur Linux en attendant, car le problème ne s'y produit pas. 1H de plus.
 
-TODO 5Hmin+
+TODO 5H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

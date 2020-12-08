@@ -24,13 +24,4 @@ module.exports = async (folder, remoteName, remoteBranch) => {
       },
     });
   }
-
-  // TODO ACY DEBUG
-  const commits = await git.log({
-    fs,
-    dir: folder,
-    ref: "master",
-    depth: 999,
-  });
-  console.log("LOG", commits);
 };
