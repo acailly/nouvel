@@ -3,7 +3,7 @@ module.exports = require("./configuration.dev");
 
 },{"./configuration.dev":9}],2:[function(require,module,exports){
 module.exports = require('./storage-file')
-},{"./storage-file":202}],3:[function(require,module,exports){
+},{"./storage-file":284}],3:[function(require,module,exports){
 const { write } = require("../../@storage");
 
 module.exports = async function (req, res) {
@@ -61,7 +61,7 @@ module.exports = function (app) {
   app.use(view404);
 };
 
-},{"./actions/newItem":3,"./actions/newRepository":4,"./views/404":6,"./views/index":7,"./views/repositories":8,"body-parser":18}],6:[function(require,module,exports){
+},{"./actions/newItem":3,"./actions/newRepository":4,"./views/404":6,"./views/index":7,"./views/repositories":8,"body-parser":47}],6:[function(require,module,exports){
 module.exports = function (req, res, next) {
   res.status(404).render("404.html");
 };
@@ -179,7 +179,7 @@ module.exports = configuration;
 //   },
 // ];
 
-},{"os":133,"path":38}],10:[function(require,module,exports){
+},{"os":182,"path":67}],10:[function(require,module,exports){
 const configuration = require("../@configuration");
 
 module.exports = function (appConfig) {
@@ -219,7 +219,7 @@ module.exports = function (appConfig) {
   });
 };
 
-},{"../@configuration":1,"./redirect-with-base-url-middleware":12,"./universal-render-middleware":13,"browser-express":30}],11:[function(require,module,exports){
+},{"../@configuration":1,"./redirect-with-base-url-middleware":12,"./universal-render-middleware":13,"browser-express":59}],11:[function(require,module,exports){
 // From https://medium.com/@vitor.cruz/a-simple-tutorial-showing-how-to-promisify-a-specific-node-js-module-which-usually-uses-callback-47c97ffa57a2
 
 const fs = require("fs");
@@ -237,7 +237,7 @@ module.exports = Object.keys(fs).reduce((acc, fn) => {
   }
   return acc;
 }, {});
-},{"fs":37,"util":197}],12:[function(require,module,exports){
+},{"fs":66,"util":277}],12:[function(require,module,exports){
 const ejs = require("ejs");
 const configuration = require("../@configuration");
 
@@ -270,7 +270,7 @@ function monkeyPatchRedirect(redirect) {
   };
 }
 
-},{"../@configuration":1,"ejs":51}],13:[function(require,module,exports){
+},{"../@configuration":1,"ejs":86}],13:[function(require,module,exports){
 const ejs = require("ejs");
 const configuration = require("../@configuration");
 
@@ -328,7 +328,313 @@ async function compileTemplate(template, data, globalData) {
   return html;
 }
 
-},{"../@configuration":1,"ejs":51}],14:[function(require,module,exports){
+},{"../@configuration":1,"ejs":86}],14:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = (folder, files) =>
+  git.add({ fs, dir: folder, filepath: files });
+
+},{"fs":66,"isomorphic-git":148}],15:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = (folder, remoteName, remoteUrl) =>
+  git.addRemote({
+    fs,
+    dir: folder,
+    remote: remoteName,
+    url: remoteUrl,
+  });
+
+},{"fs":66,"isomorphic-git":148}],16:[function(require,module,exports){
+const git = require("isomorphic-git");
+const http = require("isomorphic-git/http/node");
+const fs = require("fs");
+module.exports = async (
+  folder,
+  remoteName,
+  remoteUrl,
+  remoteBranch,
+  username,
+  password
+) => {
+  let canFetch = true;
+
+  try {
+    await git.fetch({
+      fs,
+      http,
+      dir: folder,
+      corsProxy: "https://cors.isomorphic-git.org",
+      remote: remoteName,
+      remoteRef: remoteBranch,
+      onAuth(url) {
+        return { username, password };
+      },
+      depth: 1,
+      singleBranch: true,
+      tags: false,
+    });
+  } catch (e) {
+    canFetch = false;
+  }
+
+  return canFetch;
+};
+
+},{"fs":66,"isomorphic-git":148,"isomorphic-git/http/node":147}],17:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = (folder) =>
+  git.commit({
+    fs,
+    dir: folder,
+    message: ":white_check_mark: Automatic sync git",
+    author: {
+      // TODO ACY
+      name: "Mr. Test",
+      email: "mrtest@example.com",
+    },
+  });
+
+},{"fs":66,"isomorphic-git":148}],18:[function(require,module,exports){
+const git = require("isomorphic-git");
+const http = require("isomorphic-git/http/node");
+const fs = require("fs");
+module.exports = (folder, remoteName, remoteBranch) =>
+  git.fetch({
+    fs,
+    http,
+    dir: folder,
+    corsProxy: "https://cors.isomorphic-git.org",
+    // TODO ACY Cette ligne est pour ne pas être en mode shallow parce que
+    //j'ai peur que ca casse le push, mais est ce vraiment le cas ? à tester
+    depth: 1000000000,
+    remote: remoteName,
+    remoteRef: remoteBranch,
+  });
+
+},{"fs":66,"isomorphic-git":148,"isomorphic-git/http/node":147}],19:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = (folder, remoteName) =>
+  git.getConfig({ fs, dir: folder, path: `remote.${remoteName}.url` });
+
+},{"fs":66,"isomorphic-git":148}],20:[function(require,module,exports){
+module.exports = {
+  isSupported: require("./isSupported"),
+  init: require("./init"),
+  getRemoteUrl: require("./getRemoteUrl"),
+  addRemote: require("./addRemote"),
+  add: require("./add"),
+  somethingToCommit: require("./somethingToCommit"),
+  commit: require("./commit"),
+  updateServerInfo: require("./updateServerInfo"),
+  canFetchRemote: require("./canFetchRemote"),
+  fetch: require("./fetch"),
+  merge: require("./merge"),
+  push: require("./push"),
+};
+
+},{"./add":14,"./addRemote":15,"./canFetchRemote":16,"./commit":17,"./fetch":18,"./getRemoteUrl":19,"./init":21,"./isSupported":22,"./merge":23,"./push":24,"./somethingToCommit":25,"./updateServerInfo":26}],21:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = (folder) => git.init({ fs, dir: folder });
+
+},{"fs":66,"isomorphic-git":148}],22:[function(require,module,exports){
+const git = require("isomorphic-git");
+module.exports = async () => {
+  return Promise.resolve(!!git);
+};
+
+},{"isomorphic-git":148}],23:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+module.exports = async (folder, remoteName, remoteBranch) => {
+  const branches = await git.listBranches({ fs, dir: folder });
+  if (!branches || !branches.length) {
+    // Isomorphic git does not handle merge when repository is empty
+    // see https://github.com/isomorphic-git/isomorphic-git/issues/685
+
+    await git.checkout({
+      fs,
+      dir: folder,
+      remote: remoteName,
+      ref: remoteBranch,
+    });
+  } else {
+    await git.merge({
+      fs,
+      dir: folder,
+      theirs: `remotes/${remoteName}/${remoteBranch}`,
+      author: {
+        // TODO ACY
+        name: "Mr. Test",
+        email: "mrtest@example.com",
+      },
+    });
+  }
+};
+
+},{"fs":66,"isomorphic-git":148}],24:[function(require,module,exports){
+const git = require("isomorphic-git");
+const http = require("isomorphic-git/http/node");
+const fs = require("fs");
+module.exports = (folder, remoteName, remoteBranch, username, password) =>
+  git.push({
+    fs,
+    http,
+    dir: folder,
+    remote: remoteName,
+    ref: remoteBranch,
+    onAuth(url) {
+      return { username, password };
+    },
+    corsProxy: "https://cors.isomorphic-git.org",
+  });
+
+},{"fs":66,"isomorphic-git":148,"isomorphic-git/http/node":147}],25:[function(require,module,exports){
+const git = require("isomorphic-git");
+const fs = require("fs");
+const path = require("path");
+module.exports = async (folder) => {
+  // Using wonderful command statusMatrix
+  // See more at https://isomorphic-git.org/docs/en/statusMatrix.html
+  const FILE = 0,
+    HEAD = 1,
+    WORKDIR = 2,
+    STAGE = 3;
+
+  const filenames = (await git.statusMatrix({ fs, dir: folder }))
+    .filter((row) => row[HEAD] !== row[STAGE])
+    .map((row) => row[FILE]);
+
+  return filenames && filenames.length;
+};
+
+},{"fs":66,"isomorphic-git":148,"path":67}],26:[function(require,module,exports){
+module.exports = (folder) => {
+  // NOT SUPPORTED
+};
+
+},{}],27:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder, files) =>
+  execShellCommand("git add " + files, folder);
+
+},{"./execShellCommand":31}],28:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder, remoteName, remoteUrl) =>
+  execShellCommand(`git remote add ${remoteName} ${remoteUrl}`, folder);
+
+},{"./execShellCommand":31}],29:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = async (
+  folder,
+  remoteName,
+  remoteUrl,
+  remoteBranch,
+  username,
+  password
+) => {
+  let canFetch = true;
+
+  try {
+    // https://superuser.com/a/833286
+    await execShellCommand(
+      `git ls-remote --exit-code -h "${remoteUrl}"`,
+      folder
+    );
+  } catch (e) {
+    canFetch = false;
+  }
+
+  return canFetch;
+};
+
+},{"./execShellCommand":31}],30:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder) =>
+  execShellCommand(
+    'git commit -m ":white_check_mark: Automatic sync git"',
+    folder
+  );
+
+},{"./execShellCommand":31}],31:[function(require,module,exports){
+const exec = require("child_process").exec;
+
+// From https://medium.com/@ali.dev/how-to-use-promise-with-exec-in-node-js-a39c4d7bbf77
+module.exports = function execShellCommand(cmd, cwd) {
+    return new Promise((resolve, reject) => {
+      exec(
+        cmd,
+        {
+          cwd
+        },
+        (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(stdout ? stdout : stderr);
+      });
+    });
+  }
+},{"child_process":71}],32:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder, remoteName, remoteBranch) =>
+  execShellCommand(`git fetch ${remoteName} ${remoteBranch}`, folder);
+
+},{"./execShellCommand":31}],33:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = async (folder, remoteName) => {
+  try {
+    return await execShellCommand(`git remote get-url ${remoteName}`, folder);
+  } catch (e) {
+    return;
+  }
+};
+
+},{"./execShellCommand":31}],34:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"./add":27,"./addRemote":28,"./canFetchRemote":29,"./commit":30,"./fetch":32,"./getRemoteUrl":33,"./init":35,"./isSupported":36,"./merge":37,"./push":38,"./somethingToCommit":39,"./updateServerInfo":40,"dup":20}],35:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder) => execShellCommand(`git init`, folder);
+
+},{"./execShellCommand":31}],36:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = async () => {
+  let isSupported = true;
+
+  try {
+    await execShellCommand(`git --version`, ".");
+  } catch (e) {
+    isSupported = false;
+  }
+
+  return isSupported;
+};
+
+},{"./execShellCommand":31}],37:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder, remoteName, remoteBranch) =>
+  execShellCommand(`git merge ${remoteName}/${remoteBranch}`, folder);
+
+},{"./execShellCommand":31}],38:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder, remoteName, remoteBranch, username, password) =>
+  execShellCommand(`git push ${remoteName} ${remoteBranch}`, folder);
+
+},{"./execShellCommand":31}],39:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = async (folder, remoteName) => {
+  const output = execShellCommand("git diff --name-only --cached", folder);
+  return output;
+};
+
+},{"./execShellCommand":31}],40:[function(require,module,exports){
+const execShellCommand = require("./execShellCommand");
+module.exports = (folder) => execShellCommand("git update-server-info", folder);
+
+},{"./execShellCommand":31}],41:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -838,7 +1144,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"object-assign":124,"util/":17}],15:[function(require,module,exports){
+},{"object-assign":172,"util/":44}],42:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -863,14 +1169,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],17:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1460,7 +1766,270 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":16,"browserfs/dist/shims/process.js":39,"inherits":15}],18:[function(require,module,exports){
+},{"./support/isBuffer":43,"browserfs/dist/shims/process.js":68,"inherits":42}],45:[function(require,module,exports){
+'use strict';
+module.exports = require('./lib');
+
+},{"./lib":46}],46:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var AsyncLock = function (opts) {
+	opts = opts || {};
+
+	this.Promise = opts.Promise || Promise;
+
+	// format: {key : [fn, fn]}
+	// queues[key] = null indicates no job running for key
+	this.queues = Object.create(null);
+
+	// domain of current running func {key : fn}
+	this.domains = Object.create(null);
+
+	// lock is reentrant for same domain
+	this.domainReentrant = opts.domainReentrant || false;
+
+	this.timeout = opts.timeout || AsyncLock.DEFAULT_TIMEOUT;
+	this.maxPending = opts.maxPending || AsyncLock.DEFAULT_MAX_PENDING;
+};
+
+AsyncLock.DEFAULT_TIMEOUT = 0; //Never
+AsyncLock.DEFAULT_MAX_PENDING = 1000;
+
+/**
+ * Acquire Locks
+ *
+ * @param {String|Array} key 	resource key or keys to lock
+ * @param {function} fn 	async function
+ * @param {function} cb 	callback function, otherwise will return a promise
+ * @param {Object} opts 	options
+ */
+AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
+	if (Array.isArray(key)) {
+		return this._acquireBatch(key, fn, cb, opts);
+	}
+
+	if (typeof (fn) !== 'function') {
+		throw new Error('You must pass a function to execute');
+	}
+
+	// faux-deferred promise using new Promise() (as Promise.defer is deprecated)
+	var deferredResolve = null;
+	var deferredReject = null;
+	var deferred = null;
+
+	if (typeof (cb) !== 'function') {
+		opts = cb;
+		cb = null;
+
+		// will return a promise
+		deferred =  new this.Promise(function(resolve, reject) {
+			deferredResolve = resolve;
+			deferredReject = reject;
+		});
+	}
+
+	opts = opts || {};
+
+	var resolved = false;
+	var timer = null;
+	var self = this;
+
+	var done = function (locked, err, ret) {
+		if (locked) {
+			if (self.queues[key].length === 0) {
+				delete self.queues[key];
+			}
+			delete self.domains[key];
+		}
+
+		if (!resolved) {
+			if (!deferred) {
+				if (typeof (cb) === 'function') {
+					cb(err, ret);
+				}
+			}
+			else {
+				//promise mode
+				if (err) {
+					deferredReject(err);
+				}
+				else {
+					deferredResolve(ret);
+				}
+			}
+			resolved = true;
+		}
+
+		if (locked) {
+			//run next func
+			if (!!self.queues[key] && self.queues[key].length > 0) {
+				self.queues[key].shift()();
+			}
+		}
+	};
+
+	var exec = function (locked) {
+		if (resolved) { // may due to timed out
+			return done(locked);
+		}
+
+		if (timer) {
+			clearTimeout(timer);
+			timer = null;
+		}
+
+		if (locked) {
+			self.domains[key] = process.domain;
+		}
+
+		// Callback mode
+		if (fn.length === 1) {
+			var called = false;
+			fn(function (err, ret) {
+				if (!called) {
+					called = true;
+					done(locked, err, ret);
+				}
+			});
+		}
+		else {
+			// Promise mode
+			self._promiseTry(function () {
+				return fn();
+			})
+			.then(function(ret){
+				done(locked, undefined, ret);
+			}, function(error){
+				done(locked, error);
+			});
+		}
+	};
+	if (!!process.domain) {
+		exec = process.domain.bind(exec);
+	}
+
+	if (!self.queues[key]) {
+		self.queues[key] = [];
+		exec(true);
+	}
+	else if (self.domainReentrant && !!process.domain && process.domain === self.domains[key]) {
+		// If code is in the same domain of current running task, run it directly
+		// Since lock is re-enterable
+		exec(false);
+	}
+	else if (self.queues[key].length >= self.maxPending) {
+		done(false, new Error('Too much pending tasks'));
+	}
+	else {
+		var taskFn = function () {
+			exec(true);
+		};
+		if (opts.skipQueue) {
+			self.queues[key].unshift(taskFn);
+		} else {
+			self.queues[key].push(taskFn);
+		}
+
+		var timeout = opts.timeout || self.timeout;
+		if (timeout) {
+			timer = setTimeout(function () {
+				timer = null;
+				done(false, new Error('async-lock timed out'));
+			}, timeout);
+		}
+	}
+
+	if (deferred) {
+		return deferred;
+	}
+};
+
+/*
+ * Below is how this function works:
+ *
+ * Equivalent code:
+ * self.acquire(key1, function(cb){
+ *     self.acquire(key2, function(cb){
+ *         self.acquire(key3, fn, cb);
+ *     }, cb);
+ * }, cb);
+ *
+ * Equivalent code:
+ * var fn3 = getFn(key3, fn);
+ * var fn2 = getFn(key2, fn3);
+ * var fn1 = getFn(key1, fn2);
+ * fn1(cb);
+ */
+AsyncLock.prototype._acquireBatch = function (keys, fn, cb, opts) {
+	if (typeof (cb) !== 'function') {
+		opts = cb;
+		cb = null;
+	}
+
+	var self = this;
+	var getFn = function (key, fn) {
+		return function (cb) {
+			self.acquire(key, fn, cb, opts);
+		};
+	};
+
+	var fnx = fn;
+	keys.reverse().forEach(function (key) {
+		fnx = getFn(key, fnx);
+	});
+
+	if (typeof (cb) === 'function') {
+		fnx(cb);
+	}
+	else {
+		return new this.Promise(function (resolve, reject) {
+			// check for promise mode in case keys is empty array
+			if (fnx.length === 1) {
+				fnx(function (err, ret) {
+					if (err) {
+						reject(err);
+					}
+					else {
+						resolve(ret);
+					}
+				});
+			} else {
+				resolve(fnx());
+			}
+		});
+	}
+};
+
+/*
+ *	Whether there is any running or pending asyncFunc
+ *
+ *	@param {String} key
+ */
+AsyncLock.prototype.isBusy = function (key) {
+	if (!key) {
+		return Object.keys(this.queues).length > 0;
+	}
+	else {
+		return !!this.queues[key];
+	}
+};
+
+/**
+ * Promise.try() implementation to become independent of Q-specific methods
+ */
+AsyncLock.prototype._promiseTry = function(fn) {
+	try {
+		return this.Promise.resolve(fn());
+	} catch (e) {
+		return this.Promise.reject(e);
+	}
+};
+
+module.exports = AsyncLock;
+
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"browserfs/dist/shims/process.js":68}],47:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
@@ -1619,7 +2188,7 @@ function loadParser (parserName) {
   return (parsers[parserName] = parser)
 }
 
-},{"./lib/types/json":20,"./lib/types/raw":21,"./lib/types/text":22,"./lib/types/urlencoded":23,"depd":49}],19:[function(require,module,exports){
+},{"./lib/types/json":49,"./lib/types/raw":50,"./lib/types/text":51,"./lib/types/urlencoded":52,"depd":82}],48:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
@@ -1802,7 +2371,7 @@ function contentstream (req, debug, inflate) {
   return stream
 }
 
-},{"http-errors":86,"iconv-lite":105,"on-finished":132,"raw-body":158,"zlib":41}],20:[function(require,module,exports){
+},{"http-errors":121,"iconv-lite":141,"on-finished":180,"raw-body":213,"zlib":70}],49:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014 Jonathan Ong
@@ -2034,7 +2603,7 @@ function typeChecker (type) {
   }
 }
 
-},{"../read":19,"bytes":42,"content-type":44,"debug":46,"http-errors":86,"type-is":188}],21:[function(require,module,exports){
+},{"../read":48,"bytes":73,"content-type":76,"debug":79,"http-errors":121,"type-is":268}],50:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
@@ -2137,7 +2706,7 @@ function typeChecker (type) {
   }
 }
 
-},{"../read":19,"bytes":42,"debug":46,"type-is":188}],22:[function(require,module,exports){
+},{"../read":48,"bytes":73,"debug":79,"type-is":268}],51:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
@@ -2260,7 +2829,7 @@ function typeChecker (type) {
   }
 }
 
-},{"../read":19,"bytes":42,"content-type":44,"debug":46,"type-is":188}],23:[function(require,module,exports){
+},{"../read":48,"bytes":73,"content-type":76,"debug":79,"type-is":268}],52:[function(require,module,exports){
 /*!
  * body-parser
  * Copyright(c) 2014 Jonathan Ong
@@ -2546,7 +3115,7 @@ function typeChecker (type) {
   }
 }
 
-},{"../read":19,"bytes":42,"content-type":44,"debug":46,"depd":49,"http-errors":86,"qs":151,"querystring":157,"type-is":188}],24:[function(require,module,exports){
+},{"../read":48,"bytes":73,"content-type":76,"debug":79,"depd":82,"http-errors":121,"qs":206,"querystring":212,"type-is":268}],53:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -2575,7 +3144,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],25:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -2603,7 +3172,7 @@ module.exports = util.assign(
     Format
 );
 
-},{"./utils":29}],26:[function(require,module,exports){
+},{"./utils":58}],55:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -2616,7 +3185,7 @@ module.exports = {
     stringify: stringify
 };
 
-},{"./formats":25,"./parse":27,"./stringify":28}],27:[function(require,module,exports){
+},{"./formats":54,"./parse":56,"./stringify":57}],56:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -2875,7 +3444,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":29}],28:[function(require,module,exports){
+},{"./utils":58}],57:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -3148,7 +3717,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":25,"./utils":29}],29:[function(require,module,exports){
+},{"./formats":54,"./utils":58}],58:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -3398,7 +3967,7 @@ module.exports = {
     merge: merge
 };
 
-},{}],30:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /* global window, document */
 
 const BaseRouter = require('router');
@@ -3604,7 +4173,7 @@ Router.prototype.close = function close() {
 
 module.exports = Router;
 
-},{"./request":31,"./response":32,"./supports-push-state":33,"catch-links":43,"form-serialize":80,"inherits":24,"qs":26,"router":173,"url":190}],31:[function(require,module,exports){
+},{"./request":60,"./response":61,"./supports-push-state":62,"catch-links":74,"form-serialize":115,"inherits":53,"qs":55,"router":228,"url":270}],60:[function(require,module,exports){
 /* global window, document */
 
 const EventEmitter = require('events');
@@ -3669,7 +4238,7 @@ Request.prototype.is = noop;
 
 module.exports = Request;
 
-},{"events":79,"inherits":24}],32:[function(require,module,exports){
+},{"events":114,"inherits":53}],61:[function(require,module,exports){
 /* global window, document */
 
 const EventEmitter = require('events');
@@ -3770,7 +4339,7 @@ Response.prototype.writeHead = noop;
 
 module.exports = Response;
 
-},{"./supports-push-state":33,"events":79,"inherits":24,"url":190}],33:[function(require,module,exports){
+},{"./supports-push-state":62,"events":114,"inherits":53,"url":270}],62:[function(require,module,exports){
 /* global window, navigator */
 
 let supported = true;
@@ -3789,9 +4358,9 @@ if (
 
 module.exports = supported && window.history && 'pushState' in window.history;
 
-},{}],34:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 
-},{}],35:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 (function (setImmediate){
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -28550,27 +29119,27 @@ return /******/ (function(modules) { // webpackBootstrap
 ;
 
 }).call(this,require("timers").setImmediate)
-},{"timers":186}],36:[function(require,module,exports){
+},{"timers":266}],65:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('buffer');
 
-}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":35}],37:[function(require,module,exports){
+}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],66:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('fs');
 
-}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":35}],38:[function(require,module,exports){
+}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],67:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('path');
 
-}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":35}],39:[function(require,module,exports){
+}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],68:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('process');
 
-}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":35}],40:[function(require,module,exports){
+}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],69:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
 /* eslint camelcase: "off" */
@@ -28982,7 +29551,7 @@ Zlib.prototype._reset = function () {
 
 exports.Zlib = Zlib;
 }).call(this,require('browserfs/dist/shims/process.js'),require('buffer').Buffer)
-},{"assert":14,"browserfs/dist/shims/process.js":39,"buffer":36,"pako/lib/zlib/constants":136,"pako/lib/zlib/deflate.js":138,"pako/lib/zlib/inflate.js":140,"pako/lib/zlib/zstream":144}],41:[function(require,module,exports){
+},{"assert":41,"browserfs/dist/shims/process.js":68,"buffer":65,"pako/lib/zlib/constants":189,"pako/lib/zlib/deflate.js":191,"pako/lib/zlib/inflate.js":194,"pako/lib/zlib/zstream":198}],70:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -29594,7 +30163,75 @@ util.inherits(DeflateRaw, Zlib);
 util.inherits(InflateRaw, Zlib);
 util.inherits(Unzip, Zlib);
 }).call(this,require('browserfs/dist/shims/process.js'))
-},{"./binding":40,"assert":14,"browserfs/dist/shims/process.js":39,"buffer":36,"stream":183,"util":197}],42:[function(require,module,exports){
+},{"./binding":69,"assert":41,"browserfs/dist/shims/process.js":68,"buffer":65,"stream":243,"util":277}],71:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"dup":63}],72:[function(require,module,exports){
+module.exports = {
+  "100": "Continue",
+  "101": "Switching Protocols",
+  "102": "Processing",
+  "200": "OK",
+  "201": "Created",
+  "202": "Accepted",
+  "203": "Non-Authoritative Information",
+  "204": "No Content",
+  "205": "Reset Content",
+  "206": "Partial Content",
+  "207": "Multi-Status",
+  "208": "Already Reported",
+  "226": "IM Used",
+  "300": "Multiple Choices",
+  "301": "Moved Permanently",
+  "302": "Found",
+  "303": "See Other",
+  "304": "Not Modified",
+  "305": "Use Proxy",
+  "307": "Temporary Redirect",
+  "308": "Permanent Redirect",
+  "400": "Bad Request",
+  "401": "Unauthorized",
+  "402": "Payment Required",
+  "403": "Forbidden",
+  "404": "Not Found",
+  "405": "Method Not Allowed",
+  "406": "Not Acceptable",
+  "407": "Proxy Authentication Required",
+  "408": "Request Timeout",
+  "409": "Conflict",
+  "410": "Gone",
+  "411": "Length Required",
+  "412": "Precondition Failed",
+  "413": "Payload Too Large",
+  "414": "URI Too Long",
+  "415": "Unsupported Media Type",
+  "416": "Range Not Satisfiable",
+  "417": "Expectation Failed",
+  "418": "I'm a teapot",
+  "421": "Misdirected Request",
+  "422": "Unprocessable Entity",
+  "423": "Locked",
+  "424": "Failed Dependency",
+  "425": "Unordered Collection",
+  "426": "Upgrade Required",
+  "428": "Precondition Required",
+  "429": "Too Many Requests",
+  "431": "Request Header Fields Too Large",
+  "451": "Unavailable For Legal Reasons",
+  "500": "Internal Server Error",
+  "501": "Not Implemented",
+  "502": "Bad Gateway",
+  "503": "Service Unavailable",
+  "504": "Gateway Timeout",
+  "505": "HTTP Version Not Supported",
+  "506": "Variant Also Negotiates",
+  "507": "Insufficient Storage",
+  "508": "Loop Detected",
+  "509": "Bandwidth Limit Exceeded",
+  "510": "Not Extended",
+  "511": "Network Authentication Required"
+}
+
+},{}],73:[function(require,module,exports){
 /*!
  * bytes
  * Copyright(c) 2012-2014 TJ Holowaychuk
@@ -29758,7 +30395,7 @@ function parse(val) {
   return Math.floor(map[unit] * floatValue);
 }
 
-},{}],43:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 var url = require('url');
 
 module.exports = function (root, cb) {
@@ -29790,7 +30427,41 @@ module.exports = function (root, cb) {
     });
 };
 
-},{"url":190}],44:[function(require,module,exports){
+},{"url":270}],75:[function(require,module,exports){
+'use strict';
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function replaceAll(str, search, replacement) {
+  search = search instanceof RegExp ? search : new RegExp(escapeRegExp(search), 'g');
+
+  return str.replace(search, replacement);
+}
+
+var CleanGitRef = {
+  clean: function clean(value) {
+    if (typeof value !== 'string') {
+      throw new Error('Expected a string, received: ' + value);
+    }
+
+    value = replaceAll(value, './', '/');
+    value = replaceAll(value, '..', '.');
+    value = replaceAll(value, ' ', '-');
+    value = replaceAll(value, /^[~^:?*\\\-]/g, '');
+    value = replaceAll(value, /[~^:?*\\]/g, '-');
+    value = replaceAll(value, /[~^:?*\\\-]$/g, '');
+    value = replaceAll(value, '@{', '-');
+    value = replaceAll(value, /\.$/g, '');
+    value = replaceAll(value, /\/$/g, '');
+    value = replaceAll(value, /\.lock$/g, '');
+    return value;
+  }
+};
+
+module.exports = CleanGitRef;
+},{}],76:[function(require,module,exports){
 /*!
  * content-type
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -30014,7 +30685,7 @@ function ContentType (type) {
   this.type = type
 }
 
-},{}],45:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -30125,7 +30796,127 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":107}],46:[function(require,module,exports){
+},{"../../is-buffer/index.js":143}],78:[function(require,module,exports){
+/* crc32.js (C) 2014-present SheetJS -- http://sheetjs.com */
+/* vim: set ts=2: */
+/*exported CRC32 */
+var CRC32;
+(function (factory) {
+	/*jshint ignore:start */
+	/*eslint-disable */
+	if(typeof DO_NOT_EXPORT_CRC === 'undefined') {
+		if('object' === typeof exports) {
+			factory(exports);
+		} else if ('function' === typeof define && define.amd) {
+			define(function () {
+				var module = {};
+				factory(module);
+				return module;
+			});
+		} else {
+			factory(CRC32 = {});
+		}
+	} else {
+		factory(CRC32 = {});
+	}
+	/*eslint-enable */
+	/*jshint ignore:end */
+}(function(CRC32) {
+CRC32.version = '1.2.0';
+/* see perf/crc32table.js */
+/*global Int32Array */
+function signed_crc_table() {
+	var c = 0, table = new Array(256);
+
+	for(var n =0; n != 256; ++n){
+		c = n;
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		c = ((c&1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
+		table[n] = c;
+	}
+
+	return typeof Int32Array !== 'undefined' ? new Int32Array(table) : table;
+}
+
+var T = signed_crc_table();
+function crc32_bstr(bstr, seed) {
+	var C = seed ^ -1, L = bstr.length - 1;
+	for(var i = 0; i < L;) {
+		C = (C>>>8) ^ T[(C^bstr.charCodeAt(i++))&0xFF];
+		C = (C>>>8) ^ T[(C^bstr.charCodeAt(i++))&0xFF];
+	}
+	if(i === L) C = (C>>>8) ^ T[(C ^ bstr.charCodeAt(i))&0xFF];
+	return C ^ -1;
+}
+
+function crc32_buf(buf, seed) {
+	if(buf.length > 10000) return crc32_buf_8(buf, seed);
+	var C = seed ^ -1, L = buf.length - 3;
+	for(var i = 0; i < L;) {
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+	}
+	while(i < L+3) C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+	return C ^ -1;
+}
+
+function crc32_buf_8(buf, seed) {
+	var C = seed ^ -1, L = buf.length - 7;
+	for(var i = 0; i < L;) {
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+		C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+	}
+	while(i < L+7) C = (C>>>8) ^ T[(C^buf[i++])&0xFF];
+	return C ^ -1;
+}
+
+function crc32_str(str, seed) {
+	var C = seed ^ -1;
+	for(var i = 0, L=str.length, c, d; i < L;) {
+		c = str.charCodeAt(i++);
+		if(c < 0x80) {
+			C = (C>>>8) ^ T[(C ^ c)&0xFF];
+		} else if(c < 0x800) {
+			C = (C>>>8) ^ T[(C ^ (192|((c>>6)&31)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|(c&63)))&0xFF];
+		} else if(c >= 0xD800 && c < 0xE000) {
+			c = (c&1023)+64; d = str.charCodeAt(i++)&1023;
+			C = (C>>>8) ^ T[(C ^ (240|((c>>8)&7)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|((c>>2)&63)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|((d>>6)&15)|((c&3)<<4)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|(d&63)))&0xFF];
+		} else {
+			C = (C>>>8) ^ T[(C ^ (224|((c>>12)&15)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|((c>>6)&63)))&0xFF];
+			C = (C>>>8) ^ T[(C ^ (128|(c&63)))&0xFF];
+		}
+	}
+	return C ^ -1;
+}
+CRC32.table = T;
+// $FlowIgnore
+CRC32.bstr = crc32_bstr;
+// $FlowIgnore
+CRC32.buf = crc32_buf;
+// $FlowIgnore
+CRC32.str = crc32_str;
+}));
+
+},{}],79:[function(require,module,exports){
 (function (process){
 /**
  * This is the web browser implementation of `debug()`.
@@ -30314,7 +31105,7 @@ function localstorage() {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'))
-},{"./debug":47,"browserfs/dist/shims/process.js":39}],47:[function(require,module,exports){
+},{"./debug":80,"browserfs/dist/shims/process.js":68}],80:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -30518,7 +31309,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":123}],48:[function(require,module,exports){
+},{"ms":171}],81:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -30578,7 +31369,7 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"object-keys":126}],49:[function(require,module,exports){
+},{"object-keys":174}],82:[function(require,module,exports){
 /*!
  * depd
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -30657,7 +31448,460 @@ function wrapproperty (obj, prop, message) {
   }
 }
 
-},{}],50:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
+// Copyright (c) 2006, 2008 Tony Garnock-Jones <tonyg@lshift.net>
+// Copyright (c) 2006, 2008 LShift Ltd. <query@lshift.net>
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation files
+// (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software,
+// and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+// BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+var onp = require('./onp');
+
+function longestCommonSubsequence(file1, file2) {
+  var diff = new onp(file1, file2);
+  diff.compose();
+  var ses = diff.getses();
+
+  var root;
+  var prev;
+  var file1RevIdx = file1.length - 1,
+      file2RevIdx = file2.length - 1;
+  for (var i = ses.length - 1; i >= 0; --i) {
+      if (ses[i].t === diff.SES_COMMON) {
+        if (prev) {
+          prev.chain = {
+            file1index: file1RevIdx,
+            file2index: file2RevIdx,
+            chain: null
+          };
+          prev = prev.chain;
+        } else {
+          root = {
+            file1index: file1RevIdx,
+            file2index: file2RevIdx,
+            chain: null
+          };
+          prev = root;
+        }
+        file1RevIdx--;
+        file2RevIdx--;
+      } else if (ses[i].t === diff.SES_DELETE) {
+        file1RevIdx--;
+      } else if (ses[i].t === diff.SES_ADD) {
+        file2RevIdx--;
+      }
+  }
+
+  var tail = {
+    file1index: -1,
+    file2index: -1,
+    chain: null
+  };
+
+  if (!prev) {
+    return tail;
+  }
+
+  prev.chain = tail;
+
+  return root;
+}
+
+function diffIndices(file1, file2) {
+  // We apply the LCS to give a simple representation of the
+  // offsets and lengths of mismatched chunks in the input
+  // files. This is used by diff3_merge_indices below.
+
+  var result = [];
+  var tail1 = file1.length;
+  var tail2 = file2.length;
+
+  for (var candidate = longestCommonSubsequence(file1, file2); candidate !== null; candidate = candidate.chain) {
+    var mismatchLength1 = tail1 - candidate.file1index - 1;
+    var mismatchLength2 = tail2 - candidate.file2index - 1;
+    tail1 = candidate.file1index;
+    tail2 = candidate.file2index;
+
+    if (mismatchLength1 || mismatchLength2) {
+      result.push({
+        file1: [tail1 + 1, mismatchLength1],
+        file2: [tail2 + 1, mismatchLength2]
+      });
+    }
+  }
+
+  result.reverse();
+  return result;
+}
+
+function diff3MergeIndices(a, o, b) {
+  // Given three files, A, O, and B, where both A and B are
+  // independently derived from O, returns a fairly complicated
+  // internal representation of merge decisions it's taken. The
+  // interested reader may wish to consult
+  //
+  // Sanjeev Khanna, Keshav Kunal, and Benjamin C. Pierce. "A
+  // Formal Investigation of Diff3." In Arvind and Prasad,
+  // editors, Foundations of Software Technology and Theoretical
+  // Computer Science (FSTTCS), December 2007.
+  //
+  // (http://www.cis.upenn.edu/~bcpierce/papers/diff3-short.pdf)
+  var i;
+
+  var m1 = diffIndices(o, a);
+  var m2 = diffIndices(o, b);
+
+  var hunks = [];
+
+  function addHunk(h, side) {
+    hunks.push([h.file1[0], side, h.file1[1], h.file2[0], h.file2[1]]);
+  }
+  for (i = 0; i < m1.length; i++) {
+    addHunk(m1[i], 0);
+  }
+  for (i = 0; i < m2.length; i++) {
+    addHunk(m2[i], 2);
+  }
+  hunks.sort(function(x, y) {
+    return x[0] - y[0]
+  });
+
+  var result = [];
+  var commonOffset = 0;
+
+  function copyCommon(targetOffset) {
+    if (targetOffset > commonOffset) {
+      result.push([1, commonOffset, targetOffset - commonOffset]);
+      commonOffset = targetOffset;
+    }
+  }
+
+  for (var hunkIndex = 0; hunkIndex < hunks.length; hunkIndex++) {
+    var firstHunkIndex = hunkIndex;
+    var hunk = hunks[hunkIndex];
+    var regionLhs = hunk[0];
+    var regionRhs = regionLhs + hunk[2];
+    while (hunkIndex < hunks.length - 1) {
+      var maybeOverlapping = hunks[hunkIndex + 1];
+      var maybeLhs = maybeOverlapping[0];
+      if (maybeLhs > regionRhs) break;
+      regionRhs = Math.max(regionRhs, maybeLhs + maybeOverlapping[2]);
+      hunkIndex++;
+    }
+
+    copyCommon(regionLhs);
+    if (firstHunkIndex == hunkIndex) {
+      // The "overlap" was only one hunk long, meaning that
+      // there's no conflict here. Either a and o were the
+      // same, or b and o were the same.
+      if (hunk[4] > 0) {
+        result.push([hunk[1], hunk[3], hunk[4]]);
+      }
+    } else {
+      // A proper conflict. Determine the extents of the
+      // regions involved from a, o and b. Effectively merge
+      // all the hunks on the left into one giant hunk, and
+      // do the same for the right; then, correct for skew
+      // in the regions of o that each side changed, and
+      // report appropriate spans for the three sides.
+      var regions = {
+        0: [a.length, -1, o.length, -1],
+        2: [b.length, -1, o.length, -1]
+      };
+      for (i = firstHunkIndex; i <= hunkIndex; i++) {
+        hunk = hunks[i];
+        var side = hunk[1];
+        var r = regions[side];
+        var oLhs = hunk[0];
+        var oRhs = oLhs + hunk[2];
+        var abLhs = hunk[3];
+        var abRhs = abLhs + hunk[4];
+        r[0] = Math.min(abLhs, r[0]);
+        r[1] = Math.max(abRhs, r[1]);
+        r[2] = Math.min(oLhs, r[2]);
+        r[3] = Math.max(oRhs, r[3]);
+      }
+      var aLhs = regions[0][0] + (regionLhs - regions[0][2]);
+      var aRhs = regions[0][1] + (regionRhs - regions[0][3]);
+      var bLhs = regions[2][0] + (regionLhs - regions[2][2]);
+      var bRhs = regions[2][1] + (regionRhs - regions[2][3]);
+      result.push([-1,
+        aLhs, aRhs - aLhs,
+        regionLhs, regionRhs - regionLhs,
+        bLhs, bRhs - bLhs
+      ]);
+    }
+    commonOffset = regionRhs;
+  }
+
+  copyCommon(o.length);
+  return result;
+}
+
+function diff3Merge(a, o, b) {
+  // Applies the output of Diff.diff3_merge_indices to actually
+  // construct the merged file; the returned result alternates
+  // between "ok" and "conflict" blocks.
+
+  var result = [];
+  var files = [a, o, b];
+  var indices = diff3MergeIndices(a, o, b);
+
+  var okLines = [];
+
+  function flushOk() {
+    if (okLines.length) {
+      result.push({
+        ok: okLines
+      });
+    }
+    okLines = [];
+  }
+
+  function pushOk(xs) {
+    for (var j = 0; j < xs.length; j++) {
+      okLines.push(xs[j]);
+    }
+  }
+
+  function isTrueConflict(rec) {
+    if (rec[2] != rec[6]) return true;
+    var aoff = rec[1];
+    var boff = rec[5];
+    for (var j = 0; j < rec[2]; j++) {
+      if (a[j + aoff] != b[j + boff]) return true;
+    }
+    return false;
+  }
+
+  for (var i = 0; i < indices.length; i++) {
+    var x = indices[i];
+    var side = x[0];
+    if (side == -1) {
+      if (!isTrueConflict(x)) {
+        pushOk(files[0].slice(x[1], x[1] + x[2]));
+      } else {
+        flushOk();
+        result.push({
+          conflict: {
+            a: a.slice(x[1], x[1] + x[2]),
+            aIndex: x[1],
+            o: o.slice(x[3], x[3] + x[4]),
+            oIndex: x[3],
+            b: b.slice(x[5], x[5] + x[6]),
+            bIndex: x[5]
+          }
+        });
+      }
+    } else {
+      pushOk(files[side].slice(x[1], x[1] + x[2]));
+    }
+  }
+
+  flushOk();
+  return result;
+}
+
+module.exports = diff3Merge;
+
+},{"./onp":84}],84:[function(require,module,exports){
+/*
+ * URL: https://github.com/cubicdaiya/onp
+ *
+ * Copyright (c) 2013 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ */
+
+/**
+ * The algorithm implemented here is based on "An O(NP) Sequence Comparison Algorithm"
+ * by described by Sun Wu, Udi Manber and Gene Myers
+*/
+module.exports = function (a_, b_) {
+    var a          = a_,
+        b          = b_,
+        m          = a.length,
+        n          = b.length,
+        reverse    = false,
+        ed         = null,
+        offset     = m + 1,
+        path       = [],
+        pathposi   = [],
+        ses        = [],
+        lcs        = "",
+        SES_DELETE = -1,
+        SES_COMMON = 0,
+        SES_ADD    = 1;
+
+    var tmp1,
+        tmp2;
+
+    var init = function () {
+        if (m >= n) {
+            tmp1    = a;
+            tmp2    = m;
+            a       = b;
+            b       = tmp1;
+            m       = n;
+            n       = tmp2;
+            reverse = true;
+            offset = m + 1;
+        }
+    };
+
+    var P = function (x, y, k) {
+        return {
+            'x' : x,
+            'y' : y,
+            'k' : k,
+        };
+    };
+
+    var seselem = function (elem, t) {
+        return {
+            'elem' : elem,
+            't'    : t,
+        };
+    };
+
+    var snake = function (k, p, pp) {
+        var r, x, y;
+        if (p > pp) {
+            r = path[k-1+offset];
+        } else {
+            r = path[k+1+offset];
+        }
+
+        y = Math.max(p, pp);
+        x = y - k;
+        while (x < m && y < n && a[x] === b[y]) {
+            ++x;
+            ++y;
+        }
+
+        path[k+offset] = pathposi.length;
+        pathposi[pathposi.length] = new P(x, y, r);
+        return y;
+    };
+
+    var recordseq = function (epc) {
+        var x_idx, y_idx, px_idx, py_idx, i;
+        x_idx  = y_idx  = 1;
+        px_idx = py_idx = 0;
+        for (i=epc.length-1;i>=0;--i) {
+            while(px_idx < epc[i].x || py_idx < epc[i].y) {
+                if (epc[i].y - epc[i].x > py_idx - px_idx) {
+                    if (reverse) {
+                        ses[ses.length] = new seselem(b[py_idx], SES_DELETE);
+                    } else {
+                        ses[ses.length] = new seselem(b[py_idx], SES_ADD);
+                    }
+                    ++y_idx;
+                    ++py_idx;
+                } else if (epc[i].y - epc[i].x < py_idx - px_idx) {
+                    if (reverse) {
+                        ses[ses.length] = new seselem(a[px_idx], SES_ADD);
+                    } else {
+                        ses[ses.length] = new seselem(a[px_idx], SES_DELETE);
+                    }
+                    ++x_idx;
+                    ++px_idx;
+                } else {
+                    ses[ses.length] = new seselem(a[px_idx], SES_COMMON);
+                    lcs += a[px_idx];
+                    ++x_idx;
+                    ++y_idx;
+                    ++px_idx;
+                    ++py_idx;
+                }
+            }
+        }
+    };
+
+    init();
+
+    return {
+        SES_DELETE : -1,
+        SES_COMMON :  0,
+        SES_ADD    :  1,
+        editdistance : function () {
+            return ed;
+        },
+        getlcs : function () {
+            return lcs;
+        },
+        getses : function () {
+            return ses;
+        },
+        compose : function () {
+            var delta, size, fp, p, r, epc, i, k;
+            delta  = n - m;
+            size   = m + n + 3;
+            fp     = {};
+            for (i=0;i<size;++i) {
+                fp[i] = -1;
+                path[i] = -1;
+            }
+            p = -1;
+            do {
+                ++p;
+                for (k=-p;k<=delta-1;++k) {
+                    fp[k+offset] = snake(k, fp[k-1+offset]+1, fp[k+1+offset]);
+                }
+                for (k=delta+p;k>=delta+1;--k) {
+                    fp[k+offset] = snake(k, fp[k-1+offset]+1, fp[k+1+offset]);
+                }
+                fp[delta+offset] = snake(delta, fp[delta-1+offset]+1, fp[delta+1+offset]);
+            } while (fp[delta+offset] !== n);
+
+            ed = delta + 2 * p;
+
+            r = path[delta+offset];
+
+            epc  = [];
+            while (r !== -1) {
+                epc[epc.length] = new P(pathposi[r].x, pathposi[r].y, null);
+                r = pathposi[r].k;
+            }
+            recordseq(epc);
+        }
+    };
+};
+
+},{}],85:[function(require,module,exports){
 /*!
  * ee-first
  * Copyright(c) 2014 Jonathan Ong
@@ -30754,7 +31998,7 @@ function listener(event, done) {
   }
 }
 
-},{}],51:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -31694,7 +32938,7 @@ if (typeof window != 'undefined') {
   window.ejs = exports;
 }
 
-},{"../package.json":53,"./utils":52,"fs":37,"path":38}],52:[function(require,module,exports){
+},{"../package.json":88,"./utils":87,"fs":66,"path":67}],87:[function(require,module,exports){
 /*
  * EJS Embedded JavaScript templates
  * Copyright 2112 Matthew Eernisse (mde@fleegix.org)
@@ -31863,12 +33107,12 @@ exports.cache = {
   }
 };
 
-},{}],53:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       "ejs@3.1.3",
-      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
+      "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech"
     ]
   ],
   "_from": "ejs@3.1.3",
@@ -31892,7 +33136,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-3.1.3.tgz",
   "_spec": "3.1.3",
-  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
+  "_where": "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -31942,7 +33186,7 @@ module.exports={
   "version": "3.1.3"
 }
 
-},{}],54:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -31989,7 +33233,7 @@ module.exports = function CreateDataProperty(O, P, V) {
 	);
 };
 
-},{"../GetIntrinsic":71,"../helpers/DefineOwnProperty":72,"./FromPropertyDescriptor":55,"./IsDataDescriptor":58,"./IsExtensible":59,"./IsPropertyKey":60,"./OrdinaryGetOwnProperty":62,"./SameValue":64,"./Type":68}],55:[function(require,module,exports){
+},{"../GetIntrinsic":106,"../helpers/DefineOwnProperty":107,"./FromPropertyDescriptor":90,"./IsDataDescriptor":93,"./IsExtensible":94,"./IsPropertyKey":95,"./OrdinaryGetOwnProperty":97,"./SameValue":99,"./Type":103}],90:[function(require,module,exports){
 'use strict';
 
 var assertRecord = require('../helpers/assertRecord');
@@ -32027,7 +33271,7 @@ module.exports = function FromPropertyDescriptor(Desc) {
 	return obj;
 };
 
-},{"../helpers/assertRecord":73,"./Type":68}],56:[function(require,module,exports){
+},{"../helpers/assertRecord":108,"./Type":103}],91:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32043,14 +33287,14 @@ module.exports = $Array.isArray || function IsArray(argument) {
 	return toStr(argument) === '[object Array]';
 };
 
-},{"../GetIntrinsic":71,"../helpers/callBound":75}],57:[function(require,module,exports){
+},{"../GetIntrinsic":106,"../helpers/callBound":110}],92:[function(require,module,exports){
 'use strict';
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.11
 
 module.exports = require('is-callable');
 
-},{"is-callable":108}],58:[function(require,module,exports){
+},{"is-callable":144}],93:[function(require,module,exports){
 'use strict';
 
 var has = require('has');
@@ -32075,7 +33319,7 @@ module.exports = function IsDataDescriptor(Desc) {
 	return true;
 };
 
-},{"../helpers/assertRecord":73,"./Type":68,"has":85}],59:[function(require,module,exports){
+},{"../helpers/assertRecord":108,"./Type":103,"has":120}],94:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32097,7 +33341,7 @@ module.exports = $preventExtensions
 		return !isPrimitive(obj);
 	};
 
-},{"../GetIntrinsic":71,"../helpers/isPrimitive":78}],60:[function(require,module,exports){
+},{"../GetIntrinsic":106,"../helpers/isPrimitive":113}],95:[function(require,module,exports){
 'use strict';
 
 // https://www.ecma-international.org/ecma-262/6.0/#sec-ispropertykey
@@ -32106,7 +33350,7 @@ module.exports = function IsPropertyKey(argument) {
 	return typeof argument === 'string' || typeof argument === 'symbol';
 };
 
-},{}],61:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32132,7 +33376,7 @@ module.exports = function IsRegExp(argument) {
 	return hasRegExpMatcher(argument);
 };
 
-},{"../GetIntrinsic":71,"./ToBoolean":65,"is-regex":109}],62:[function(require,module,exports){
+},{"../GetIntrinsic":106,"./ToBoolean":100,"is-regex":145}],97:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32178,12 +33422,12 @@ module.exports = function OrdinaryGetOwnProperty(O, P) {
 	return ToPropertyDescriptor($gOPD(O, P));
 };
 
-},{"../GetIntrinsic":71,"../helpers/callBound":75,"../helpers/getOwnPropertyDescriptor":76,"./IsArray":56,"./IsPropertyKey":60,"./IsRegExp":61,"./ToPropertyDescriptor":67,"./Type":68,"has":85}],63:[function(require,module,exports){
+},{"../GetIntrinsic":106,"../helpers/callBound":110,"../helpers/getOwnPropertyDescriptor":111,"./IsArray":91,"./IsPropertyKey":95,"./IsRegExp":96,"./ToPropertyDescriptor":102,"./Type":103,"has":120}],98:[function(require,module,exports){
 'use strict';
 
 module.exports = require('../5/CheckObjectCoercible');
 
-},{"../5/CheckObjectCoercible":69}],64:[function(require,module,exports){
+},{"../5/CheckObjectCoercible":104}],99:[function(require,module,exports){
 'use strict';
 
 var $isNaN = require('../helpers/isNaN');
@@ -32198,14 +33442,14 @@ module.exports = function SameValue(x, y) {
 	return $isNaN(x) && $isNaN(y);
 };
 
-},{"../helpers/isNaN":77}],65:[function(require,module,exports){
+},{"../helpers/isNaN":112}],100:[function(require,module,exports){
 'use strict';
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.2
 
 module.exports = function ToBoolean(value) { return !!value; };
 
-},{}],66:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32221,7 +33465,7 @@ module.exports = function ToObject(value) {
 	return $Object(value);
 };
 
-},{"../GetIntrinsic":71,"./RequireObjectCoercible":63}],67:[function(require,module,exports){
+},{"../GetIntrinsic":106,"./RequireObjectCoercible":98}],102:[function(require,module,exports){
 'use strict';
 
 var has = require('has');
@@ -32275,7 +33519,7 @@ module.exports = function ToPropertyDescriptor(Obj) {
 	return desc;
 };
 
-},{"../GetIntrinsic":71,"./IsCallable":57,"./ToBoolean":65,"./Type":68,"has":85}],68:[function(require,module,exports){
+},{"../GetIntrinsic":106,"./IsCallable":92,"./ToBoolean":100,"./Type":103,"has":120}],103:[function(require,module,exports){
 'use strict';
 
 var ES5Type = require('../5/Type');
@@ -32289,7 +33533,7 @@ module.exports = function Type(x) {
 	return ES5Type(x);
 };
 
-},{"../5/Type":70}],69:[function(require,module,exports){
+},{"../5/Type":105}],104:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32305,7 +33549,7 @@ module.exports = function CheckObjectCoercible(value, optMessage) {
 	return value;
 };
 
-},{"../GetIntrinsic":71}],70:[function(require,module,exports){
+},{"../GetIntrinsic":106}],105:[function(require,module,exports){
 'use strict';
 
 // https://www.ecma-international.org/ecma-262/5.1/#sec-8
@@ -32331,7 +33575,7 @@ module.exports = function Type(x) {
 	}
 };
 
-},{}],71:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 'use strict';
 
 /* globals
@@ -32551,7 +33795,7 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":82,"has-symbols":83}],72:[function(require,module,exports){
+},{"function-bind":117,"has-symbols":118}],107:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32598,7 +33842,7 @@ module.exports = function DefineOwnProperty(IsDataDescriptor, SameValue, FromPro
 	return true;
 };
 
-},{"../GetIntrinsic":71,"../helpers/callBound":75}],73:[function(require,module,exports){
+},{"../GetIntrinsic":106,"../helpers/callBound":110}],108:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32648,7 +33892,7 @@ module.exports = function assertRecord(Type, recordType, argumentName, value) {
 	}
 };
 
-},{"../GetIntrinsic":71,"has":85}],74:[function(require,module,exports){
+},{"../GetIntrinsic":106,"has":120}],109:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
@@ -32667,7 +33911,7 @@ module.exports.apply = function applyBind() {
 	return $reflectApply(bind, $apply, arguments);
 };
 
-},{"../GetIntrinsic":71,"function-bind":82}],75:[function(require,module,exports){
+},{"../GetIntrinsic":106,"function-bind":117}],110:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32684,7 +33928,7 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-},{"../GetIntrinsic":71,"./callBind":74}],76:[function(require,module,exports){
+},{"../GetIntrinsic":106,"./callBind":109}],111:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('../GetIntrinsic');
@@ -32701,21 +33945,21 @@ if ($gOPD) {
 
 module.exports = $gOPD;
 
-},{"../GetIntrinsic":71}],77:[function(require,module,exports){
+},{"../GetIntrinsic":106}],112:[function(require,module,exports){
 'use strict';
 
 module.exports = Number.isNaN || function isNaN(a) {
 	return a !== a;
 };
 
-},{}],78:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 'use strict';
 
 module.exports = function isPrimitive(value) {
 	return value === null || (typeof value !== 'function' && typeof value !== 'object');
 };
 
-},{}],79:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -33240,7 +34484,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],80:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 // get successful control from form and assemble into object
 // http://www.w3.org/TR/html401/interact/forms.html#h-17.13.2
 
@@ -33502,7 +34746,7 @@ function str_serialize(result, key, value) {
 
 module.exports = serialize;
 
-},{}],81:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -33556,14 +34800,14 @@ module.exports = function bind(that) {
     return bound;
 };
 
-},{}],82:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 module.exports = Function.prototype.bind || implementation;
 
-},{"./implementation":81}],83:[function(require,module,exports){
+},{"./implementation":116}],118:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -33580,7 +34824,7 @@ module.exports = function hasNativeSymbols() {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./shams":84}],84:[function(require,module,exports){
+},{"./shams":119}],119:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -33624,14 +34868,14 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],85:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":82}],86:[function(require,module,exports){
+},{"function-bind":117}],121:[function(require,module,exports){
 /*!
  * http-errors
  * Copyright(c) 2014 Jonathan Ong
@@ -33899,7 +35143,40 @@ function populateConstructorExports (exports, codes, HttpError) {
     '"I\'mateapot"; use "ImATeapot" instead')
 }
 
-},{"depd":49,"inherits":106,"setprototypeof":180,"statuses":182,"toidentifier":187}],87:[function(require,module,exports){
+},{"depd":82,"inherits":142,"setprototypeof":236,"statuses":242,"toidentifier":267}],122:[function(require,module,exports){
+var http = require('http')
+var url = require('url')
+
+var https = module.exports
+
+for (var key in http) {
+  if (http.hasOwnProperty(key)) https[key] = http[key]
+}
+
+https.request = function (params, cb) {
+  params = validateParams(params)
+  return http.request.call(this, params, cb)
+}
+
+https.get = function (params, cb) {
+  params = validateParams(params)
+  return http.get.call(this, params, cb)
+}
+
+function validateParams (params) {
+  if (typeof params === 'string') {
+    params = url.parse(params)
+  }
+  if (!params.protocol) {
+    params.protocol = 'https:'
+  }
+  if (params.protocol !== 'https:') {
+    throw new Error('Protocol "' + params.protocol + '" not supported. Expected "https:"')
+  }
+  return params
+}
+
+},{"http":244,"url":270}],123:[function(require,module,exports){
 "use strict";
 var Buffer = require("safer-buffer").Buffer;
 
@@ -34456,7 +35733,7 @@ function findIdx(table, val) {
 }
 
 
-},{"safer-buffer":179}],88:[function(require,module,exports){
+},{"safer-buffer":234}],124:[function(require,module,exports){
 "use strict";
 
 // Description of supported double byte encodings and aliases.
@@ -34634,7 +35911,7 @@ module.exports = {
     'xxbig5': 'big5hkscs',
 };
 
-},{"./tables/big5-added.json":94,"./tables/cp936.json":95,"./tables/cp949.json":96,"./tables/cp950.json":97,"./tables/eucjp.json":98,"./tables/gb18030-ranges.json":99,"./tables/gbk-added.json":100,"./tables/shiftjis.json":101}],89:[function(require,module,exports){
+},{"./tables/big5-added.json":130,"./tables/cp936.json":131,"./tables/cp949.json":132,"./tables/cp950.json":133,"./tables/eucjp.json":134,"./tables/gb18030-ranges.json":135,"./tables/gbk-added.json":136,"./tables/shiftjis.json":137}],125:[function(require,module,exports){
 "use strict";
 
 // Update this array if you add/rename/remove files in this directory.
@@ -34658,7 +35935,7 @@ for (var i = 0; i < modules.length; i++) {
             exports[enc] = module[enc];
 }
 
-},{"./dbcs-codec":87,"./dbcs-data":88,"./internal":90,"./sbcs-codec":91,"./sbcs-data":93,"./sbcs-data-generated":92,"./utf16":102,"./utf7":103}],90:[function(require,module,exports){
+},{"./dbcs-codec":123,"./dbcs-data":124,"./internal":126,"./sbcs-codec":127,"./sbcs-data":129,"./sbcs-data-generated":128,"./utf16":138,"./utf7":139}],126:[function(require,module,exports){
 "use strict";
 var Buffer = require("safer-buffer").Buffer;
 
@@ -34848,7 +36125,7 @@ InternalDecoderCesu8.prototype.end = function() {
     return res;
 }
 
-},{"safer-buffer":179,"string_decoder":184}],91:[function(require,module,exports){
+},{"safer-buffer":234,"string_decoder":264}],127:[function(require,module,exports){
 "use strict";
 var Buffer = require("safer-buffer").Buffer;
 
@@ -34922,7 +36199,7 @@ SBCSDecoder.prototype.write = function(buf) {
 SBCSDecoder.prototype.end = function() {
 }
 
-},{"safer-buffer":179}],92:[function(require,module,exports){
+},{"safer-buffer":234}],128:[function(require,module,exports){
 "use strict";
 
 // Generated data for sbcs codec. Don't edit manually. Regenerate using generation/gen-sbcs.js script.
@@ -35374,7 +36651,7 @@ module.exports = {
     "chars": "���������������������������������กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู����฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛����"
   }
 }
-},{}],93:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 "use strict";
 
 // Manually added data to be used by sbcs codec in addition to generated one.
@@ -35550,7 +36827,7 @@ module.exports = {
 };
 
 
-},{}],94:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports=[
 ["8740","䏰䰲䘃䖦䕸𧉧䵷䖳𧲱䳢𧳅㮕䜶䝄䱇䱀𤊿𣘗𧍒𦺋𧃒䱗𪍑䝏䗚䲅𧱬䴇䪤䚡𦬣爥𥩔𡩣𣸆𣽡晍囻"],
 ["8767","綕夝𨮹㷴霴𧯯寛𡵞媤㘥𩺰嫑宷峼杮薓𩥅瑡璝㡵𡵓𣚞𦀡㻬"],
@@ -35674,7 +36951,7 @@ module.exports=[
 ["fea1","𤅟𤩹𨮏孆𨰃𡢞瓈𡦈甎瓩甞𨻙𡩋寗𨺬鎅畍畊畧畮𤾂㼄𤴓疎瑝疞疴瘂瘬癑癏癯癶𦏵皐臯㟸𦤑𦤎皡皥皷盌𦾟葢𥂝𥅽𡸜眞眦着撯𥈠睘𣊬瞯𨥤𨥨𡛁矴砉𡍶𤨒棊碯磇磓隥礮𥗠磗礴碱𧘌辸袄𨬫𦂃𢘜禆褀椂禀𥡗禝𧬹礼禩渪𧄦㺨秆𩄍秔"]
 ]
 
-},{}],95:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports=[
 ["0","\u0000",127,"€"],
 ["8140","丂丄丅丆丏丒丗丟丠両丣並丩丮丯丱丳丵丷丼乀乁乂乄乆乊乑乕乗乚乛乢乣乤乥乧乨乪",5,"乲乴",9,"乿",6,"亇亊"],
@@ -35940,7 +37217,7 @@ module.exports=[
 ["fe40","兀嗀﨎﨏﨑﨓﨔礼﨟蘒﨡﨣﨤﨧﨨﨩"]
 ]
 
-},{}],96:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports=[
 ["0","\u0000",127],
 ["8141","갂갃갅갆갋",4,"갘갞갟갡갢갣갥",6,"갮갲갳갴"],
@@ -36215,7 +37492,7 @@ module.exports=[
 ["fda1","爻肴酵驍侯候厚后吼喉嗅帿後朽煦珝逅勛勳塤壎焄熏燻薰訓暈薨喧暄煊萱卉喙毁彙徽揮暉煇諱輝麾休携烋畦虧恤譎鷸兇凶匈洶胸黑昕欣炘痕吃屹紇訖欠欽歆吸恰洽翕興僖凞喜噫囍姬嬉希憙憘戱晞曦熙熹熺犧禧稀羲詰"]
 ]
 
-},{}],97:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports=[
 ["0","\u0000",127],
 ["a140","　，、。．‧；：？！︰…‥﹐﹑﹒·﹔﹕﹖﹗｜–︱—︳╴︴﹏（）︵︶｛｝︷︸〔〕︹︺【】︻︼《》︽︾〈〉︿﹀「」﹁﹂『』﹃﹄﹙﹚"],
@@ -36394,7 +37671,7 @@ module.exports=[
 ["f9a1","龤灨灥糷虪蠾蠽蠿讞貜躩軉靋顳顴飌饡馫驤驦驧鬤鸕鸗齈戇欞爧虌躨钂钀钁驩驨鬮鸙爩虋讟钃鱹麷癵驫鱺鸝灩灪麤齾齉龘碁銹裏墻恒粧嫺╔╦╗╠╬╣╚╩╝╒╤╕╞╪╡╘╧╛╓╥╖╟╫╢╙╨╜║═╭╮╰╯▓"]
 ]
 
-},{}],98:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports=[
 ["0","\u0000",127],
 ["8ea1","｡",62],
@@ -36578,9 +37855,9 @@ module.exports=[
 ["8feda1","黸黿鼂鼃鼉鼏鼐鼑鼒鼔鼖鼗鼙鼚鼛鼟鼢鼦鼪鼫鼯鼱鼲鼴鼷鼹鼺鼼鼽鼿齁齃",4,"齓齕齖齗齘齚齝齞齨齩齭",4,"齳齵齺齽龏龐龑龒龔龖龗龞龡龢龣龥"]
 ]
 
-},{}],99:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 module.exports={"uChars":[128,165,169,178,184,216,226,235,238,244,248,251,253,258,276,284,300,325,329,334,364,463,465,467,469,471,473,475,477,506,594,610,712,716,730,930,938,962,970,1026,1104,1106,8209,8215,8218,8222,8231,8241,8244,8246,8252,8365,8452,8454,8458,8471,8482,8556,8570,8596,8602,8713,8720,8722,8726,8731,8737,8740,8742,8748,8751,8760,8766,8777,8781,8787,8802,8808,8816,8854,8858,8870,8896,8979,9322,9372,9548,9588,9616,9622,9634,9652,9662,9672,9676,9680,9702,9735,9738,9793,9795,11906,11909,11913,11917,11928,11944,11947,11951,11956,11960,11964,11979,12284,12292,12312,12319,12330,12351,12436,12447,12535,12543,12586,12842,12850,12964,13200,13215,13218,13253,13263,13267,13270,13384,13428,13727,13839,13851,14617,14703,14801,14816,14964,15183,15471,15585,16471,16736,17208,17325,17330,17374,17623,17997,18018,18212,18218,18301,18318,18760,18811,18814,18820,18823,18844,18848,18872,19576,19620,19738,19887,40870,59244,59336,59367,59413,59417,59423,59431,59437,59443,59452,59460,59478,59493,63789,63866,63894,63976,63986,64016,64018,64021,64025,64034,64037,64042,65074,65093,65107,65112,65127,65132,65375,65510,65536],"gbChars":[0,36,38,45,50,81,89,95,96,100,103,104,105,109,126,133,148,172,175,179,208,306,307,308,309,310,311,312,313,341,428,443,544,545,558,741,742,749,750,805,819,820,7922,7924,7925,7927,7934,7943,7944,7945,7950,8062,8148,8149,8152,8164,8174,8236,8240,8262,8264,8374,8380,8381,8384,8388,8390,8392,8393,8394,8396,8401,8406,8416,8419,8424,8437,8439,8445,8482,8485,8496,8521,8603,8936,8946,9046,9050,9063,9066,9076,9092,9100,9108,9111,9113,9131,9162,9164,9218,9219,11329,11331,11334,11336,11346,11361,11363,11366,11370,11372,11375,11389,11682,11686,11687,11692,11694,11714,11716,11723,11725,11730,11736,11982,11989,12102,12336,12348,12350,12384,12393,12395,12397,12510,12553,12851,12962,12973,13738,13823,13919,13933,14080,14298,14585,14698,15583,15847,16318,16434,16438,16481,16729,17102,17122,17315,17320,17402,17418,17859,17909,17911,17915,17916,17936,17939,17961,18664,18703,18814,18962,19043,33469,33470,33471,33484,33485,33490,33497,33501,33505,33513,33520,33536,33550,37845,37921,37948,38029,38038,38064,38065,38066,38069,38075,38076,38078,39108,39109,39113,39114,39115,39116,39265,39394,189000]}
-},{}],100:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 module.exports=[
 ["a140","",62],
 ["a180","",32],
@@ -36637,7 +37914,7 @@ module.exports=[
 ["fe80","䜣䜩䝼䞍⻊䥇䥺䥽䦂䦃䦅䦆䦟䦛䦷䦶䲣䲟䲠䲡䱷䲢䴓",6,"䶮",93]
 ]
 
-},{}],101:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 module.exports=[
 ["0","\u0000",128],
 ["a1","｡",62],
@@ -36764,7 +38041,7 @@ module.exports=[
 ["fc40","髜魵魲鮏鮱鮻鰀鵰鵫鶴鸙黑"]
 ]
 
-},{}],102:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 "use strict";
 var Buffer = require("safer-buffer").Buffer;
 
@@ -36943,7 +38220,7 @@ function detectEncoding(buf, defaultEncoding) {
 
 
 
-},{"safer-buffer":179}],103:[function(require,module,exports){
+},{"safer-buffer":234}],139:[function(require,module,exports){
 "use strict";
 var Buffer = require("safer-buffer").Buffer;
 
@@ -37235,7 +38512,7 @@ Utf7IMAPDecoder.prototype.end = function() {
 
 
 
-},{"safer-buffer":179}],104:[function(require,module,exports){
+},{"safer-buffer":234}],140:[function(require,module,exports){
 "use strict";
 
 var BOMChar = '\uFEFF';
@@ -37289,7 +38566,7 @@ StripBOMWrapper.prototype.end = function() {
 }
 
 
-},{}],105:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 (function (process){
 "use strict";
 
@@ -37446,9 +38723,9 @@ if ("Ā" != "\u0100") {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'))
-},{"../encodings":89,"./bom-handling":104,"./extend-node":34,"./streams":34,"browserfs/dist/shims/process.js":39,"safer-buffer":179}],106:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-},{"dup":15}],107:[function(require,module,exports){
+},{"../encodings":125,"./bom-handling":140,"./extend-node":63,"./streams":63,"browserfs/dist/shims/process.js":68,"safer-buffer":234}],142:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"dup":42}],143:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -37471,7 +38748,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],108:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 'use strict';
 
 var fnToStr = Function.prototype.toString;
@@ -37539,7 +38816,7 @@ module.exports = reflectApply
 		return strClass === fnClass || strClass === genClass;
 	};
 
-},{}],109:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict';
 
 var hasSymbols = require('has-symbols')();
@@ -37599,14 +38876,17970 @@ module.exports = hasToStringTag
 		return toStr.call(value) === regexClass;
 	};
 
-},{"has-symbols":83}],110:[function(require,module,exports){
+},{"has-symbols":118}],146:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],111:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var get = _interopDefault(require('simple-get'));
+
+/**
+ * @typedef {Object} GitProgressEvent
+ * @property {string} phase
+ * @property {number} loaded
+ * @property {number} total
+ */
+
+/**
+ * @callback ProgressCallback
+ * @param {GitProgressEvent} progress
+ * @returns {void | Promise<void>}
+ */
+
+/**
+ * @typedef {Object} GitHttpRequest
+ * @property {string} url - The URL to request
+ * @property {string} [method='GET'] - The HTTP method to use
+ * @property {Object<string, string>} [headers={}] - Headers to include in the HTTP request
+ * @property {AsyncIterableIterator<Uint8Array>} [body] - An async iterator of Uint8Arrays that make up the body of POST requests
+ * @property {ProgressCallback} [onProgress] - Reserved for future use (emitting `GitProgressEvent`s)
+ * @property {object} [signal] - Reserved for future use (canceling a request)
+ */
+
+/**
+ * @typedef {Object} GitHttpResponse
+ * @property {string} url - The final URL that was fetched after any redirects
+ * @property {string} [method] - The HTTP method that was used
+ * @property {Object<string, string>} [headers] - HTTP response headers
+ * @property {AsyncIterableIterator<Uint8Array>} [body] - An async iterator of Uint8Arrays that make up the body of the response
+ * @property {number} statusCode - The HTTP status code
+ * @property {string} statusMessage - The HTTP status message
+ */
+
+/**
+ * @callback HttpFetch
+ * @param {GitHttpRequest} request
+ * @returns {Promise<GitHttpResponse>}
+ */
+
+/**
+ * @typedef {Object} HttpClient
+ * @property {HttpFetch} request
+ */
+
+// Convert a value to an Async Iterator
+// This will be easier with async generator functions.
+function fromValue(value) {
+  let queue = [value];
+  return {
+    next() {
+      return Promise.resolve({ done: queue.length === 0, value: queue.pop() })
+    },
+    return() {
+      queue = [];
+      return {}
+    },
+    [Symbol.asyncIterator]() {
+      return this
+    },
+  }
+}
+
+function getIterator(iterable) {
+  if (iterable[Symbol.asyncIterator]) {
+    return iterable[Symbol.asyncIterator]()
+  }
+  if (iterable[Symbol.iterator]) {
+    return iterable[Symbol.iterator]()
+  }
+  if (iterable.next) {
+    return iterable
+  }
+  return fromValue(iterable)
+}
+
+// Currently 'for await' upsets my linters.
+async function forAwait(iterable, cb) {
+  const iter = getIterator(iterable);
+  while (true) {
+    const { value, done } = await iter.next();
+    if (value) await cb(value);
+    if (done) break
+  }
+  if (iter.return) iter.return();
+}
+
+function asyncIteratorToStream(iter) {
+  const { PassThrough } = require('readable-stream');
+  const stream = new PassThrough();
+  setTimeout(async () => {
+    await forAwait(iter, chunk => stream.write(chunk));
+    stream.end();
+  }, 1);
+  return stream
+}
+
+async function collect(iterable) {
+  let size = 0;
+  const buffers = [];
+  // This will be easier once `for await ... of` loops are available.
+  await forAwait(iterable, value => {
+    buffers.push(value);
+    size += value.byteLength;
+  });
+  const result = new Uint8Array(size);
+  let nextIndex = 0;
+  for (const buffer of buffers) {
+    result.set(buffer, nextIndex);
+    nextIndex += buffer.byteLength;
+  }
+  return result
+}
+
+// Convert a Node stream to an Async Iterator
+function fromNodeStream(stream) {
+  // Use native async iteration if it's available.
+  const asyncIterator = Object.getOwnPropertyDescriptor(
+    stream,
+    Symbol.asyncIterator
+  );
+  if (asyncIterator && asyncIterator.enumerable) {
+    return stream
+  }
+  // Author's Note
+  // I tried many MANY ways to do this.
+  // I tried two npm modules (stream-to-async-iterator and streams-to-async-iterator) with no luck.
+  // I tried using 'readable' and .read(), and .pause() and .resume()
+  // It took me two loooong evenings to get to this point.
+  // So if you are horrified that this solution just builds up a queue with no backpressure,
+  // and turns Promises inside out, too bad. This is the first code that worked reliably.
+  let ended = false;
+  const queue = [];
+  let defer = {};
+  stream.on('data', chunk => {
+    queue.push(chunk);
+    if (defer.resolve) {
+      defer.resolve({ value: queue.shift(), done: false });
+      defer = {};
+    }
+  });
+  stream.on('error', err => {
+    if (defer.reject) {
+      defer.reject(err);
+      defer = {};
+    }
+  });
+  stream.on('end', () => {
+    ended = true;
+    if (defer.resolve) {
+      defer.resolve({ done: true });
+      defer = {};
+    }
+  });
+  return {
+    next() {
+      return new Promise((resolve, reject) => {
+        if (queue.length === 0 && ended) {
+          return resolve({ done: true })
+        } else if (queue.length > 0) {
+          return resolve({ value: queue.shift(), done: false })
+        } else if (queue.length === 0 && !ended) {
+          defer = { resolve, reject };
+        }
+      })
+    },
+    return() {
+      stream.removeAllListeners();
+      if (stream.destroy) stream.destroy();
+    },
+    [Symbol.asyncIterator]() {
+      return this
+    },
+  }
+}
+
+/**
+ * HttpClient
+ *
+ * @param {GitHttpRequest} request
+ * @returns {Promise<GitHttpResponse>}
+ */
+async function request({
+  onProgress,
+  url,
+  method = 'GET',
+  headers = {},
+  body,
+}) {
+  // If we can, we should send it as a single buffer so it sets a Content-Length header.
+  if (body && Array.isArray(body)) {
+    body = Buffer.from(await collect(body));
+  } else if (body) {
+    body = asyncIteratorToStream(body);
+  }
+  return new Promise((resolve, reject) => {
+    get(
+      {
+        url,
+        method,
+        headers,
+        body,
+      },
+      (err, res) => {
+        if (err) return reject(err)
+        const iter = fromNodeStream(res);
+        resolve({
+          url: res.url,
+          method: res.method,
+          statusCode: res.statusCode,
+          statusMessage: res.statusMessage,
+          body: iter,
+          headers: res.headers,
+        });
+      }
+    );
+  })
+}
+
+var index = { request };
+
+exports.default = index;
+exports.request = request;
+
+}).call(this,require('buffer').Buffer)
+},{"buffer":65,"readable-stream":164,"simple-get":240}],148:[function(require,module,exports){
+(function (Buffer){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var AsyncLock = _interopDefault(require('async-lock'));
+var Hash = _interopDefault(require('sha.js/sha1.js'));
+var crc32 = _interopDefault(require('crc-32'));
+var pako = _interopDefault(require('pako'));
+var ignore = _interopDefault(require('ignore'));
+var pify = _interopDefault(require('pify'));
+var cleanGitRef = _interopDefault(require('clean-git-ref'));
+var diff3Merge = _interopDefault(require('diff3'));
+
+/**
+ * @typedef {Object} GitProgressEvent
+ * @property {string} phase
+ * @property {number} loaded
+ * @property {number} total
+ */
+
+/**
+ * @callback ProgressCallback
+ * @param {GitProgressEvent} progress
+ * @returns {void | Promise<void>}
+ */
+
+/**
+ * @typedef {Object} GitHttpRequest
+ * @property {string} url - The URL to request
+ * @property {string} [method='GET'] - The HTTP method to use
+ * @property {Object<string, string>} [headers={}] - Headers to include in the HTTP request
+ * @property {AsyncIterableIterator<Uint8Array>} [body] - An async iterator of Uint8Arrays that make up the body of POST requests
+ * @property {ProgressCallback} [onProgress] - Reserved for future use (emitting `GitProgressEvent`s)
+ * @property {object} [signal] - Reserved for future use (canceling a request)
+ */
+
+/**
+ * @typedef {Object} GitHttpResponse
+ * @property {string} url - The final URL that was fetched after any redirects
+ * @property {string} [method] - The HTTP method that was used
+ * @property {Object<string, string>} [headers] - HTTP response headers
+ * @property {AsyncIterableIterator<Uint8Array>} [body] - An async iterator of Uint8Arrays that make up the body of the response
+ * @property {number} statusCode - The HTTP status code
+ * @property {string} statusMessage - The HTTP status message
+ */
+
+/**
+ * @callback HttpFetch
+ * @param {GitHttpRequest} request
+ * @returns {Promise<GitHttpResponse>}
+ */
+
+/**
+ * @typedef {Object} HttpClient
+ * @property {HttpFetch} request
+ */
+
+/**
+ * A git commit object.
+ *
+ * @typedef {Object} CommitObject
+ * @property {string} message Commit message
+ * @property {string} tree SHA-1 object id of corresponding file tree
+ * @property {string[]} parent an array of zero or more SHA-1 object ids
+ * @property {Object} author
+ * @property {string} author.name The author's name
+ * @property {string} author.email The author's email
+ * @property {number} author.timestamp UTC Unix timestamp in seconds
+ * @property {number} author.timezoneOffset Timezone difference from UTC in minutes
+ * @property {Object} committer
+ * @property {string} committer.name The committer's name
+ * @property {string} committer.email The committer's email
+ * @property {number} committer.timestamp UTC Unix timestamp in seconds
+ * @property {number} committer.timezoneOffset Timezone difference from UTC in minutes
+ * @property {string} [gpgsig] PGP signature (if present)
+ */
+
+/**
+ * An entry from a git tree object. Files are called 'blobs' and directories are called 'trees'.
+ *
+ * @typedef {Object} TreeEntry
+ * @property {string} mode the 6 digit hexadecimal mode
+ * @property {string} path the name of the file or directory
+ * @property {string} oid the SHA-1 object id of the blob or tree
+ * @property {'commit'|'blob'|'tree'} type the type of object
+ */
+
+/**
+ * A git tree object. Trees represent a directory snapshot.
+ *
+ * @typedef {TreeEntry[]} TreeObject
+ */
+
+/**
+ * A git annotated tag object.
+ *
+ * @typedef {Object} TagObject
+ * @property {string} object SHA-1 object id of object being tagged
+ * @property {'blob' | 'tree' | 'commit' | 'tag'} type the type of the object being tagged
+ * @property {string} tag the tag name
+ * @property {Object} tagger
+ * @property {string} tagger.name the tagger's name
+ * @property {string} tagger.email the tagger's email
+ * @property {number} tagger.timestamp UTC Unix timestamp in seconds
+ * @property {number} tagger.timezoneOffset timezone difference from UTC in minutes
+ * @property {string} message tag message
+ * @property {string} [gpgsig] PGP signature (if present)
+ */
+
+/**
+ * @typedef {Object} ReadCommitResult
+ * @property {string} oid - SHA-1 object id of this commit
+ * @property {CommitObject} commit - the parsed commit object
+ * @property {string} payload - PGP signing payload
+ */
+
+/**
+ * @typedef {Object} ServerRef - This object has the following schema:
+ * @property {string} ref - The name of the ref
+ * @property {string} oid - The SHA-1 object id the ref points to
+ * @property {string} [target] - The target ref pointed to by a symbolic ref
+ * @property {string} [peeled] - If the oid is the SHA-1 object id of an annotated tag, this is the SHA-1 object id that the annotated tag points to
+ */
+
+/**
+ * @typedef Walker
+ * @property {Symbol} Symbol('GitWalkerSymbol')
+ */
+
+/**
+ * Normalized subset of filesystem `stat` data:
+ *
+ * @typedef {Object} Stat
+ * @property {number} ctimeSeconds
+ * @property {number} ctimeNanoseconds
+ * @property {number} mtimeSeconds
+ * @property {number} mtimeNanoseconds
+ * @property {number} dev
+ * @property {number} ino
+ * @property {number} mode
+ * @property {number} uid
+ * @property {number} gid
+ * @property {number} size
+ */
+
+/**
+ * The `WalkerEntry` is an interface that abstracts computing many common tree / blob stats.
+ *
+ * @typedef {Object} WalkerEntry
+ * @property {function(): Promise<'tree'|'blob'|'special'|'commit'>} type
+ * @property {function(): Promise<number>} mode
+ * @property {function(): Promise<string>} oid
+ * @property {function(): Promise<Uint8Array|void>} content
+ * @property {function(): Promise<Stat>} stat
+ */
+
+/**
+ * @typedef {Object} CallbackFsClient
+ * @property {function} readFile - https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback
+ * @property {function} writeFile - https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
+ * @property {function} unlink - https://nodejs.org/api/fs.html#fs_fs_unlink_path_callback
+ * @property {function} readdir - https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback
+ * @property {function} mkdir - https://nodejs.org/api/fs.html#fs_fs_mkdir_path_mode_callback
+ * @property {function} rmdir - https://nodejs.org/api/fs.html#fs_fs_rmdir_path_callback
+ * @property {function} stat - https://nodejs.org/api/fs.html#fs_fs_stat_path_options_callback
+ * @property {function} lstat - https://nodejs.org/api/fs.html#fs_fs_lstat_path_options_callback
+ * @property {function} [readlink] - https://nodejs.org/api/fs.html#fs_fs_readlink_path_options_callback
+ * @property {function} [symlink] - https://nodejs.org/api/fs.html#fs_fs_symlink_target_path_type_callback
+ * @property {function} [chmod] - https://nodejs.org/api/fs.html#fs_fs_chmod_path_mode_callback
+ */
+
+/**
+ * @typedef {Object} PromiseFsClient
+ * @property {Object} promises
+ * @property {function} promises.readFile - https://nodejs.org/api/fs.html#fs_fspromises_readfile_path_options
+ * @property {function} promises.writeFile - https://nodejs.org/api/fs.html#fs_fspromises_writefile_file_data_options
+ * @property {function} promises.unlink - https://nodejs.org/api/fs.html#fs_fspromises_unlink_path
+ * @property {function} promises.readdir - https://nodejs.org/api/fs.html#fs_fspromises_readdir_path_options
+ * @property {function} promises.mkdir - https://nodejs.org/api/fs.html#fs_fspromises_mkdir_path_options
+ * @property {function} promises.rmdir - https://nodejs.org/api/fs.html#fs_fspromises_rmdir_path
+ * @property {function} promises.stat - https://nodejs.org/api/fs.html#fs_fspromises_stat_path_options
+ * @property {function} promises.lstat - https://nodejs.org/api/fs.html#fs_fspromises_lstat_path_options
+ * @property {function} [promises.readlink] - https://nodejs.org/api/fs.html#fs_fspromises_readlink_path_options
+ * @property {function} [promises.symlink] - https://nodejs.org/api/fs.html#fs_fspromises_symlink_target_path_type
+ * @property {function} [promises.chmod] - https://nodejs.org/api/fs.html#fs_fspromises_chmod_path_mode
+ */
+
+/**
+ * @typedef {CallbackFsClient | PromiseFsClient} FsClient
+ */
+
+/**
+ * @callback MessageCallback
+ * @param {string} message
+ * @returns {void | Promise<void>}
+ */
+
+/**
+ * @typedef {Object} GitAuth
+ * @property {string} [username]
+ * @property {string} [password]
+ * @property {Object<string, string>} [headers]
+ * @property {boolean} [cancel] Tells git to throw a `UserCanceledError` (instead of an `HttpError`).
+ */
+
+/**
+ * @callback AuthCallback
+ * @param {string} url
+ * @param {GitAuth} auth Might have some values if the URL itself originally contained a username or password.
+ * @returns {GitAuth | void | Promise<GitAuth | void>}
+ */
+
+/**
+ * @callback AuthFailureCallback
+ * @param {string} url
+ * @param {GitAuth} auth The credentials that failed
+ * @returns {GitAuth | void | Promise<GitAuth | void>}
+ */
+
+/**
+ * @callback AuthSuccessCallback
+ * @param {string} url
+ * @param {GitAuth} auth
+ * @returns {void | Promise<void>}
+ */
+
+/**
+ * @typedef {Object} SignParams
+ * @property {string} payload - a plaintext message
+ * @property {string} secretKey - an 'ASCII armor' encoded PGP key (technically can actually contain _multiple_ keys)
+ */
+
+/**
+ * @callback SignCallback
+ * @param {SignParams} args
+ * @return {{signature: string} | Promise<{signature: string}>} - an 'ASCII armor' encoded "detached" signature
+ */
+
+/**
+ * @callback WalkerMap
+ * @param {string} filename
+ * @param {WalkerEntry[]} entries
+ * @returns {Promise<any>}
+ */
+
+/**
+ * @callback WalkerReduce
+ * @param {any} parent
+ * @param {any[]} children
+ * @returns {Promise<any>}
+ */
+
+/**
+ * @callback WalkerIterateCallback
+ * @param {WalkerEntry[]} entries
+ * @returns {Promise<any[]>}
+ */
+
+/**
+ * @callback WalkerIterate
+ * @param {WalkerIterateCallback} walk
+ * @param {IterableIterator<WalkerEntry[]>} children
+ * @returns {Promise<any[]>}
+ */
+
+/**
+ * @typedef {Object} RefUpdateStatus
+ * @property {boolean} ok
+ * @property {string} error
+ */
+
+/**
+ * @typedef {Object} PushResult
+ * @property {boolean} ok
+ * @property {?string} error
+ * @property {Object<string, RefUpdateStatus>} refs
+ * @property {Object<string, string>} [headers]
+ */
+
+/**
+ * @typedef {0|1} HeadStatus
+ */
+
+/**
+ * @typedef {0|1|2} WorkdirStatus
+ */
+
+/**
+ * @typedef {0|1|2|3} StageStatus
+ */
+
+/**
+ * @typedef {[string, HeadStatus, WorkdirStatus, StageStatus]} StatusRow
+ */
+
+class BaseError extends Error {
+  constructor(message) {
+    super(message);
+    // Setting this here allows TS to infer that all git errors have a `caller` property and
+    // that its type is string.
+    this.caller = '';
+  }
+
+  toJSON() {
+    // Error objects aren't normally serializable. So we do something about that.
+    return {
+      code: this.code,
+      data: this.data,
+      caller: this.caller,
+      message: this.message,
+      stack: this.stack,
+    }
+  }
+
+  fromJSON(json) {
+    const e = new BaseError(json.message);
+    e.code = json.code;
+    e.data = json.data;
+    e.caller = json.caller;
+    e.stack = json.stack;
+    return e
+  }
+
+  get isIsomorphicGitError() {
+    return true
+  }
+}
+
+class InternalError extends BaseError {
+  /**
+   * @param {string} message
+   */
+  constructor(message) {
+    super(
+      `An internal error caused this command to fail. Please file a bug report at https://github.com/isomorphic-git/isomorphic-git/issues with this error message: ${message}`
+    );
+    this.code = this.name = InternalError.code;
+    this.data = { message };
+  }
+}
+/** @type {'InternalError'} */
+InternalError.code = 'InternalError';
+
+// Modeled after https://github.com/tjfontaine/node-buffercursor
+// but with the goal of being much lighter weight.
+class BufferCursor {
+  constructor(buffer) {
+    this.buffer = buffer;
+    this._start = 0;
+  }
+
+  eof() {
+    return this._start >= this.buffer.length
+  }
+
+  tell() {
+    return this._start
+  }
+
+  seek(n) {
+    this._start = n;
+  }
+
+  slice(n) {
+    const r = this.buffer.slice(this._start, this._start + n);
+    this._start += n;
+    return r
+  }
+
+  toString(enc, length) {
+    const r = this.buffer.toString(enc, this._start, this._start + length);
+    this._start += length;
+    return r
+  }
+
+  write(value, length, enc) {
+    const r = this.buffer.write(value, this._start, length, enc);
+    this._start += length;
+    return r
+  }
+
+  copy(source, start, end) {
+    const r = source.copy(this.buffer, this._start, start, end);
+    this._start += r;
+    return r
+  }
+
+  readUInt8() {
+    const r = this.buffer.readUInt8(this._start);
+    this._start += 1;
+    return r
+  }
+
+  writeUInt8(value) {
+    const r = this.buffer.writeUInt8(value, this._start);
+    this._start += 1;
+    return r
+  }
+
+  readUInt16BE() {
+    const r = this.buffer.readUInt16BE(this._start);
+    this._start += 2;
+    return r
+  }
+
+  writeUInt16BE(value) {
+    const r = this.buffer.writeUInt16BE(value, this._start);
+    this._start += 2;
+    return r
+  }
+
+  readUInt32BE() {
+    const r = this.buffer.readUInt32BE(this._start);
+    this._start += 4;
+    return r
+  }
+
+  writeUInt32BE(value) {
+    const r = this.buffer.writeUInt32BE(value, this._start);
+    this._start += 4;
+    return r
+  }
+}
+
+function compareStrings(a, b) {
+  // https://stackoverflow.com/a/40355107/2168416
+  return -(a < b) || +(a > b)
+}
+
+function comparePath(a, b) {
+  // https://stackoverflow.com/a/40355107/2168416
+  return compareStrings(a.path, b.path)
+}
+
+/**
+ * From https://github.com/git/git/blob/master/Documentation/technical/index-format.txt
+ *
+ * 32-bit mode, split into (high to low bits)
+ *
+ *  4-bit object type
+ *    valid values in binary are 1000 (regular file), 1010 (symbolic link)
+ *    and 1110 (gitlink)
+ *
+ *  3-bit unused
+ *
+ *  9-bit unix permission. Only 0755 and 0644 are valid for regular files.
+ *  Symbolic links and gitlinks have value 0 in this field.
+ */
+function normalizeMode(mode) {
+  // Note: BrowserFS will use -1 for "unknown"
+  // I need to make it non-negative for these bitshifts to work.
+  let type = mode > 0 ? mode >> 12 : 0;
+  // If it isn't valid, assume it as a "regular file"
+  // 0100 = directory
+  // 1000 = regular file
+  // 1010 = symlink
+  // 1110 = gitlink
+  if (
+    type !== 0b0100 &&
+    type !== 0b1000 &&
+    type !== 0b1010 &&
+    type !== 0b1110
+  ) {
+    type = 0b1000;
+  }
+  let permissions = mode & 0o777;
+  // Is the file executable? then 755. Else 644.
+  if (permissions & 0b001001001) {
+    permissions = 0o755;
+  } else {
+    permissions = 0o644;
+  }
+  // If it's not a regular file, scrub all permissions
+  if (type !== 0b1000) permissions = 0;
+  return (type << 12) + permissions
+}
+
+const MAX_UINT32 = 2 ** 32;
+
+function SecondsNanoseconds(
+  givenSeconds,
+  givenNanoseconds,
+  milliseconds,
+  date
+) {
+  if (givenSeconds !== undefined && givenNanoseconds !== undefined) {
+    return [givenSeconds, givenNanoseconds]
+  }
+  if (milliseconds === undefined) {
+    milliseconds = date.valueOf();
+  }
+  const seconds = Math.floor(milliseconds / 1000);
+  const nanoseconds = (milliseconds - seconds * 1000) * 1000000;
+  return [seconds, nanoseconds]
+}
+
+function normalizeStats(e) {
+  const [ctimeSeconds, ctimeNanoseconds] = SecondsNanoseconds(
+    e.ctimeSeconds,
+    e.ctimeNanoseconds,
+    e.ctimeMs,
+    e.ctime
+  );
+  const [mtimeSeconds, mtimeNanoseconds] = SecondsNanoseconds(
+    e.mtimeSeconds,
+    e.mtimeNanoseconds,
+    e.mtimeMs,
+    e.mtime
+  );
+
+  return {
+    ctimeSeconds: ctimeSeconds % MAX_UINT32,
+    ctimeNanoseconds: ctimeNanoseconds % MAX_UINT32,
+    mtimeSeconds: mtimeSeconds % MAX_UINT32,
+    mtimeNanoseconds: mtimeNanoseconds % MAX_UINT32,
+    dev: e.dev % MAX_UINT32,
+    ino: e.ino % MAX_UINT32,
+    mode: normalizeMode(e.mode % MAX_UINT32),
+    uid: e.uid % MAX_UINT32,
+    gid: e.gid % MAX_UINT32,
+    // size of -1 happens over a BrowserFS HTTP Backend that doesn't serve Content-Length headers
+    // (like the Karma webserver) because BrowserFS HTTP Backend uses HTTP HEAD requests to do fs.stat
+    size: e.size > -1 ? e.size % MAX_UINT32 : 0,
+  }
+}
+
+function toHex(buffer) {
+  let hex = '';
+  for (const byte of new Uint8Array(buffer)) {
+    if (byte < 16) hex += '0';
+    hex += byte.toString(16);
+  }
+  return hex
+}
+
+/* eslint-env node, browser */
+
+let supportsSubtleSHA1 = null;
+
+async function shasum(buffer) {
+  if (supportsSubtleSHA1 === null) {
+    supportsSubtleSHA1 = await testSubtleSHA1();
+  }
+  return supportsSubtleSHA1 ? subtleSHA1(buffer) : shasumSync(buffer)
+}
+
+// This is modeled after @dominictarr's "shasum" module,
+// but without the 'json-stable-stringify' dependency and
+// extra type-casting features.
+function shasumSync(buffer) {
+  return new Hash().update(buffer).digest('hex')
+}
+
+async function subtleSHA1(buffer) {
+  const hash = await crypto.subtle.digest('SHA-1', buffer);
+  return toHex(hash)
+}
+
+async function testSubtleSHA1() {
+  // I'm using a rather crude method of progressive enhancement, because
+  // some browsers that have crypto.subtle.digest don't actually implement SHA-1.
+  try {
+    const hash = await subtleSHA1(new Uint8Array([]));
+    if (hash === 'da39a3ee5e6b4b0d3255bfef95601890afd80709') return true
+  } catch (_) {
+    // no bother
+  }
+  return false
+}
+
+// Extract 1-bit assume-valid, 1-bit extended flag, 2-bit merge state flag, 12-bit path length flag
+function parseCacheEntryFlags(bits) {
+  return {
+    assumeValid: Boolean(bits & 0b1000000000000000),
+    extended: Boolean(bits & 0b0100000000000000),
+    stage: (bits & 0b0011000000000000) >> 12,
+    nameLength: bits & 0b0000111111111111,
+  }
+}
+
+function renderCacheEntryFlags(entry) {
+  const flags = entry.flags;
+  // 1-bit extended flag (must be zero in version 2)
+  flags.extended = false;
+  // 12-bit name length if the length is less than 0xFFF; otherwise 0xFFF
+  // is stored in this field.
+  flags.nameLength = Math.min(Buffer.from(entry.path).length, 0xfff);
+  return (
+    (flags.assumeValid ? 0b1000000000000000 : 0) +
+    (flags.extended ? 0b0100000000000000 : 0) +
+    ((flags.stage & 0b11) << 12) +
+    (flags.nameLength & 0b111111111111)
+  )
+}
+
+class GitIndex {
+  /*::
+   _entries: Map<string, CacheEntry>
+   _dirty: boolean // Used to determine if index needs to be saved to filesystem
+   */
+  constructor(entries) {
+    this._dirty = false;
+    this._entries = entries || new Map();
+  }
+
+  static async from(buffer) {
+    if (Buffer.isBuffer(buffer)) {
+      return GitIndex.fromBuffer(buffer)
+    } else if (buffer === null) {
+      return new GitIndex(null)
+    } else {
+      throw new InternalError('invalid type passed to GitIndex.from')
+    }
+  }
+
+  static async fromBuffer(buffer) {
+    // Verify shasum
+    const shaComputed = await shasum(buffer.slice(0, -20));
+    const shaClaimed = buffer.slice(-20).toString('hex');
+    if (shaClaimed !== shaComputed) {
+      throw new InternalError(
+        `Invalid checksum in GitIndex buffer: expected ${shaClaimed} but saw ${shaComputed}`
+      )
+    }
+    const reader = new BufferCursor(buffer);
+    const _entries = new Map();
+    const magic = reader.toString('utf8', 4);
+    if (magic !== 'DIRC') {
+      throw new InternalError(`Inavlid dircache magic file number: ${magic}`)
+    }
+    const version = reader.readUInt32BE();
+    if (version !== 2) {
+      throw new InternalError(`Unsupported dircache version: ${version}`)
+    }
+    const numEntries = reader.readUInt32BE();
+    let i = 0;
+    while (!reader.eof() && i < numEntries) {
+      const entry = {};
+      entry.ctimeSeconds = reader.readUInt32BE();
+      entry.ctimeNanoseconds = reader.readUInt32BE();
+      entry.mtimeSeconds = reader.readUInt32BE();
+      entry.mtimeNanoseconds = reader.readUInt32BE();
+      entry.dev = reader.readUInt32BE();
+      entry.ino = reader.readUInt32BE();
+      entry.mode = reader.readUInt32BE();
+      entry.uid = reader.readUInt32BE();
+      entry.gid = reader.readUInt32BE();
+      entry.size = reader.readUInt32BE();
+      entry.oid = reader.slice(20).toString('hex');
+      const flags = reader.readUInt16BE();
+      entry.flags = parseCacheEntryFlags(flags);
+      // TODO: handle if (version === 3 && entry.flags.extended)
+      const pathlength = buffer.indexOf(0, reader.tell() + 1) - reader.tell();
+      if (pathlength < 1) {
+        throw new InternalError(`Got a path length of: ${pathlength}`)
+      }
+      // TODO: handle pathnames larger than 12 bits
+      entry.path = reader.toString('utf8', pathlength);
+      // The next bit is awkward. We expect 1 to 8 null characters
+      // such that the total size of the entry is a multiple of 8 bits.
+      // (Hence subtract 12 bytes for the header.)
+      let padding = 8 - ((reader.tell() - 12) % 8);
+      if (padding === 0) padding = 8;
+      while (padding--) {
+        const tmp = reader.readUInt8();
+        if (tmp !== 0) {
+          throw new InternalError(
+            `Expected 1-8 null characters but got '${tmp}' after ${entry.path}`
+          )
+        } else if (reader.eof()) {
+          throw new InternalError('Unexpected end of file')
+        }
+      }
+      // end of awkward part
+      _entries.set(entry.path, entry);
+      i++;
+    }
+    return new GitIndex(_entries)
+  }
+
+  get entries() {
+    return [...this._entries.values()].sort(comparePath)
+  }
+
+  get entriesMap() {
+    return this._entries
+  }
+
+  *[Symbol.iterator]() {
+    for (const entry of this.entries) {
+      yield entry;
+    }
+  }
+
+  insert({ filepath, stats, oid }) {
+    stats = normalizeStats(stats);
+    const bfilepath = Buffer.from(filepath);
+    const entry = {
+      ctimeSeconds: stats.ctimeSeconds,
+      ctimeNanoseconds: stats.ctimeNanoseconds,
+      mtimeSeconds: stats.mtimeSeconds,
+      mtimeNanoseconds: stats.mtimeNanoseconds,
+      dev: stats.dev,
+      ino: stats.ino,
+      // We provide a fallback value for `mode` here because not all fs
+      // implementations assign it, but we use it in GitTree.
+      // '100644' is for a "regular non-executable file"
+      mode: stats.mode || 0o100644,
+      uid: stats.uid,
+      gid: stats.gid,
+      size: stats.size,
+      path: filepath,
+      oid: oid,
+      flags: {
+        assumeValid: false,
+        extended: false,
+        stage: 0,
+        nameLength: bfilepath.length < 0xfff ? bfilepath.length : 0xfff,
+      },
+    };
+    this._entries.set(entry.path, entry);
+    this._dirty = true;
+  }
+
+  delete({ filepath }) {
+    if (this._entries.has(filepath)) {
+      this._entries.delete(filepath);
+    } else {
+      for (const key of this._entries.keys()) {
+        if (key.startsWith(filepath + '/')) {
+          this._entries.delete(key);
+        }
+      }
+    }
+    this._dirty = true;
+  }
+
+  clear() {
+    this._entries.clear();
+    this._dirty = true;
+  }
+
+  render() {
+    return this.entries
+      .map(entry => `${entry.mode.toString(8)} ${entry.oid}    ${entry.path}`)
+      .join('\n')
+  }
+
+  async toObject() {
+    const header = Buffer.alloc(12);
+    const writer = new BufferCursor(header);
+    writer.write('DIRC', 4, 'utf8');
+    writer.writeUInt32BE(2);
+    writer.writeUInt32BE(this.entries.length);
+    const body = Buffer.concat(
+      this.entries.map(entry => {
+        const bpath = Buffer.from(entry.path);
+        // the fixed length + the filename + at least one null char => align by 8
+        const length = Math.ceil((62 + bpath.length + 1) / 8) * 8;
+        const written = Buffer.alloc(length);
+        const writer = new BufferCursor(written);
+        const stat = normalizeStats(entry);
+        writer.writeUInt32BE(stat.ctimeSeconds);
+        writer.writeUInt32BE(stat.ctimeNanoseconds);
+        writer.writeUInt32BE(stat.mtimeSeconds);
+        writer.writeUInt32BE(stat.mtimeNanoseconds);
+        writer.writeUInt32BE(stat.dev);
+        writer.writeUInt32BE(stat.ino);
+        writer.writeUInt32BE(stat.mode);
+        writer.writeUInt32BE(stat.uid);
+        writer.writeUInt32BE(stat.gid);
+        writer.writeUInt32BE(stat.size);
+        writer.write(entry.oid, 20, 'hex');
+        writer.writeUInt16BE(renderCacheEntryFlags(entry));
+        writer.write(entry.path, bpath.length, 'utf8');
+        return written
+      })
+    );
+    const main = Buffer.concat([header, body]);
+    const sum = await shasum(main);
+    return Buffer.concat([main, Buffer.from(sum, 'hex')])
+  }
+}
+
+function compareStats(entry, stats) {
+  // Comparison based on the description in Paragraph 4 of
+  // https://www.kernel.org/pub/software/scm/git/docs/technical/racy-git.txt
+  const e = normalizeStats(entry);
+  const s = normalizeStats(stats);
+  const staleness =
+    e.mode !== s.mode ||
+    e.mtimeSeconds !== s.mtimeSeconds ||
+    e.ctimeSeconds !== s.ctimeSeconds ||
+    e.uid !== s.uid ||
+    e.gid !== s.gid ||
+    e.ino !== s.ino ||
+    e.size !== s.size;
+  return staleness
+}
+
+// import LockManager from 'travix-lock-manager'
+
+// import Lock from '../utils.js'
+
+// const lm = new LockManager()
+let lock = null;
+
+function createCache() {
+  return {
+    map: new Map(),
+    stats: new Map(),
+  }
+}
+
+async function updateCachedIndexFile(fs, filepath, cache) {
+  const stat = await fs.lstat(filepath);
+  const rawIndexFile = await fs.read(filepath);
+  const index = await GitIndex.from(rawIndexFile);
+  // cache the GitIndex object so we don't need to re-read it every time.
+  cache.map.set(filepath, index);
+  // Save the stat data for the index so we know whether the cached file is stale (modified by an outside process).
+  cache.stats.set(filepath, stat);
+}
+
+// Determine whether our copy of the index file is stale
+async function isIndexStale(fs, filepath, cache) {
+  const savedStats = cache.stats.get(filepath);
+  if (savedStats === undefined) return true
+  const currStats = await fs.lstat(filepath);
+  if (savedStats === null) return false
+  if (currStats === null) return false
+  return compareStats(savedStats, currStats)
+}
+
+class GitIndexManager {
+  /**
+   *
+   * @param {object} opts
+   * @param {import('../models/FileSystem.js').FileSystem} opts.fs
+   * @param {string} opts.gitdir
+   * @param {object} opts.cache
+   * @param {function(GitIndex): any} closure
+   */
+  static async acquire({ fs, gitdir, cache }, closure) {
+    if (!cache.index) cache.index = createCache();
+
+    const filepath = `${gitdir}/index`;
+    if (lock === null) lock = new AsyncLock({ maxPending: Infinity });
+    let result;
+    await lock.acquire(filepath, async function() {
+      // Acquire a file lock while we're reading the index
+      // to make sure other processes aren't writing to it
+      // simultaneously, which could result in a corrupted index.
+      // const fileLock = await Lock(filepath)
+      if (await isIndexStale(fs, filepath, cache.index)) {
+        await updateCachedIndexFile(fs, filepath, cache.index);
+      }
+      const index = cache.index.map.get(filepath);
+      result = await closure(index);
+      if (index._dirty) {
+        // Acquire a file lock while we're writing the index file
+        // let fileLock = await Lock(filepath)
+        const buffer = await index.toObject();
+        await fs.write(filepath, buffer);
+        // Update cached stat value
+        cache.index.stats.set(filepath, await fs.lstat(filepath));
+        index._dirty = false;
+      }
+    });
+    return result
+  }
+}
+
+function basename(path) {
+  const last = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+  if (last > -1) {
+    path = path.slice(last + 1);
+  }
+  return path
+}
+
+function dirname(path) {
+  const last = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+  if (last === -1) return '.'
+  if (last === 0) return '/'
+  return path.slice(0, last)
+}
+
+/*::
+type Node = {
+  type: string,
+  fullpath: string,
+  basename: string,
+  metadata: Object, // mode, oid
+  parent?: Node,
+  children: Array<Node>
+}
+*/
+
+function flatFileListToDirectoryStructure(files) {
+  const inodes = new Map();
+  const mkdir = function(name) {
+    if (!inodes.has(name)) {
+      const dir = {
+        type: 'tree',
+        fullpath: name,
+        basename: basename(name),
+        metadata: {},
+        children: [],
+      };
+      inodes.set(name, dir);
+      // This recursively generates any missing parent folders.
+      // We do it after we've added the inode to the set so that
+      // we don't recurse infinitely trying to create the root '.' dirname.
+      dir.parent = mkdir(dirname(name));
+      if (dir.parent && dir.parent !== dir) dir.parent.children.push(dir);
+    }
+    return inodes.get(name)
+  };
+
+  const mkfile = function(name, metadata) {
+    if (!inodes.has(name)) {
+      const file = {
+        type: 'blob',
+        fullpath: name,
+        basename: basename(name),
+        metadata: metadata,
+        // This recursively generates any missing parent folders.
+        parent: mkdir(dirname(name)),
+        children: [],
+      };
+      if (file.parent) file.parent.children.push(file);
+      inodes.set(name, file);
+    }
+    return inodes.get(name)
+  };
+
+  mkdir('.');
+  for (const file of files) {
+    mkfile(file.path, file);
+  }
+  return inodes
+}
+
+/**
+ *
+ * @param {number} mode
+ */
+function mode2type(mode) {
+  // prettier-ignore
+  switch (mode) {
+    case 0o040000: return 'tree'
+    case 0o100644: return 'blob'
+    case 0o100755: return 'blob'
+    case 0o120000: return 'blob'
+    case 0o160000: return 'commit'
+  }
+  throw new InternalError(`Unexpected GitTree entry mode: ${mode.toString(8)}`)
+}
+
+class GitWalkerIndex {
+  constructor({ fs, gitdir, cache }) {
+    this.treePromise = GitIndexManager.acquire(
+      { fs, gitdir, cache },
+      async function(index) {
+        return flatFileListToDirectoryStructure(index.entries)
+      }
+    );
+    const walker = this;
+    this.ConstructEntry = class StageEntry {
+      constructor(fullpath) {
+        this._fullpath = fullpath;
+        this._type = false;
+        this._mode = false;
+        this._stat = false;
+        this._oid = false;
+      }
+
+      async type() {
+        return walker.type(this)
+      }
+
+      async mode() {
+        return walker.mode(this)
+      }
+
+      async stat() {
+        return walker.stat(this)
+      }
+
+      async content() {
+        return walker.content(this)
+      }
+
+      async oid() {
+        return walker.oid(this)
+      }
+    };
+  }
+
+  async readdir(entry) {
+    const filepath = entry._fullpath;
+    const tree = await this.treePromise;
+    const inode = tree.get(filepath);
+    if (!inode) return null
+    if (inode.type === 'blob') return null
+    if (inode.type !== 'tree') {
+      throw new Error(`ENOTDIR: not a directory, scandir '${filepath}'`)
+    }
+    const names = inode.children.map(inode => inode.fullpath);
+    names.sort(compareStrings);
+    return names
+  }
+
+  async type(entry) {
+    if (entry._type === false) {
+      await entry.stat();
+    }
+    return entry._type
+  }
+
+  async mode(entry) {
+    if (entry._mode === false) {
+      await entry.stat();
+    }
+    return entry._mode
+  }
+
+  async stat(entry) {
+    if (entry._stat === false) {
+      const tree = await this.treePromise;
+      const inode = tree.get(entry._fullpath);
+      if (!inode) {
+        throw new Error(
+          `ENOENT: no such file or directory, lstat '${entry._fullpath}'`
+        )
+      }
+      const stats = inode.type === 'tree' ? {} : normalizeStats(inode.metadata);
+      entry._type = inode.type === 'tree' ? 'tree' : mode2type(stats.mode);
+      entry._mode = stats.mode;
+      if (inode.type === 'tree') {
+        entry._stat = undefined;
+      } else {
+        entry._stat = stats;
+      }
+    }
+    return entry._stat
+  }
+
+  async content(_entry) {
+    // Cannot get content for an index entry
+  }
+
+  async oid(entry) {
+    if (entry._oid === false) {
+      const tree = await this.treePromise;
+      const inode = tree.get(entry._fullpath);
+      entry._oid = inode.metadata.oid;
+    }
+    return entry._oid
+  }
+}
+
+// This is part of an elaborate system to facilitate code-splitting / tree-shaking.
+// commands/walk.js can depend on only this, and the actual Walker classes exported
+// can be opaque - only having a single property (this symbol) that is not enumerable,
+// and thus the constructor can be passed as an argument to walk while being "unusable"
+// outside of it.
+const GitWalkSymbol = Symbol('GitWalkSymbol');
+
+// @ts-check
+
+/**
+ * @returns {Walker}
+ */
+function STAGE() {
+  const o = Object.create(null);
+  Object.defineProperty(o, GitWalkSymbol, {
+    value: function({ fs, gitdir, cache }) {
+      return new GitWalkerIndex({ fs, gitdir, cache })
+    },
+  });
+  Object.freeze(o);
+  return o
+}
+
+// @ts-check
+
+class NotFoundError extends BaseError {
+  /**
+   * @param {string} what
+   */
+  constructor(what) {
+    super(`Could not find ${what}.`);
+    this.code = this.name = NotFoundError.code;
+    this.data = { what };
+  }
+}
+/** @type {'NotFoundError'} */
+NotFoundError.code = 'NotFoundError';
+
+class ObjectTypeError extends BaseError {
+  /**
+   * @param {string} oid
+   * @param {'blob'|'commit'|'tag'|'tree'} actual
+   * @param {'blob'|'commit'|'tag'|'tree'} expected
+   * @param {string} [filepath]
+   */
+  constructor(oid, actual, expected, filepath) {
+    super(
+      `Object ${oid} ${
+        filepath ? `at ${filepath}` : ''
+      }was anticipated to be a ${expected} but it is a ${actual}.`
+    );
+    this.code = this.name = ObjectTypeError.code;
+    this.data = { oid, actual, expected, filepath };
+  }
+}
+/** @type {'ObjectTypeError'} */
+ObjectTypeError.code = 'ObjectTypeError';
+
+class InvalidOidError extends BaseError {
+  /**
+   * @param {string} value
+   */
+  constructor(value) {
+    super(`Expected a 40-char hex object id but saw "${value}".`);
+    this.code = this.name = InvalidOidError.code;
+    this.data = { value };
+  }
+}
+/** @type {'InvalidOidError'} */
+InvalidOidError.code = 'InvalidOidError';
+
+class NoRefspecError extends BaseError {
+  /**
+   * @param {string} remote
+   */
+  constructor(remote) {
+    super(`Could not find a fetch refspec for remote "${remote}". Make sure the config file has an entry like the following:
+[remote "${remote}"]
+\tfetch = +refs/heads/*:refs/remotes/origin/*
+`);
+    this.code = this.name = NoRefspecError.code;
+    this.data = { remote };
+  }
+}
+/** @type {'NoRefspecError'} */
+NoRefspecError.code = 'NoRefspecError';
+
+class GitPackedRefs {
+  constructor(text) {
+    this.refs = new Map();
+    this.parsedConfig = [];
+    if (text) {
+      let key = null;
+      this.parsedConfig = text
+        .trim()
+        .split('\n')
+        .map(line => {
+          if (/^\s*#/.test(line)) {
+            return { line, comment: true }
+          }
+          const i = line.indexOf(' ');
+          if (line.startsWith('^')) {
+            // This is a oid for the commit associated with the annotated tag immediately preceding this line.
+            // Trim off the '^'
+            const value = line.slice(1);
+            // The tagname^{} syntax is based on the output of `git show-ref --tags -d`
+            this.refs.set(key + '^{}', value);
+            return { line, ref: key, peeled: value }
+          } else {
+            // This is an oid followed by the ref name
+            const value = line.slice(0, i);
+            key = line.slice(i + 1);
+            this.refs.set(key, value);
+            return { line, ref: key, oid: value }
+          }
+        });
+    }
+    return this
+  }
+
+  static from(text) {
+    return new GitPackedRefs(text)
+  }
+
+  delete(ref) {
+    this.parsedConfig = this.parsedConfig.filter(entry => entry.ref !== ref);
+    this.refs.delete(ref);
+  }
+
+  toString() {
+    return this.parsedConfig.map(({ line }) => line).join('\n') + '\n'
+  }
+}
+
+class GitRefSpec {
+  constructor({ remotePath, localPath, force, matchPrefix }) {
+    Object.assign(this, {
+      remotePath,
+      localPath,
+      force,
+      matchPrefix,
+    });
+  }
+
+  static from(refspec) {
+    const [
+      forceMatch,
+      remotePath,
+      remoteGlobMatch,
+      localPath,
+      localGlobMatch,
+    ] = refspec.match(/^(\+?)(.*?)(\*?):(.*?)(\*?)$/).slice(1);
+    const force = forceMatch === '+';
+    const remoteIsGlob = remoteGlobMatch === '*';
+    const localIsGlob = localGlobMatch === '*';
+    // validate
+    // TODO: Make this check more nuanced, and depend on whether this is a fetch refspec or a push refspec
+    if (remoteIsGlob !== localIsGlob) {
+      throw new InternalError('Invalid refspec')
+    }
+    return new GitRefSpec({
+      remotePath,
+      localPath,
+      force,
+      matchPrefix: remoteIsGlob,
+    })
+    // TODO: We need to run resolveRef on both paths to expand them to their full name.
+  }
+
+  translate(remoteBranch) {
+    if (this.matchPrefix) {
+      if (remoteBranch.startsWith(this.remotePath)) {
+        return this.localPath + remoteBranch.replace(this.remotePath, '')
+      }
+    } else {
+      if (remoteBranch === this.remotePath) return this.localPath
+    }
+    return null
+  }
+
+  reverseTranslate(localBranch) {
+    if (this.matchPrefix) {
+      if (localBranch.startsWith(this.localPath)) {
+        return this.remotePath + localBranch.replace(this.localPath, '')
+      }
+    } else {
+      if (localBranch === this.localPath) return this.remotePath
+    }
+    return null
+  }
+}
+
+class GitRefSpecSet {
+  constructor(rules = []) {
+    this.rules = rules;
+  }
+
+  static from(refspecs) {
+    const rules = [];
+    for (const refspec of refspecs) {
+      rules.push(GitRefSpec.from(refspec)); // might throw
+    }
+    return new GitRefSpecSet(rules)
+  }
+
+  add(refspec) {
+    const rule = GitRefSpec.from(refspec); // might throw
+    this.rules.push(rule);
+  }
+
+  translate(remoteRefs) {
+    const result = [];
+    for (const rule of this.rules) {
+      for (const remoteRef of remoteRefs) {
+        const localRef = rule.translate(remoteRef);
+        if (localRef) {
+          result.push([remoteRef, localRef]);
+        }
+      }
+    }
+    return result
+  }
+
+  translateOne(remoteRef) {
+    let result = null;
+    for (const rule of this.rules) {
+      const localRef = rule.translate(remoteRef);
+      if (localRef) {
+        result = localRef;
+      }
+    }
+    return result
+  }
+
+  localNamespaces() {
+    return this.rules
+      .filter(rule => rule.matchPrefix)
+      .map(rule => rule.localPath.replace(/\/$/, ''))
+  }
+}
+
+function compareRefNames(a, b) {
+  // https://stackoverflow.com/a/40355107/2168416
+  const _a = a.replace(/\^\{\}$/, '');
+  const _b = b.replace(/\^\{\}$/, '');
+  const tmp = -(_a < _b) || +(_a > _b);
+  if (tmp === 0) {
+    return a.endsWith('^{}') ? 1 : -1
+  }
+  return tmp
+}
+
+function normalizePath(path) {
+  return path
+    .replace(/\/\.\//g, '/') // Replace '/./' with '/'
+    .replace(/\/{2,}/g, '/') // Replace consecutive '/'
+    .replace(/^\/\.$/, '/') // if path === '/.' return '/'
+    .replace(/^\.\/$/, '.') // if path === './' return '.'
+    .replace(/^\.\//, '') // Remove leading './'
+    .replace(/\/\.$/, '') // Remove trailing '/.'
+    .replace(/(.+)\/$/, '$1') // Remove trailing '/'
+    .replace(/^$/, '.') // if path === '' return '.'
+}
+
+// For some reason path.posix.join is undefined in webpack
+
+function join(...parts) {
+  return normalizePath(parts.map(normalizePath).join('/'))
+}
+
+// This is straight from parse_unit_factor in config.c of canonical git
+const num = val => {
+  val = val.toLowerCase();
+  let n = parseInt(val);
+  if (val.endsWith('k')) n *= 1024;
+  if (val.endsWith('m')) n *= 1024 * 1024;
+  if (val.endsWith('g')) n *= 1024 * 1024 * 1024;
+  return n
+};
+
+// This is straight from git_parse_maybe_bool_text in config.c of canonical git
+const bool = val => {
+  val = val.trim().toLowerCase();
+  if (val === 'true' || val === 'yes' || val === 'on') return true
+  if (val === 'false' || val === 'no' || val === 'off') return false
+  throw Error(
+    `Expected 'true', 'false', 'yes', 'no', 'on', or 'off', but got ${val}`
+  )
+};
+
+const schema = {
+  core: {
+    filemode: bool,
+    bare: bool,
+    logallrefupdates: bool,
+    symlinks: bool,
+    ignorecase: bool,
+    bigFileThreshold: num,
+  },
+};
+
+// https://git-scm.com/docs/git-config#_syntax
+
+// section starts with [ and ends with ]
+// section is alphanumeric (ASCII) with - and .
+// section is case insensitive
+// subsection is optionnal
+// subsection is specified after section and one or more spaces
+// subsection is specified between double quotes
+const SECTION_LINE_REGEX = /^\[([A-Za-z0-9-.]+)(?: "(.*)")?\]$/;
+const SECTION_REGEX = /^[A-Za-z0-9-.]+$/;
+
+// variable lines contain a name, and equal sign and then a value
+// variable lines can also only contain a name (the implicit value is a boolean true)
+// variable name is alphanumeric (ASCII) with -
+// variable name starts with an alphabetic character
+// variable name is case insensitive
+const VARIABLE_LINE_REGEX = /^([A-Za-z][A-Za-z-]*)(?: *= *(.*))?$/;
+const VARIABLE_NAME_REGEX = /^[A-Za-z][A-Za-z-]*$/;
+
+const VARIABLE_VALUE_COMMENT_REGEX = /^(.*?)( *[#;].*)$/;
+
+const extractSectionLine = line => {
+  const matches = SECTION_LINE_REGEX.exec(line);
+  if (matches != null) {
+    const [section, subsection] = matches.slice(1);
+    return [section, subsection]
+  }
+  return null
+};
+
+const extractVariableLine = line => {
+  const matches = VARIABLE_LINE_REGEX.exec(line);
+  if (matches != null) {
+    const [name, rawValue = 'true'] = matches.slice(1);
+    const valueWithoutComments = removeComments(rawValue);
+    const valueWithoutQuotes = removeQuotes(valueWithoutComments);
+    return [name, valueWithoutQuotes]
+  }
+  return null
+};
+
+const removeComments = rawValue => {
+  const commentMatches = VARIABLE_VALUE_COMMENT_REGEX.exec(rawValue);
+  if (commentMatches == null) {
+    return rawValue
+  }
+  const [valueWithoutComment, comment] = commentMatches.slice(1);
+  // if odd number of quotes before and after comment => comment is escaped
+  if (
+    hasOddNumberOfQuotes(valueWithoutComment) &&
+    hasOddNumberOfQuotes(comment)
+  ) {
+    return `${valueWithoutComment}${comment}`
+  }
+  return valueWithoutComment
+};
+
+const hasOddNumberOfQuotes = text => {
+  const numberOfQuotes = (text.match(/(?:^|[^\\])"/g) || []).length;
+  return numberOfQuotes % 2 !== 0
+};
+
+const removeQuotes = text => {
+  return text.split('').reduce((newText, c, idx, text) => {
+    const isQuote = c === '"' && text[idx - 1] !== '\\';
+    const isEscapeForQuote = c === '\\' && text[idx + 1] === '"';
+    if (isQuote || isEscapeForQuote) {
+      return newText
+    }
+    return newText + c
+  }, '')
+};
+
+const lower = text => {
+  return text != null ? text.toLowerCase() : null
+};
+
+const getPath = (section, subsection, name) => {
+  return [lower(section), subsection, lower(name)]
+    .filter(a => a != null)
+    .join('.')
+};
+
+const findLastIndex = (array, callback) => {
+  return array.reduce((lastIndex, item, index) => {
+    return callback(item) ? index : lastIndex
+  }, -1)
+};
+
+// Note: there are a LOT of edge cases that aren't covered (e.g. keys in sections that also
+// have subsections, [include] directives, etc.
+class GitConfig {
+  constructor(text) {
+    let section = null;
+    let subsection = null;
+    this.parsedConfig = text.split('\n').map(line => {
+      let name = null;
+      let value = null;
+
+      const trimmedLine = line.trim();
+      const extractedSection = extractSectionLine(trimmedLine);
+      const isSection = extractedSection != null;
+      if (isSection) {
+        ;[section, subsection] = extractedSection;
+      } else {
+        const extractedVariable = extractVariableLine(trimmedLine);
+        const isVariable = extractedVariable != null;
+        if (isVariable) {
+          ;[name, value] = extractedVariable;
+        }
+      }
+
+      const path = getPath(section, subsection, name);
+      return { line, isSection, section, subsection, name, value, path }
+    });
+  }
+
+  static from(text) {
+    return new GitConfig(text)
+  }
+
+  async get(path, getall = false) {
+    const allValues = this.parsedConfig
+      .filter(config => config.path === path.toLowerCase())
+      .map(({ section, name, value }) => {
+        const fn = schema[section] && schema[section][name];
+        return fn ? fn(value) : value
+      });
+    return getall ? allValues : allValues.pop()
+  }
+
+  async getall(path) {
+    return this.get(path, true)
+  }
+
+  async getSubsections(section) {
+    return this.parsedConfig
+      .filter(config => config.section === section && config.isSection)
+      .map(config => config.subsection)
+  }
+
+  async deleteSection(section, subsection) {
+    this.parsedConfig = this.parsedConfig.filter(
+      config =>
+        !(config.section === section && config.subsection === subsection)
+    );
+  }
+
+  async append(path, value) {
+    return this.set(path, value, true)
+  }
+
+  async set(path, value, append = false) {
+    const configIndex = findLastIndex(
+      this.parsedConfig,
+      config => config.path === path.toLowerCase()
+    );
+    if (value == null) {
+      if (configIndex !== -1) {
+        this.parsedConfig.splice(configIndex, 1);
+      }
+    } else {
+      if (configIndex !== -1) {
+        const config = this.parsedConfig[configIndex];
+        const modifiedConfig = Object.assign({}, config, {
+          value,
+          modified: true,
+        });
+        if (append) {
+          this.parsedConfig.splice(configIndex + 1, 0, modifiedConfig);
+        } else {
+          this.parsedConfig[configIndex] = modifiedConfig;
+        }
+      } else {
+        const sectionPath = path
+          .split('.')
+          .slice(0, -1)
+          .join('.')
+          .toLowerCase();
+        const sectionIndex = this.parsedConfig.findIndex(
+          config => config.path === sectionPath
+        );
+        const [section, subsection] = sectionPath.split('.');
+        const name = path.split('.').pop();
+        const newConfig = {
+          section,
+          subsection,
+          name,
+          value,
+          modified: true,
+          path: getPath(section, subsection, name),
+        };
+        if (SECTION_REGEX.test(section) && VARIABLE_NAME_REGEX.test(name)) {
+          if (sectionIndex >= 0) {
+            // Reuse existing section
+            this.parsedConfig.splice(sectionIndex + 1, 0, newConfig);
+          } else {
+            // Add a new section
+            const newSection = {
+              section,
+              subsection,
+              modified: true,
+              path: getPath(section, subsection, null),
+            };
+            this.parsedConfig.push(newSection, newConfig);
+          }
+        }
+      }
+    }
+  }
+
+  toString() {
+    return this.parsedConfig
+      .map(({ line, section, subsection, name, value, modified = false }) => {
+        if (!modified) {
+          return line
+        }
+        if (name != null && value != null) {
+          return `\t${name} = ${value}`
+        }
+        if (subsection != null) {
+          return `[${section} "${subsection}"]`
+        }
+        return `[${section}]`
+      })
+      .join('\n')
+  }
+}
+
+class GitConfigManager {
+  static async get({ fs, gitdir }) {
+    // We can improve efficiency later if needed.
+    // TODO: read from full list of git config files
+    const text = await fs.read(`${gitdir}/config`, { encoding: 'utf8' });
+    return GitConfig.from(text)
+  }
+
+  static async save({ fs, gitdir, config }) {
+    // We can improve efficiency later if needed.
+    // TODO: handle saving to the correct global/user/repo location
+    await fs.write(`${gitdir}/config`, config.toString(), {
+      encoding: 'utf8',
+    });
+  }
+}
+
+// This is a convenience wrapper for reading and writing files in the 'refs' directory.
+
+// @see https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+const refpaths = ref => [
+  `${ref}`,
+  `refs/${ref}`,
+  `refs/tags/${ref}`,
+  `refs/heads/${ref}`,
+  `refs/remotes/${ref}`,
+  `refs/remotes/${ref}/HEAD`,
+];
+
+// @see https://git-scm.com/docs/gitrepository-layout
+const GIT_FILES = ['config', 'description', 'index', 'shallow', 'commondir'];
+
+class GitRefManager {
+  static async updateRemoteRefs({
+    fs,
+    gitdir,
+    remote,
+    refs,
+    symrefs,
+    tags,
+    refspecs = undefined,
+    prune = false,
+    pruneTags = false,
+  }) {
+    // Validate input
+    for (const value of refs.values()) {
+      if (!value.match(/[0-9a-f]{40}/)) {
+        throw new InvalidOidError(value)
+      }
+    }
+    const config = await GitConfigManager.get({ fs, gitdir });
+    if (!refspecs) {
+      refspecs = await config.getall(`remote.${remote}.fetch`);
+      if (refspecs.length === 0) {
+        throw new NoRefspecError(remote)
+      }
+      // There's some interesting behavior with HEAD that doesn't follow the refspec.
+      refspecs.unshift(`+HEAD:refs/remotes/${remote}/HEAD`);
+    }
+    const refspec = GitRefSpecSet.from(refspecs);
+    const actualRefsToWrite = new Map();
+    // Delete all current tags if the pruneTags argument is true.
+    if (pruneTags) {
+      const tags = await GitRefManager.listRefs({
+        fs,
+        gitdir,
+        filepath: 'refs/tags',
+      });
+      await GitRefManager.deleteRefs({
+        fs,
+        gitdir,
+        refs: tags.map(tag => `refs/tags/${tag}`),
+      });
+    }
+    // Add all tags if the fetch tags argument is true.
+    if (tags) {
+      for (const serverRef of refs.keys()) {
+        if (serverRef.startsWith('refs/tags') && !serverRef.endsWith('^{}')) {
+          // Git's behavior is to only fetch tags that do not conflict with tags already present.
+          if (!(await GitRefManager.exists({ fs, gitdir, ref: serverRef }))) {
+            // If there is a dereferenced an annotated tag value available, prefer that.
+            const oid = refs.get(serverRef + '^{}') || refs.get(serverRef);
+            actualRefsToWrite.set(serverRef, oid);
+          }
+        }
+      }
+    }
+    // Combine refs and symrefs giving symrefs priority
+    const refTranslations = refspec.translate([...refs.keys()]);
+    for (const [serverRef, translatedRef] of refTranslations) {
+      const value = refs.get(serverRef);
+      actualRefsToWrite.set(translatedRef, value);
+    }
+    const symrefTranslations = refspec.translate([...symrefs.keys()]);
+    for (const [serverRef, translatedRef] of symrefTranslations) {
+      const value = symrefs.get(serverRef);
+      const symtarget = refspec.translateOne(value);
+      if (symtarget) {
+        actualRefsToWrite.set(translatedRef, `ref: ${symtarget}`);
+      }
+    }
+    // If `prune` argument is true, clear out the existing local refspec roots
+    const pruned = [];
+    if (prune) {
+      for (const filepath of refspec.localNamespaces()) {
+        const refs = (
+          await GitRefManager.listRefs({
+            fs,
+            gitdir,
+            filepath,
+          })
+        ).map(file => `${filepath}/${file}`);
+        for (const ref of refs) {
+          if (!actualRefsToWrite.has(ref)) {
+            pruned.push(ref);
+          }
+        }
+      }
+      if (pruned.length > 0) {
+        await GitRefManager.deleteRefs({ fs, gitdir, refs: pruned });
+      }
+    }
+    // Update files
+    // TODO: For large repos with a history of thousands of pull requests
+    // (i.e. gitlab-ce) it would be vastly more efficient to write them
+    // to .git/packed-refs.
+    // The trick is to make sure we a) don't write a packed ref that is
+    // already shadowed by a loose ref and b) don't loose any refs already
+    // in packed-refs. Doing this efficiently may be difficult. A
+    // solution that might work is
+    // a) load the current packed-refs file
+    // b) add actualRefsToWrite, overriding the existing values if present
+    // c) enumerate all the loose refs currently in .git/refs/remotes/${remote}
+    // d) overwrite their value with the new value.
+    // Examples of refs we need to avoid writing in loose format for efficieny's sake
+    // are .git/refs/remotes/origin/refs/remotes/remote_mirror_3059
+    // and .git/refs/remotes/origin/refs/merge-requests
+    for (const [key, value] of actualRefsToWrite) {
+      await fs.write(join(gitdir, key), `${value.trim()}\n`, 'utf8');
+    }
+    return { pruned }
+  }
+
+  // TODO: make this less crude?
+  static async writeRef({ fs, gitdir, ref, value }) {
+    // Validate input
+    if (!value.match(/[0-9a-f]{40}/)) {
+      throw new InvalidOidError(value)
+    }
+    await fs.write(join(gitdir, ref), `${value.trim()}\n`, 'utf8');
+  }
+
+  static async writeSymbolicRef({ fs, gitdir, ref, value }) {
+    await fs.write(join(gitdir, ref), 'ref: ' + `${value.trim()}\n`, 'utf8');
+  }
+
+  static async deleteRef({ fs, gitdir, ref }) {
+    return GitRefManager.deleteRefs({ fs, gitdir, refs: [ref] })
+  }
+
+  static async deleteRefs({ fs, gitdir, refs }) {
+    // Delete regular ref
+    await Promise.all(refs.map(ref => fs.rm(join(gitdir, ref))));
+    // Delete any packed ref
+    let text = await fs.read(`${gitdir}/packed-refs`, { encoding: 'utf8' });
+    const packed = GitPackedRefs.from(text);
+    const beforeSize = packed.refs.size;
+    for (const ref of refs) {
+      if (packed.refs.has(ref)) {
+        packed.delete(ref);
+      }
+    }
+    if (packed.refs.size < beforeSize) {
+      text = packed.toString();
+      await fs.write(`${gitdir}/packed-refs`, text, { encoding: 'utf8' });
+    }
+  }
+
+  /**
+   * @param {object} args
+   * @param {import('../models/FileSystem.js').FileSystem} args.fs
+   * @param {string} args.gitdir
+   * @param {string} args.ref
+   * @param {number} [args.depth]
+   * @returns {Promise<string>}
+   */
+  static async resolve({ fs, gitdir, ref, depth = undefined }) {
+    if (depth !== undefined) {
+      depth--;
+      if (depth === -1) {
+        return ref
+      }
+    }
+    let sha;
+    // Is it a ref pointer?
+    if (ref.startsWith('ref: ')) {
+      ref = ref.slice('ref: '.length);
+      return GitRefManager.resolve({ fs, gitdir, ref, depth })
+    }
+    // Is it a complete and valid SHA?
+    if (ref.length === 40 && /[0-9a-f]{40}/.test(ref)) {
+      return ref
+    }
+    // We need to alternate between the file system and the packed-refs
+    const packedMap = await GitRefManager.packedRefs({ fs, gitdir });
+    // Look in all the proper paths, in this order
+    const allpaths = refpaths(ref).filter(p => !GIT_FILES.includes(p)); // exclude git system files (#709)
+
+    for (const ref of allpaths) {
+      sha =
+        (await fs.read(`${gitdir}/${ref}`, { encoding: 'utf8' })) ||
+        packedMap.get(ref);
+      if (sha) {
+        return GitRefManager.resolve({ fs, gitdir, ref: sha.trim(), depth })
+      }
+    }
+    // Do we give up?
+    throw new NotFoundError(ref)
+  }
+
+  static async exists({ fs, gitdir, ref }) {
+    try {
+      await GitRefManager.expand({ fs, gitdir, ref });
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  static async expand({ fs, gitdir, ref }) {
+    // Is it a complete and valid SHA?
+    if (ref.length === 40 && /[0-9a-f]{40}/.test(ref)) {
+      return ref
+    }
+    // We need to alternate between the file system and the packed-refs
+    const packedMap = await GitRefManager.packedRefs({ fs, gitdir });
+    // Look in all the proper paths, in this order
+    const allpaths = refpaths(ref);
+    for (const ref of allpaths) {
+      if (await fs.exists(`${gitdir}/${ref}`)) return ref
+      if (packedMap.has(ref)) return ref
+    }
+    // Do we give up?
+    throw new NotFoundError(ref)
+  }
+
+  static async expandAgainstMap({ ref, map }) {
+    // Look in all the proper paths, in this order
+    const allpaths = refpaths(ref);
+    for (const ref of allpaths) {
+      if (await map.has(ref)) return ref
+    }
+    // Do we give up?
+    throw new NotFoundError(ref)
+  }
+
+  static resolveAgainstMap({ ref, fullref = ref, depth = undefined, map }) {
+    if (depth !== undefined) {
+      depth--;
+      if (depth === -1) {
+        return { fullref, oid: ref }
+      }
+    }
+    // Is it a ref pointer?
+    if (ref.startsWith('ref: ')) {
+      ref = ref.slice('ref: '.length);
+      return GitRefManager.resolveAgainstMap({ ref, fullref, depth, map })
+    }
+    // Is it a complete and valid SHA?
+    if (ref.length === 40 && /[0-9a-f]{40}/.test(ref)) {
+      return { fullref, oid: ref }
+    }
+    // Look in all the proper paths, in this order
+    const allpaths = refpaths(ref);
+    for (const ref of allpaths) {
+      const sha = map.get(ref);
+      if (sha) {
+        return GitRefManager.resolveAgainstMap({
+          ref: sha.trim(),
+          fullref: ref,
+          depth,
+          map,
+        })
+      }
+    }
+    // Do we give up?
+    throw new NotFoundError(ref)
+  }
+
+  static async packedRefs({ fs, gitdir }) {
+    const text = await fs.read(`${gitdir}/packed-refs`, { encoding: 'utf8' });
+    const packed = GitPackedRefs.from(text);
+    return packed.refs
+  }
+
+  // List all the refs that match the `filepath` prefix
+  static async listRefs({ fs, gitdir, filepath }) {
+    const packedMap = GitRefManager.packedRefs({ fs, gitdir });
+    let files = null;
+    try {
+      files = await fs.readdirDeep(`${gitdir}/${filepath}`);
+      files = files.map(x => x.replace(`${gitdir}/${filepath}/`, ''));
+    } catch (err) {
+      files = [];
+    }
+
+    for (let key of (await packedMap).keys()) {
+      // filter by prefix
+      if (key.startsWith(filepath)) {
+        // remove prefix
+        key = key.replace(filepath + '/', '');
+        // Don't include duplicates; the loose files have precedence anyway
+        if (!files.includes(key)) {
+          files.push(key);
+        }
+      }
+    }
+    // since we just appended things onto an array, we need to sort them now
+    files.sort(compareRefNames);
+    return files
+  }
+
+  static async listBranches({ fs, gitdir, remote }) {
+    if (remote) {
+      return GitRefManager.listRefs({
+        fs,
+        gitdir,
+        filepath: `refs/remotes/${remote}`,
+      })
+    } else {
+      return GitRefManager.listRefs({ fs, gitdir, filepath: `refs/heads` })
+    }
+  }
+
+  static async listTags({ fs, gitdir }) {
+    const tags = await GitRefManager.listRefs({
+      fs,
+      gitdir,
+      filepath: `refs/tags`,
+    });
+    return tags.filter(x => !x.endsWith('^{}'))
+  }
+}
+
+function compareTreeEntryPath(a, b) {
+  // Git sorts tree entries as if there is a trailing slash on directory names.
+  return compareStrings(appendSlashIfDir(a), appendSlashIfDir(b))
+}
+
+function appendSlashIfDir(entry) {
+  return entry.mode === '040000' ? entry.path + '/' : entry.path
+}
+
+/**
+ *
+ * @typedef {Object} TreeEntry
+ * @property {string} mode - the 6 digit hexadecimal mode
+ * @property {string} path - the name of the file or directory
+ * @property {string} oid - the SHA-1 object id of the blob or tree
+ * @property {'commit'|'blob'|'tree'} type - the type of object
+ */
+
+function mode2type$1(mode) {
+  // prettier-ignore
+  switch (mode) {
+    case '040000': return 'tree'
+    case '100644': return 'blob'
+    case '100755': return 'blob'
+    case '120000': return 'blob'
+    case '160000': return 'commit'
+  }
+  throw new InternalError(`Unexpected GitTree entry mode: ${mode}`)
+}
+
+function parseBuffer(buffer) {
+  const _entries = [];
+  let cursor = 0;
+  while (cursor < buffer.length) {
+    const space = buffer.indexOf(32, cursor);
+    if (space === -1) {
+      throw new InternalError(
+        `GitTree: Error parsing buffer at byte location ${cursor}: Could not find the next space character.`
+      )
+    }
+    const nullchar = buffer.indexOf(0, cursor);
+    if (nullchar === -1) {
+      throw new InternalError(
+        `GitTree: Error parsing buffer at byte location ${cursor}: Could not find the next null character.`
+      )
+    }
+    let mode = buffer.slice(cursor, space).toString('utf8');
+    if (mode === '40000') mode = '040000'; // makes it line up neater in printed output
+    const type = mode2type$1(mode);
+    const path = buffer.slice(space + 1, nullchar).toString('utf8');
+    const oid = buffer.slice(nullchar + 1, nullchar + 21).toString('hex');
+    cursor = nullchar + 21;
+    _entries.push({ mode, path, oid, type });
+  }
+  return _entries
+}
+
+function limitModeToAllowed(mode) {
+  if (typeof mode === 'number') {
+    mode = mode.toString(8);
+  }
+  // tree
+  if (mode.match(/^0?4.*/)) return '040000' // Directory
+  if (mode.match(/^1006.*/)) return '100644' // Regular non-executable file
+  if (mode.match(/^1007.*/)) return '100755' // Regular executable file
+  if (mode.match(/^120.*/)) return '120000' // Symbolic link
+  if (mode.match(/^160.*/)) return '160000' // Commit (git submodule reference)
+  throw new InternalError(`Could not understand file mode: ${mode}`)
+}
+
+function nudgeIntoShape(entry) {
+  if (!entry.oid && entry.sha) {
+    entry.oid = entry.sha; // Github
+  }
+  entry.mode = limitModeToAllowed(entry.mode); // index
+  if (!entry.type) {
+    entry.type = mode2type$1(entry.mode); // index
+  }
+  return entry
+}
+
+class GitTree {
+  constructor(entries) {
+    if (Buffer.isBuffer(entries)) {
+      this._entries = parseBuffer(entries);
+    } else if (Array.isArray(entries)) {
+      this._entries = entries.map(nudgeIntoShape);
+    } else {
+      throw new InternalError('invalid type passed to GitTree constructor')
+    }
+    // Tree entries are not sorted alphabetically in the usual sense (see `compareTreeEntryPath`)
+    // but it is important later on that these be sorted in the same order as they would be returned from readdir.
+    this._entries.sort(comparePath);
+  }
+
+  static from(tree) {
+    return new GitTree(tree)
+  }
+
+  render() {
+    return this._entries
+      .map(entry => `${entry.mode} ${entry.type} ${entry.oid}    ${entry.path}`)
+      .join('\n')
+  }
+
+  toObject() {
+    // Adjust the sort order to match git's
+    const entries = [...this._entries];
+    entries.sort(compareTreeEntryPath);
+    return Buffer.concat(
+      entries.map(entry => {
+        const mode = Buffer.from(entry.mode.replace(/^0/, ''));
+        const space = Buffer.from(' ');
+        const path = Buffer.from(entry.path, 'utf8');
+        const nullchar = Buffer.from([0]);
+        const oid = Buffer.from(entry.oid, 'hex');
+        return Buffer.concat([mode, space, path, nullchar, oid])
+      })
+    )
+  }
+
+  /**
+   * @returns {TreeEntry[]}
+   */
+  entries() {
+    return this._entries
+  }
+
+  *[Symbol.iterator]() {
+    for (const entry of this._entries) {
+      yield entry;
+    }
+  }
+}
+
+class GitObject {
+  static wrap({ type, object }) {
+    return Buffer.concat([
+      Buffer.from(`${type} ${object.byteLength.toString()}\x00`),
+      Buffer.from(object),
+    ])
+  }
+
+  static unwrap(buffer) {
+    const s = buffer.indexOf(32); // first space
+    const i = buffer.indexOf(0); // first null value
+    const type = buffer.slice(0, s).toString('utf8'); // get type of object
+    const length = buffer.slice(s + 1, i).toString('utf8'); // get type of object
+    const actualLength = buffer.length - (i + 1);
+    // verify length
+    if (parseInt(length) !== actualLength) {
+      throw new InternalError(
+        `Length mismatch: expected ${length} bytes but got ${actualLength} instead.`
+      )
+    }
+    return {
+      type,
+      object: Buffer.from(buffer.slice(i + 1)),
+    }
+  }
+}
+
+async function readObjectLoose({ fs, gitdir, oid }) {
+  const source = `objects/${oid.slice(0, 2)}/${oid.slice(2)}`;
+  const file = await fs.read(`${gitdir}/${source}`);
+  if (!file) {
+    return null
+  }
+  return { object: file, format: 'deflated', source }
+}
+
+/**
+ * @param {Buffer} delta
+ * @param {Buffer} source
+ * @returns {Buffer}
+ */
+function applyDelta(delta, source) {
+  const reader = new BufferCursor(delta);
+  const sourceSize = readVarIntLE(reader);
+
+  if (sourceSize !== source.byteLength) {
+    throw new InternalError(
+      `applyDelta expected source buffer to be ${sourceSize} bytes but the provided buffer was ${source.length} bytes`
+    )
+  }
+  const targetSize = readVarIntLE(reader);
+  let target;
+
+  const firstOp = readOp(reader, source);
+  // Speed optimization - return raw buffer if it's just single simple copy
+  if (firstOp.byteLength === targetSize) {
+    target = firstOp;
+  } else {
+    // Otherwise, allocate a fresh buffer and slices
+    target = Buffer.alloc(targetSize);
+    const writer = new BufferCursor(target);
+    writer.copy(firstOp);
+
+    while (!reader.eof()) {
+      writer.copy(readOp(reader, source));
+    }
+
+    const tell = writer.tell();
+    if (targetSize !== tell) {
+      throw new InternalError(
+        `applyDelta expected target buffer to be ${targetSize} bytes but the resulting buffer was ${tell} bytes`
+      )
+    }
+  }
+  return target
+}
+
+function readVarIntLE(reader) {
+  let result = 0;
+  let shift = 0;
+  let byte = null;
+  do {
+    byte = reader.readUInt8();
+    result |= (byte & 0b01111111) << shift;
+    shift += 7;
+  } while (byte & 0b10000000)
+  return result
+}
+
+function readCompactLE(reader, flags, size) {
+  let result = 0;
+  let shift = 0;
+  while (size--) {
+    if (flags & 0b00000001) {
+      result |= reader.readUInt8() << shift;
+    }
+    flags >>= 1;
+    shift += 8;
+  }
+  return result
+}
+
+function readOp(reader, source) {
+  /** @type {number} */
+  const byte = reader.readUInt8();
+  const COPY = 0b10000000;
+  const OFFS = 0b00001111;
+  const SIZE = 0b01110000;
+  if (byte & COPY) {
+    // copy consists of 4 byte offset, 3 byte size (in LE order)
+    const offset = readCompactLE(reader, byte & OFFS, 4);
+    let size = readCompactLE(reader, (byte & SIZE) >> 4, 3);
+    // Yup. They really did this optimization.
+    if (size === 0) size = 0x10000;
+    return source.slice(offset, offset + size)
+  } else {
+    // insert
+    return reader.slice(byte)
+  }
+}
+
+// Convert a value to an Async Iterator
+// This will be easier with async generator functions.
+function fromValue(value) {
+  let queue = [value];
+  return {
+    next() {
+      return Promise.resolve({ done: queue.length === 0, value: queue.pop() })
+    },
+    return() {
+      queue = [];
+      return {}
+    },
+    [Symbol.asyncIterator]() {
+      return this
+    },
+  }
+}
+
+function getIterator(iterable) {
+  if (iterable[Symbol.asyncIterator]) {
+    return iterable[Symbol.asyncIterator]()
+  }
+  if (iterable[Symbol.iterator]) {
+    return iterable[Symbol.iterator]()
+  }
+  if (iterable.next) {
+    return iterable
+  }
+  return fromValue(iterable)
+}
+
+// inspired by 'gartal' but lighter-weight and more battle-tested.
+class StreamReader {
+  constructor(stream) {
+    this.stream = getIterator(stream);
+    this.buffer = null;
+    this.cursor = 0;
+    this.undoCursor = 0;
+    this.started = false;
+    this._ended = false;
+    this._discardedBytes = 0;
+  }
+
+  eof() {
+    return this._ended && this.cursor === this.buffer.length
+  }
+
+  tell() {
+    return this._discardedBytes + this.cursor
+  }
+
+  async byte() {
+    if (this.eof()) return
+    if (!this.started) await this._init();
+    if (this.cursor === this.buffer.length) {
+      await this._loadnext();
+      if (this._ended) return
+    }
+    this._moveCursor(1);
+    return this.buffer[this.undoCursor]
+  }
+
+  async chunk() {
+    if (this.eof()) return
+    if (!this.started) await this._init();
+    if (this.cursor === this.buffer.length) {
+      await this._loadnext();
+      if (this._ended) return
+    }
+    this._moveCursor(this.buffer.length);
+    return this.buffer.slice(this.undoCursor, this.cursor)
+  }
+
+  async read(n) {
+    if (this.eof()) return
+    if (!this.started) await this._init();
+    if (this.cursor + n > this.buffer.length) {
+      this._trim();
+      await this._accumulate(n);
+    }
+    this._moveCursor(n);
+    return this.buffer.slice(this.undoCursor, this.cursor)
+  }
+
+  async skip(n) {
+    if (this.eof()) return
+    if (!this.started) await this._init();
+    if (this.cursor + n > this.buffer.length) {
+      this._trim();
+      await this._accumulate(n);
+    }
+    this._moveCursor(n);
+  }
+
+  async undo() {
+    this.cursor = this.undoCursor;
+  }
+
+  async _next() {
+    this.started = true;
+    let { done, value } = await this.stream.next();
+    if (done) {
+      this._ended = true;
+    }
+    if (value) {
+      value = Buffer.from(value);
+    }
+    return value
+  }
+
+  _trim() {
+    // Throw away parts of the buffer we don't need anymore
+    // assert(this.cursor <= this.buffer.length)
+    this.buffer = this.buffer.slice(this.undoCursor);
+    this.cursor -= this.undoCursor;
+    this._discardedBytes += this.undoCursor;
+    this.undoCursor = 0;
+  }
+
+  _moveCursor(n) {
+    this.undoCursor = this.cursor;
+    this.cursor += n;
+    if (this.cursor > this.buffer.length) {
+      this.cursor = this.buffer.length;
+    }
+  }
+
+  async _accumulate(n) {
+    if (this._ended) return
+    // Expand the buffer until we have N bytes of data
+    // or we've reached the end of the stream
+    const buffers = [this.buffer];
+    while (this.cursor + n > lengthBuffers(buffers)) {
+      const nextbuffer = await this._next();
+      if (this._ended) break
+      buffers.push(nextbuffer);
+    }
+    this.buffer = Buffer.concat(buffers);
+  }
+
+  async _loadnext() {
+    this._discardedBytes += this.buffer.length;
+    this.undoCursor = 0;
+    this.cursor = 0;
+    this.buffer = await this._next();
+  }
+
+  async _init() {
+    this.buffer = await this._next();
+  }
+}
+
+// This helper function helps us postpone concatenating buffers, which
+// would create intermediate buffer objects,
+function lengthBuffers(buffers) {
+  return buffers.reduce((acc, buffer) => acc + buffer.length, 0)
+}
+
+// My version of git-list-pack - roughly 15x faster than the original
+
+async function listpack(stream, onData) {
+  const reader = new StreamReader(stream);
+  let PACK = await reader.read(4);
+  PACK = PACK.toString('utf8');
+  if (PACK !== 'PACK') {
+    throw new InternalError(`Invalid PACK header '${PACK}'`)
+  }
+
+  let version = await reader.read(4);
+  version = version.readUInt32BE(0);
+  if (version !== 2) {
+    throw new InternalError(`Invalid packfile version: ${version}`)
+  }
+
+  let numObjects = await reader.read(4);
+  numObjects = numObjects.readUInt32BE(0);
+  // If (for some godforsaken reason) this is an empty packfile, abort now.
+  if (numObjects < 1) return
+
+  while (!reader.eof() && numObjects--) {
+    const offset = reader.tell();
+    const { type, length, ofs, reference } = await parseHeader(reader);
+    const inflator = new pako.Inflate();
+    while (!inflator.result) {
+      const chunk = await reader.chunk();
+      if (reader.ended) break
+      inflator.push(chunk, false);
+      if (inflator.err) {
+        throw new InternalError(`Pako error: ${inflator.msg}`)
+      }
+      if (inflator.result) {
+        if (inflator.result.length !== length) {
+          throw new InternalError(
+            `Inflated object size is different from that stated in packfile.`
+          )
+        }
+
+        // Backtrack parser to where deflated data ends
+        await reader.undo();
+        await reader.read(chunk.length - inflator.strm.avail_in);
+        const end = reader.tell();
+        await onData({
+          data: inflator.result,
+          type,
+          num: numObjects,
+          offset,
+          end,
+          reference,
+          ofs,
+        });
+      }
+    }
+  }
+}
+
+async function parseHeader(reader) {
+  // Object type is encoded in bits 654
+  let byte = await reader.byte();
+  const type = (byte >> 4) & 0b111;
+  // The length encoding get complicated.
+  // Last four bits of length is encoded in bits 3210
+  let length = byte & 0b1111;
+  // Whether the next byte is part of the variable-length encoded number
+  // is encoded in bit 7
+  if (byte & 0b10000000) {
+    let shift = 4;
+    do {
+      byte = await reader.byte();
+      length |= (byte & 0b01111111) << shift;
+      shift += 7;
+    } while (byte & 0b10000000)
+  }
+  // Handle deltified objects
+  let ofs;
+  let reference;
+  if (type === 6) {
+    let shift = 0;
+    ofs = 0;
+    const bytes = [];
+    do {
+      byte = await reader.byte();
+      ofs |= (byte & 0b01111111) << shift;
+      shift += 7;
+      bytes.push(byte);
+    } while (byte & 0b10000000)
+    reference = Buffer.from(bytes);
+  }
+  if (type === 7) {
+    const buf = await reader.read(20);
+    reference = buf;
+  }
+  return { type, length, ofs, reference }
+}
+
+/* eslint-env node, browser */
+
+let supportsDecompressionStream = false;
+
+async function inflate(buffer) {
+  if (supportsDecompressionStream === null) {
+    supportsDecompressionStream = testDecompressionStream();
+  }
+  return supportsDecompressionStream
+    ? browserInflate(buffer)
+    : pako.inflate(buffer)
+}
+
+async function browserInflate(buffer) {
+  const ds = new DecompressionStream('deflate');
+  const d = new Blob([buffer]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(d).arrayBuffer())
+}
+
+function testDecompressionStream() {
+  try {
+    const ds = new DecompressionStream('deflate');
+    if (ds) return true
+  } catch (_) {
+    // no bother
+  }
+  return false
+}
+
+function decodeVarInt(reader) {
+  const bytes = [];
+  let byte = 0;
+  let multibyte = 0;
+  do {
+    byte = reader.readUInt8();
+    // We keep bits 6543210
+    const lastSeven = byte & 0b01111111;
+    bytes.push(lastSeven);
+    // Whether the next byte is part of the variable-length encoded number
+    // is encoded in bit 7
+    multibyte = byte & 0b10000000;
+  } while (multibyte)
+  // Now that all the bytes are in big-endian order,
+  // alternate shifting the bits left by 7 and OR-ing the next byte.
+  // And... do a weird increment-by-one thing that I don't quite understand.
+  return bytes.reduce((a, b) => ((a + 1) << 7) | b, -1)
+}
+
+// I'm pretty much copying this one from the git C source code,
+// because it makes no sense.
+function otherVarIntDecode(reader, startWith) {
+  let result = startWith;
+  let shift = 4;
+  let byte = null;
+  do {
+    byte = reader.readUInt8();
+    result |= (byte & 0b01111111) << shift;
+    shift += 7;
+  } while (byte & 0b10000000)
+  return result
+}
+
+class GitPackIndex {
+  constructor(stuff) {
+    Object.assign(this, stuff);
+    this.offsetCache = {};
+  }
+
+  static async fromIdx({ idx, getExternalRefDelta }) {
+    const reader = new BufferCursor(idx);
+    const magic = reader.slice(4).toString('hex');
+    // Check for IDX v2 magic number
+    if (magic !== 'ff744f63') {
+      return // undefined
+    }
+    const version = reader.readUInt32BE();
+    if (version !== 2) {
+      throw new InternalError(
+        `Unable to read version ${version} packfile IDX. (Only version 2 supported)`
+      )
+    }
+    if (idx.byteLength > 2048 * 1024 * 1024) {
+      throw new InternalError(
+        `To keep implementation simple, I haven't implemented the layer 5 feature needed to support packfiles > 2GB in size.`
+      )
+    }
+    // Skip over fanout table
+    reader.seek(reader.tell() + 4 * 255);
+    // Get hashes
+    const size = reader.readUInt32BE();
+    const hashes = [];
+    for (let i = 0; i < size; i++) {
+      const hash = reader.slice(20).toString('hex');
+      hashes[i] = hash;
+    }
+    reader.seek(reader.tell() + 4 * size);
+    // Skip over CRCs
+    // Get offsets
+    const offsets = new Map();
+    for (let i = 0; i < size; i++) {
+      offsets.set(hashes[i], reader.readUInt32BE());
+    }
+    const packfileSha = reader.slice(20).toString('hex');
+    return new GitPackIndex({
+      hashes,
+      crcs: {},
+      offsets,
+      packfileSha,
+      getExternalRefDelta,
+    })
+  }
+
+  static async fromPack({ pack, getExternalRefDelta, onProgress }) {
+    const listpackTypes = {
+      1: 'commit',
+      2: 'tree',
+      3: 'blob',
+      4: 'tag',
+      6: 'ofs-delta',
+      7: 'ref-delta',
+    };
+    const offsetToObject = {};
+
+    // Older packfiles do NOT use the shasum of the pack itself,
+    // so it is recommended to just use whatever bytes are in the trailer.
+    // Source: https://github.com/git/git/commit/1190a1acf800acdcfd7569f87ac1560e2d077414
+    const packfileSha = pack.slice(-20).toString('hex');
+
+    const hashes = [];
+    const crcs = {};
+    const offsets = new Map();
+    let totalObjectCount = null;
+    let lastPercent = null;
+
+    await listpack([pack], async ({ data, type, reference, offset, num }) => {
+      if (totalObjectCount === null) totalObjectCount = num;
+      const percent = Math.floor(
+        ((totalObjectCount - num) * 100) / totalObjectCount
+      );
+      if (percent !== lastPercent) {
+        if (onProgress) {
+          await onProgress({
+            phase: 'Receiving objects',
+            loaded: totalObjectCount - num,
+            total: totalObjectCount,
+          });
+        }
+      }
+      lastPercent = percent;
+      // Change type from a number to a meaningful string
+      type = listpackTypes[type];
+
+      if (['commit', 'tree', 'blob', 'tag'].includes(type)) {
+        offsetToObject[offset] = {
+          type,
+          offset,
+        };
+      } else if (type === 'ofs-delta') {
+        offsetToObject[offset] = {
+          type,
+          offset,
+        };
+      } else if (type === 'ref-delta') {
+        offsetToObject[offset] = {
+          type,
+          offset,
+        };
+      }
+    });
+
+    // We need to know the lengths of the slices to compute the CRCs.
+    const offsetArray = Object.keys(offsetToObject).map(Number);
+    for (const [i, start] of offsetArray.entries()) {
+      const end =
+        i + 1 === offsetArray.length ? pack.byteLength - 20 : offsetArray[i + 1];
+      const o = offsetToObject[start];
+      const crc = crc32.buf(pack.slice(start, end)) >>> 0;
+      o.end = end;
+      o.crc = crc;
+    }
+
+    // We don't have the hashes yet. But we can generate them using the .readSlice function!
+    const p = new GitPackIndex({
+      pack: Promise.resolve(pack),
+      packfileSha,
+      crcs,
+      hashes,
+      offsets,
+      getExternalRefDelta,
+    });
+
+    // Resolve deltas and compute the oids
+    lastPercent = null;
+    let count = 0;
+    const objectsByDepth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (let offset in offsetToObject) {
+      offset = Number(offset);
+      const percent = Math.floor((count++ * 100) / totalObjectCount);
+      if (percent !== lastPercent) {
+        if (onProgress) {
+          await onProgress({
+            phase: 'Resolving deltas',
+            loaded: count,
+            total: totalObjectCount,
+          });
+        }
+      }
+      lastPercent = percent;
+
+      const o = offsetToObject[offset];
+      if (o.oid) continue
+      try {
+        p.readDepth = 0;
+        p.externalReadDepth = 0;
+        const { type, object } = await p.readSlice({ start: offset });
+        objectsByDepth[p.readDepth] += 1;
+        const oid = await shasum(GitObject.wrap({ type, object }));
+        o.oid = oid;
+        hashes.push(oid);
+        offsets.set(oid, offset);
+        crcs[oid] = o.crc;
+      } catch (err) {
+        continue
+      }
+    }
+
+    hashes.sort();
+    return p
+  }
+
+  async toBuffer() {
+    const buffers = [];
+    const write = (str, encoding) => {
+      buffers.push(Buffer.from(str, encoding));
+    };
+    // Write out IDX v2 magic number
+    write('ff744f63', 'hex');
+    // Write out version number 2
+    write('00000002', 'hex');
+    // Write fanout table
+    const fanoutBuffer = new BufferCursor(Buffer.alloc(256 * 4));
+    for (let i = 0; i < 256; i++) {
+      let count = 0;
+      for (const hash of this.hashes) {
+        if (parseInt(hash.slice(0, 2), 16) <= i) count++;
+      }
+      fanoutBuffer.writeUInt32BE(count);
+    }
+    buffers.push(fanoutBuffer.buffer);
+    // Write out hashes
+    for (const hash of this.hashes) {
+      write(hash, 'hex');
+    }
+    // Write out crcs
+    const crcsBuffer = new BufferCursor(Buffer.alloc(this.hashes.length * 4));
+    for (const hash of this.hashes) {
+      crcsBuffer.writeUInt32BE(this.crcs[hash]);
+    }
+    buffers.push(crcsBuffer.buffer);
+    // Write out offsets
+    const offsetsBuffer = new BufferCursor(Buffer.alloc(this.hashes.length * 4));
+    for (const hash of this.hashes) {
+      offsetsBuffer.writeUInt32BE(this.offsets.get(hash));
+    }
+    buffers.push(offsetsBuffer.buffer);
+    // Write out packfile checksum
+    write(this.packfileSha, 'hex');
+    // Write out shasum
+    const totalBuffer = Buffer.concat(buffers);
+    const sha = await shasum(totalBuffer);
+    const shaBuffer = Buffer.alloc(20);
+    shaBuffer.write(sha, 'hex');
+    return Buffer.concat([totalBuffer, shaBuffer])
+  }
+
+  async load({ pack }) {
+    this.pack = pack;
+  }
+
+  async unload() {
+    this.pack = null;
+  }
+
+  async read({ oid }) {
+    if (!this.offsets.get(oid)) {
+      if (this.getExternalRefDelta) {
+        this.externalReadDepth++;
+        return this.getExternalRefDelta(oid)
+      } else {
+        throw new InternalError(`Could not read object ${oid} from packfile`)
+      }
+    }
+    const start = this.offsets.get(oid);
+    return this.readSlice({ start })
+  }
+
+  async readSlice({ start }) {
+    if (this.offsetCache[start]) {
+      return Object.assign({}, this.offsetCache[start])
+    }
+    this.readDepth++;
+    const types = {
+      0b0010000: 'commit',
+      0b0100000: 'tree',
+      0b0110000: 'blob',
+      0b1000000: 'tag',
+      0b1100000: 'ofs_delta',
+      0b1110000: 'ref_delta',
+    };
+    if (!this.pack) {
+      throw new InternalError(
+        'Tried to read from a GitPackIndex with no packfile loaded into memory'
+      )
+    }
+    const raw = (await this.pack).slice(start);
+    const reader = new BufferCursor(raw);
+    const byte = reader.readUInt8();
+    // Object type is encoded in bits 654
+    const btype = byte & 0b1110000;
+    let type = types[btype];
+    if (type === undefined) {
+      throw new InternalError('Unrecognized type: 0b' + btype.toString(2))
+    }
+    // The length encoding get complicated.
+    // Last four bits of length is encoded in bits 3210
+    const lastFour = byte & 0b1111;
+    let length = lastFour;
+    // Whether the next byte is part of the variable-length encoded number
+    // is encoded in bit 7
+    const multibyte = byte & 0b10000000;
+    if (multibyte) {
+      length = otherVarIntDecode(reader, lastFour);
+    }
+    let base = null;
+    let object = null;
+    // Handle deltified objects
+    if (type === 'ofs_delta') {
+      const offset = decodeVarInt(reader);
+      const baseOffset = start - offset
+      ;({ object: base, type } = await this.readSlice({ start: baseOffset }));
+    }
+    if (type === 'ref_delta') {
+      const oid = reader.slice(20).toString('hex')
+      ;({ object: base, type } = await this.read({ oid }));
+    }
+    // Handle undeltified objects
+    const buffer = raw.slice(reader.tell());
+    object = Buffer.from(await inflate(buffer));
+    // Assert that the object length is as expected.
+    if (object.byteLength !== length) {
+      throw new InternalError(
+        `Packfile told us object would have length ${length} but it had length ${object.byteLength}`
+      )
+    }
+    if (base) {
+      object = Buffer.from(applyDelta(object, base));
+    }
+    // Cache the result based on depth.
+    if (this.readDepth > 3) {
+      // hand tuned for speed / memory usage tradeoff
+      this.offsetCache[start] = { type, object };
+    }
+    return { type, format: 'content', object }
+  }
+}
+
+async function loadPackIndex({
+  fs,
+  filename,
+  getExternalRefDelta,
+  emitter,
+  emitterPrefix,
+}) {
+  const idx = await fs.read(filename);
+  return GitPackIndex.fromIdx({ idx, getExternalRefDelta })
+}
+
+function readPackIndex({
+  fs,
+  cache,
+  filename,
+  getExternalRefDelta,
+  emitter,
+  emitterPrefix,
+}) {
+  // Try to get the packfile index from the in-memory cache
+  if (!cache.packfiles) cache.packfiles = new Map();
+  let p = cache.packfiles.get(filename);
+  if (!p) {
+    p = loadPackIndex({
+      fs,
+      filename,
+      getExternalRefDelta,
+      emitter,
+      emitterPrefix,
+    });
+    cache.packfiles.set(filename, p);
+  }
+  return p
+}
+
+async function readObjectPacked({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  format = 'content',
+  getExternalRefDelta,
+}) {
+  // Check to see if it's in a packfile.
+  // Iterate through all the .idx files
+  let list = await fs.readdir(join(gitdir, 'objects/pack'));
+  list = list.filter(x => x.endsWith('.idx'));
+  for (const filename of list) {
+    const indexFile = `${gitdir}/objects/pack/${filename}`;
+    const p = await readPackIndex({
+      fs,
+      cache,
+      filename: indexFile,
+      getExternalRefDelta,
+    });
+    if (p.error) throw new InternalError(p.error)
+    // If the packfile DOES have the oid we're looking for...
+    if (p.offsets.has(oid)) {
+      // Get the resolved git object from the packfile
+      if (!p.pack) {
+        const packFile = indexFile.replace(/idx$/, 'pack');
+        p.pack = fs.read(packFile);
+      }
+      const result = await p.read({ oid, getExternalRefDelta });
+      result.format = 'content';
+      result.source = `objects/pack/${filename.replace(/idx$/, 'pack')}`;
+      return result
+    }
+  }
+  // Failed to find it
+  return null
+}
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ * @param {string} [args.format]
+ */
+async function _readObject({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  format = 'content',
+}) {
+  // Curry the current read method so that the packfile un-deltification
+  // process can acquire external ref-deltas.
+  const getExternalRefDelta = oid => _readObject({ fs, cache, gitdir, oid });
+
+  let result;
+  // Empty tree - hard-coded so we can use it as a shorthand.
+  // Note: I think the canonical git implementation must do this too because
+  // `git cat-file -t 4b825dc642cb6eb9a060e54bf8d69288fbee4904` prints "tree" even in empty repos.
+  if (oid === '4b825dc642cb6eb9a060e54bf8d69288fbee4904') {
+    result = { format: 'wrapped', object: Buffer.from(`tree 0\x00`) };
+  }
+  // Look for it in the loose object directory.
+  if (!result) {
+    result = await readObjectLoose({ fs, gitdir, oid });
+  }
+  // Check to see if it's in a packfile.
+  if (!result) {
+    result = await readObjectPacked({
+      fs,
+      cache,
+      gitdir,
+      oid,
+      getExternalRefDelta,
+    });
+  }
+  // Finally
+  if (!result) {
+    throw new NotFoundError(oid)
+  }
+
+  if (format === 'deflated') {
+    return result
+  }
+
+  // BEHOLD! THE ONLY TIME I'VE EVER WANTED TO USE A CASE STATEMENT WITH FOLLOWTHROUGH!
+  // eslint-ignore
+  /* eslint-disable no-fallthrough */
+  switch (result.format) {
+    case 'deflated': {
+      result.object = Buffer.from(await inflate(result.object));
+      result.format = 'wrapped';
+    }
+    case 'wrapped': {
+      if (format === 'wrapped' && result.format === 'wrapped') {
+        return result
+      }
+      const sha = await shasum(result.object);
+      if (sha !== oid) {
+        throw new InternalError(
+          `SHA check failed! Expected ${oid}, computed ${sha}`
+        )
+      }
+      const { object, type } = GitObject.unwrap(result.object);
+      result.type = type;
+      result.object = object;
+      result.format = 'content';
+    }
+    case 'content': {
+      if (format === 'content') return result
+      break
+    }
+    default: {
+      throw new InternalError(`invalid format "${result.format}"`)
+    }
+  }
+  /* eslint-enable no-fallthrough */
+}
+
+class AlreadyExistsError extends BaseError {
+  /**
+   * @param {'note'|'remote'|'tag'|'branch'} noun
+   * @param {string} where
+   * @param {boolean} canForce
+   */
+  constructor(noun, where, canForce = true) {
+    super(
+      `Failed to create ${noun} at ${where} because it already exists.${
+        canForce
+          ? ` (Hint: use 'force: true' parameter to overwrite existing ${noun}.)`
+          : ''
+      }`
+    );
+    this.code = this.name = AlreadyExistsError.code;
+    this.data = { noun, where, canForce };
+  }
+}
+/** @type {'AlreadyExistsError'} */
+AlreadyExistsError.code = 'AlreadyExistsError';
+
+class AmbiguousError extends BaseError {
+  /**
+   * @param {'oids'|'refs'} nouns
+   * @param {string} short
+   * @param {string[]} matches
+   */
+  constructor(nouns, short, matches) {
+    super(
+      `Found multiple ${nouns} matching "${short}" (${matches.join(
+        ', '
+      )}). Use a longer abbreviation length to disambiguate them.`
+    );
+    this.code = this.name = AmbiguousError.code;
+    this.data = { nouns, short, matches };
+  }
+}
+/** @type {'AmbiguousError'} */
+AmbiguousError.code = 'AmbiguousError';
+
+class CheckoutConflictError extends BaseError {
+  /**
+   * @param {string[]} filepaths
+   */
+  constructor(filepaths) {
+    super(
+      `Your local changes to the following files would be overwritten by checkout: ${filepaths.join(
+        ', '
+      )}`
+    );
+    this.code = this.name = CheckoutConflictError.code;
+    this.data = { filepaths };
+  }
+}
+/** @type {'CheckoutConflictError'} */
+CheckoutConflictError.code = 'CheckoutConflictError';
+
+class CommitNotFetchedError extends BaseError {
+  /**
+   * @param {string} ref
+   * @param {string} oid
+   */
+  constructor(ref, oid) {
+    super(
+      `Failed to checkout "${ref}" because commit ${oid} is not available locally. Do a git fetch to make the branch available locally.`
+    );
+    this.code = this.name = CommitNotFetchedError.code;
+    this.data = { ref, oid };
+  }
+}
+/** @type {'CommitNotFetchedError'} */
+CommitNotFetchedError.code = 'CommitNotFetchedError';
+
+class EmptyServerResponseError extends BaseError {
+  constructor() {
+    super(`Empty response from git server.`);
+    this.code = this.name = EmptyServerResponseError.code;
+    this.data = {};
+  }
+}
+/** @type {'EmptyServerResponseError'} */
+EmptyServerResponseError.code = 'EmptyServerResponseError';
+
+class FastForwardError extends BaseError {
+  constructor() {
+    super(`A simple fast-forward merge was not possible.`);
+    this.code = this.name = FastForwardError.code;
+    this.data = {};
+  }
+}
+/** @type {'FastForwardError'} */
+FastForwardError.code = 'FastForwardError';
+
+class GitPushError extends BaseError {
+  /**
+   * @param {string} prettyDetails
+   * @param {PushResult} result
+   */
+  constructor(prettyDetails, result) {
+    super(`One or more branches were not updated: ${prettyDetails}`);
+    this.code = this.name = GitPushError.code;
+    this.data = { prettyDetails, result };
+  }
+}
+/** @type {'GitPushError'} */
+GitPushError.code = 'GitPushError';
+
+class HttpError extends BaseError {
+  /**
+   * @param {number} statusCode
+   * @param {string} statusMessage
+   * @param {string} response
+   */
+  constructor(statusCode, statusMessage, response) {
+    super(`HTTP Error: ${statusCode} ${statusMessage}`);
+    this.code = this.name = HttpError.code;
+    this.data = { statusCode, statusMessage, response };
+  }
+}
+/** @type {'HttpError'} */
+HttpError.code = 'HttpError';
+
+class InvalidFilepathError extends BaseError {
+  /**
+   * @param {'leading-slash'|'trailing-slash'} [reason]
+   */
+  constructor(reason) {
+    let message = 'invalid filepath';
+    if (reason === 'leading-slash' || reason === 'trailing-slash') {
+      message = `"filepath" parameter should not include leading or trailing directory separators because these can cause problems on some platforms.`;
+    }
+    super(message);
+    this.code = this.name = InvalidFilepathError.code;
+    this.data = { reason };
+  }
+}
+/** @type {'InvalidFilepathError'} */
+InvalidFilepathError.code = 'InvalidFilepathError';
+
+class InvalidRefNameError extends BaseError {
+  /**
+   * @param {string} ref
+   * @param {string} suggestion
+   * @param {boolean} canForce
+   */
+  constructor(ref, suggestion) {
+    super(
+      `"${ref}" would be an invalid git reference. (Hint: a valid alternative would be "${suggestion}".)`
+    );
+    this.code = this.name = InvalidRefNameError.code;
+    this.data = { ref, suggestion };
+  }
+}
+/** @type {'InvalidRefNameError'} */
+InvalidRefNameError.code = 'InvalidRefNameError';
+
+class MaxDepthError extends BaseError {
+  /**
+   * @param {number} depth
+   */
+  constructor(depth) {
+    super(`Maximum search depth of ${depth} exceeded.`);
+    this.code = this.name = MaxDepthError.code;
+    this.data = { depth };
+  }
+}
+/** @type {'MaxDepthError'} */
+MaxDepthError.code = 'MaxDepthError';
+
+class MergeNotSupportedError extends BaseError {
+  constructor() {
+    super(`Merges with conflicts are not supported yet.`);
+    this.code = this.name = MergeNotSupportedError.code;
+    this.data = {};
+  }
+}
+/** @type {'MergeNotSupportedError'} */
+MergeNotSupportedError.code = 'MergeNotSupportedError';
+
+class MissingNameError extends BaseError {
+  /**
+   * @param {'author'|'committer'|'tagger'} role
+   */
+  constructor(role) {
+    super(
+      `No name was provided for ${role} in the argument or in the .git/config file.`
+    );
+    this.code = this.name = MissingNameError.code;
+    this.data = { role };
+  }
+}
+/** @type {'MissingNameError'} */
+MissingNameError.code = 'MissingNameError';
+
+class MissingParameterError extends BaseError {
+  /**
+   * @param {string} parameter
+   */
+  constructor(parameter) {
+    super(
+      `The function requires a "${parameter}" parameter but none was provided.`
+    );
+    this.code = this.name = MissingParameterError.code;
+    this.data = { parameter };
+  }
+}
+/** @type {'MissingParameterError'} */
+MissingParameterError.code = 'MissingParameterError';
+
+class ParseError extends BaseError {
+  /**
+   * @param {string} expected
+   * @param {string} actual
+   */
+  constructor(expected, actual) {
+    super(`Expected "${expected}" but received "${actual}".`);
+    this.code = this.name = ParseError.code;
+    this.data = { expected, actual };
+  }
+}
+/** @type {'ParseError'} */
+ParseError.code = 'ParseError';
+
+class PushRejectedError extends BaseError {
+  /**
+   * @param {'not-fast-forward'|'tag-exists'} reason
+   */
+  constructor(reason) {
+    let message = '';
+    if (reason === 'not-fast-forward') {
+      message = ' because it was not a simple fast-forward';
+    } else if (reason === 'tag-exists') {
+      message = ' because tag already exists';
+    }
+    super(`Push rejected${message}. Use "force: true" to override.`);
+    this.code = this.name = PushRejectedError.code;
+    this.data = { reason };
+  }
+}
+/** @type {'PushRejectedError'} */
+PushRejectedError.code = 'PushRejectedError';
+
+class RemoteCapabilityError extends BaseError {
+  /**
+   * @param {'shallow'|'deepen-since'|'deepen-not'|'deepen-relative'} capability
+   * @param {'depth'|'since'|'exclude'|'relative'} parameter
+   */
+  constructor(capability, parameter) {
+    super(
+      `Remote does not support the "${capability}" so the "${parameter}" parameter cannot be used.`
+    );
+    this.code = this.name = RemoteCapabilityError.code;
+    this.data = { capability, parameter };
+  }
+}
+/** @type {'RemoteCapabilityError'} */
+RemoteCapabilityError.code = 'RemoteCapabilityError';
+
+class SmartHttpError extends BaseError {
+  /**
+   * @param {string} preview
+   * @param {string} response
+   */
+  constructor(preview, response) {
+    super(
+      `Remote did not reply using the "smart" HTTP protocol. Expected "001e# service=git-upload-pack" but received: ${preview}`
+    );
+    this.code = this.name = SmartHttpError.code;
+    this.data = { preview, response };
+  }
+}
+/** @type {'SmartHttpError'} */
+SmartHttpError.code = 'SmartHttpError';
+
+class UnknownTransportError extends BaseError {
+  /**
+   * @param {string} url
+   * @param {string} transport
+   * @param {string} suggestion
+   */
+  constructor(url, transport, suggestion) {
+    super(
+      `Git remote "${url}" uses an unrecognized transport protocol: "${transport}"`
+    );
+    this.code = this.name = UnknownTransportError.code;
+    this.data = { url, transport, suggestion };
+  }
+}
+/** @type {'UnknownTransportError'} */
+UnknownTransportError.code = 'UnknownTransportError';
+
+class UrlParseError extends BaseError {
+  /**
+   * @param {string} url
+   */
+  constructor(url) {
+    super(`Cannot parse remote URL: "${url}"`);
+    this.code = this.name = UrlParseError.code;
+    this.data = { url };
+  }
+}
+/** @type {'UrlParseError'} */
+UrlParseError.code = 'UrlParseError';
+
+class UserCanceledError extends BaseError {
+  constructor() {
+    super(`The operation was canceled.`);
+    this.code = this.name = UserCanceledError.code;
+    this.data = {};
+  }
+}
+/** @type {'UserCanceledError'} */
+UserCanceledError.code = 'UserCanceledError';
+
+
+
+var Errors = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  AlreadyExistsError: AlreadyExistsError,
+  AmbiguousError: AmbiguousError,
+  CheckoutConflictError: CheckoutConflictError,
+  CommitNotFetchedError: CommitNotFetchedError,
+  EmptyServerResponseError: EmptyServerResponseError,
+  FastForwardError: FastForwardError,
+  GitPushError: GitPushError,
+  HttpError: HttpError,
+  InternalError: InternalError,
+  InvalidFilepathError: InvalidFilepathError,
+  InvalidOidError: InvalidOidError,
+  InvalidRefNameError: InvalidRefNameError,
+  MaxDepthError: MaxDepthError,
+  MergeNotSupportedError: MergeNotSupportedError,
+  MissingNameError: MissingNameError,
+  MissingParameterError: MissingParameterError,
+  NoRefspecError: NoRefspecError,
+  NotFoundError: NotFoundError,
+  ObjectTypeError: ObjectTypeError,
+  ParseError: ParseError,
+  PushRejectedError: PushRejectedError,
+  RemoteCapabilityError: RemoteCapabilityError,
+  SmartHttpError: SmartHttpError,
+  UnknownTransportError: UnknownTransportError,
+  UrlParseError: UrlParseError,
+  UserCanceledError: UserCanceledError
+});
+
+function formatAuthor({ name, email, timestamp, timezoneOffset }) {
+  timezoneOffset = formatTimezoneOffset(timezoneOffset);
+  return `${name} <${email}> ${timestamp} ${timezoneOffset}`
+}
+
+// The amount of effort that went into crafting these cases to handle
+// -0 (just so we don't lose that information when parsing and reconstructing)
+// but can also default to +0 was extraordinary.
+
+function formatTimezoneOffset(minutes) {
+  const sign = simpleSign(negateExceptForZero(minutes));
+  minutes = Math.abs(minutes);
+  const hours = Math.floor(minutes / 60);
+  minutes -= hours * 60;
+  let strHours = String(hours);
+  let strMinutes = String(minutes);
+  if (strHours.length < 2) strHours = '0' + strHours;
+  if (strMinutes.length < 2) strMinutes = '0' + strMinutes;
+  return (sign === -1 ? '-' : '+') + strHours + strMinutes
+}
+
+function simpleSign(n) {
+  return Math.sign(n) || (Object.is(n, -0) ? -1 : 1)
+}
+
+function negateExceptForZero(n) {
+  return n === 0 ? n : -n
+}
+
+function normalizeNewlines(str) {
+  // remove all <CR>
+  str = str.replace(/\r/g, '');
+  // no extra newlines up front
+  str = str.replace(/^\n+/, '');
+  // and a single newline at the end
+  str = str.replace(/\n+$/, '') + '\n';
+  return str
+}
+
+function parseAuthor(author) {
+  const [, name, email, timestamp, offset] = author.match(
+    /^(.*) <(.*)> (.*) (.*)$/
+  );
+  return {
+    name: name,
+    email: email,
+    timestamp: Number(timestamp),
+    timezoneOffset: parseTimezoneOffset(offset),
+  }
+}
+
+// The amount of effort that went into crafting these cases to handle
+// -0 (just so we don't lose that information when parsing and reconstructing)
+// but can also default to +0 was extraordinary.
+
+function parseTimezoneOffset(offset) {
+  let [, sign, hours, minutes] = offset.match(/(\+|-)(\d\d)(\d\d)/);
+  minutes = (sign === '+' ? 1 : -1) * (Number(hours) * 60 + Number(minutes));
+  return negateExceptForZero$1(minutes)
+}
+
+function negateExceptForZero$1(n) {
+  return n === 0 ? n : -n
+}
+
+class GitAnnotatedTag {
+  constructor(tag) {
+    if (typeof tag === 'string') {
+      this._tag = tag;
+    } else if (Buffer.isBuffer(tag)) {
+      this._tag = tag.toString('utf8');
+    } else if (typeof tag === 'object') {
+      this._tag = GitAnnotatedTag.render(tag);
+    } else {
+      throw new InternalError(
+        'invalid type passed to GitAnnotatedTag constructor'
+      )
+    }
+  }
+
+  static from(tag) {
+    return new GitAnnotatedTag(tag)
+  }
+
+  static render(obj) {
+    return `object ${obj.object}
+type ${obj.type}
+tag ${obj.tag}
+tagger ${formatAuthor(obj.tagger)}
+
+${obj.message}
+${obj.gpgsig ? obj.gpgsig : ''}`
+  }
+
+  justHeaders() {
+    return this._tag.slice(0, this._tag.indexOf('\n\n'))
+  }
+
+  message() {
+    const tag = this.withoutSignature();
+    return tag.slice(tag.indexOf('\n\n') + 2)
+  }
+
+  parse() {
+    return Object.assign(this.headers(), {
+      message: this.message(),
+      gpgsig: this.gpgsig(),
+    })
+  }
+
+  render() {
+    return this._tag
+  }
+
+  headers() {
+    const headers = this.justHeaders().split('\n');
+    const hs = [];
+    for (const h of headers) {
+      if (h[0] === ' ') {
+        // combine with previous header (without space indent)
+        hs[hs.length - 1] += '\n' + h.slice(1);
+      } else {
+        hs.push(h);
+      }
+    }
+    const obj = {};
+    for (const h of hs) {
+      const key = h.slice(0, h.indexOf(' '));
+      const value = h.slice(h.indexOf(' ') + 1);
+      if (Array.isArray(obj[key])) {
+        obj[key].push(value);
+      } else {
+        obj[key] = value;
+      }
+    }
+    if (obj.tagger) {
+      obj.tagger = parseAuthor(obj.tagger);
+    }
+    if (obj.committer) {
+      obj.committer = parseAuthor(obj.committer);
+    }
+    return obj
+  }
+
+  withoutSignature() {
+    const tag = normalizeNewlines(this._tag);
+    if (tag.indexOf('\n-----BEGIN PGP SIGNATURE-----') === -1) return tag
+    return tag.slice(0, tag.lastIndexOf('\n-----BEGIN PGP SIGNATURE-----'))
+  }
+
+  gpgsig() {
+    if (this._tag.indexOf('\n-----BEGIN PGP SIGNATURE-----') === -1) return
+    const signature = this._tag.slice(
+      this._tag.indexOf('-----BEGIN PGP SIGNATURE-----'),
+      this._tag.indexOf('-----END PGP SIGNATURE-----') +
+        '-----END PGP SIGNATURE-----'.length
+    );
+    return normalizeNewlines(signature)
+  }
+
+  payload() {
+    return this.withoutSignature() + '\n'
+  }
+
+  toObject() {
+    return Buffer.from(this._tag, 'utf8')
+  }
+
+  static async sign(tag, sign, secretKey) {
+    const payload = tag.payload();
+    let { signature } = await sign({ payload, secretKey });
+    // renormalize the line endings to the one true line-ending
+    signature = normalizeNewlines(signature);
+    const signedTag = payload + signature;
+    // return a new tag object
+    return GitAnnotatedTag.from(signedTag)
+  }
+}
+
+function indent(str) {
+  return (
+    str
+      .trim()
+      .split('\n')
+      .map(x => ' ' + x)
+      .join('\n') + '\n'
+  )
+}
+
+function outdent(str) {
+  return str
+    .split('\n')
+    .map(x => x.replace(/^ /, ''))
+    .join('\n')
+}
+
+class GitCommit {
+  constructor(commit) {
+    if (typeof commit === 'string') {
+      this._commit = commit;
+    } else if (Buffer.isBuffer(commit)) {
+      this._commit = commit.toString('utf8');
+    } else if (typeof commit === 'object') {
+      this._commit = GitCommit.render(commit);
+    } else {
+      throw new InternalError('invalid type passed to GitCommit constructor')
+    }
+  }
+
+  static fromPayloadSignature({ payload, signature }) {
+    const headers = GitCommit.justHeaders(payload);
+    const message = GitCommit.justMessage(payload);
+    const commit = normalizeNewlines(
+      headers + '\ngpgsig' + indent(signature) + '\n' + message
+    );
+    return new GitCommit(commit)
+  }
+
+  static from(commit) {
+    return new GitCommit(commit)
+  }
+
+  toObject() {
+    return Buffer.from(this._commit, 'utf8')
+  }
+
+  // Todo: allow setting the headers and message
+  headers() {
+    return this.parseHeaders()
+  }
+
+  // Todo: allow setting the headers and message
+  message() {
+    return GitCommit.justMessage(this._commit)
+  }
+
+  parse() {
+    return Object.assign({ message: this.message() }, this.headers())
+  }
+
+  static justMessage(commit) {
+    return normalizeNewlines(commit.slice(commit.indexOf('\n\n') + 2))
+  }
+
+  static justHeaders(commit) {
+    return commit.slice(0, commit.indexOf('\n\n'))
+  }
+
+  parseHeaders() {
+    const headers = GitCommit.justHeaders(this._commit).split('\n');
+    const hs = [];
+    for (const h of headers) {
+      if (h[0] === ' ') {
+        // combine with previous header (without space indent)
+        hs[hs.length - 1] += '\n' + h.slice(1);
+      } else {
+        hs.push(h);
+      }
+    }
+    const obj = {
+      parent: [],
+    };
+    for (const h of hs) {
+      const key = h.slice(0, h.indexOf(' '));
+      const value = h.slice(h.indexOf(' ') + 1);
+      if (Array.isArray(obj[key])) {
+        obj[key].push(value);
+      } else {
+        obj[key] = value;
+      }
+    }
+    if (obj.author) {
+      obj.author = parseAuthor(obj.author);
+    }
+    if (obj.committer) {
+      obj.committer = parseAuthor(obj.committer);
+    }
+    return obj
+  }
+
+  static renderHeaders(obj) {
+    let headers = '';
+    if (obj.tree) {
+      headers += `tree ${obj.tree}\n`;
+    } else {
+      headers += `tree 4b825dc642cb6eb9a060e54bf8d69288fbee4904\n`; // the null tree
+    }
+    if (obj.parent) {
+      if (obj.parent.length === undefined) {
+        throw new InternalError(`commit 'parent' property should be an array`)
+      }
+      for (const p of obj.parent) {
+        headers += `parent ${p}\n`;
+      }
+    }
+    const author = obj.author;
+    headers += `author ${formatAuthor(author)}\n`;
+    const committer = obj.committer || obj.author;
+    headers += `committer ${formatAuthor(committer)}\n`;
+    if (obj.gpgsig) {
+      headers += 'gpgsig' + indent(obj.gpgsig);
+    }
+    return headers
+  }
+
+  static render(obj) {
+    return GitCommit.renderHeaders(obj) + '\n' + normalizeNewlines(obj.message)
+  }
+
+  render() {
+    return this._commit
+  }
+
+  withoutSignature() {
+    const commit = normalizeNewlines(this._commit);
+    if (commit.indexOf('\ngpgsig') === -1) return commit
+    const headers = commit.slice(0, commit.indexOf('\ngpgsig'));
+    const message = commit.slice(
+      commit.indexOf('-----END PGP SIGNATURE-----\n') +
+        '-----END PGP SIGNATURE-----\n'.length
+    );
+    return normalizeNewlines(headers + '\n' + message)
+  }
+
+  isolateSignature() {
+    const signature = this._commit.slice(
+      this._commit.indexOf('-----BEGIN PGP SIGNATURE-----'),
+      this._commit.indexOf('-----END PGP SIGNATURE-----') +
+        '-----END PGP SIGNATURE-----'.length
+    );
+    return outdent(signature)
+  }
+
+  static async sign(commit, sign, secretKey) {
+    const payload = commit.withoutSignature();
+    const message = GitCommit.justMessage(commit._commit);
+    let { signature } = await sign({ payload, secretKey });
+    // renormalize the line endings to the one true line-ending
+    signature = normalizeNewlines(signature);
+    const headers = GitCommit.justHeaders(commit._commit);
+    const signedCommit =
+      headers + '\n' + 'gpgsig' + indent(signature) + '\n' + message;
+    // return a new commit object
+    return GitCommit.from(signedCommit)
+  }
+}
+
+async function resolveTree({ fs, cache, gitdir, oid }) {
+  // Empty tree - bypass `readObject`
+  if (oid === '4b825dc642cb6eb9a060e54bf8d69288fbee4904') {
+    return { tree: GitTree.from([]), oid }
+  }
+  const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+  // Resolve annotated tag objects to whatever
+  if (type === 'tag') {
+    oid = GitAnnotatedTag.from(object).parse().object;
+    return resolveTree({ fs, cache, gitdir, oid })
+  }
+  // Resolve commits to trees
+  if (type === 'commit') {
+    oid = GitCommit.from(object).parse().tree;
+    return resolveTree({ fs, cache, gitdir, oid })
+  }
+  if (type !== 'tree') {
+    throw new ObjectTypeError(oid, type, 'tree')
+  }
+  return { tree: GitTree.from(object), oid }
+}
+
+class GitWalkerRepo {
+  constructor({ fs, gitdir, ref }) {
+    this.fs = fs;
+    this.cache = {};
+    this.gitdir = gitdir;
+    this.mapPromise = (async () => {
+      const map = new Map();
+      let oid;
+      try {
+        oid = await GitRefManager.resolve({ fs, gitdir, ref });
+      } catch (e) {
+        if (e instanceof NotFoundError) {
+          // Handle fresh branches with no commits
+          oid = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
+        }
+      }
+      const tree = await resolveTree({ fs, cache: this.cache, gitdir, oid });
+      tree.type = 'tree';
+      tree.mode = '40000';
+      map.set('.', tree);
+      return map
+    })();
+    const walker = this;
+    this.ConstructEntry = class TreeEntry {
+      constructor(fullpath) {
+        this._fullpath = fullpath;
+        this._type = false;
+        this._mode = false;
+        this._stat = false;
+        this._content = false;
+        this._oid = false;
+      }
+
+      async type() {
+        return walker.type(this)
+      }
+
+      async mode() {
+        return walker.mode(this)
+      }
+
+      async stat() {
+        return walker.stat(this)
+      }
+
+      async content() {
+        return walker.content(this)
+      }
+
+      async oid() {
+        return walker.oid(this)
+      }
+    };
+  }
+
+  async readdir(entry) {
+    const filepath = entry._fullpath;
+    const { fs, cache, gitdir } = this;
+    const map = await this.mapPromise;
+    const obj = map.get(filepath);
+    if (!obj) throw new Error(`No obj for ${filepath}`)
+    const oid = obj.oid;
+    if (!oid) throw new Error(`No oid for obj ${JSON.stringify(obj)}`)
+    if (obj.type !== 'tree') {
+      // TODO: support submodules (type === 'commit')
+      return null
+    }
+    const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+    if (type !== obj.type) {
+      throw new ObjectTypeError(oid, type, obj.type)
+    }
+    const tree = GitTree.from(object);
+    // cache all entries
+    for (const entry of tree) {
+      map.set(join(filepath, entry.path), entry);
+    }
+    return tree.entries().map(entry => join(filepath, entry.path))
+  }
+
+  async type(entry) {
+    if (entry._type === false) {
+      const map = await this.mapPromise;
+      const { type } = map.get(entry._fullpath);
+      entry._type = type;
+    }
+    return entry._type
+  }
+
+  async mode(entry) {
+    if (entry._mode === false) {
+      const map = await this.mapPromise;
+      const { mode } = map.get(entry._fullpath);
+      entry._mode = normalizeMode(parseInt(mode, 8));
+    }
+    return entry._mode
+  }
+
+  async stat(_entry) {}
+
+  async content(entry) {
+    if (entry._content === false) {
+      const map = await this.mapPromise;
+      const { fs, cache, gitdir } = this;
+      const obj = map.get(entry._fullpath);
+      const oid = obj.oid;
+      const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+      if (type !== 'blob') {
+        entry._content = undefined;
+      } else {
+        entry._content = new Uint8Array(object);
+      }
+    }
+    return entry._content
+  }
+
+  async oid(entry) {
+    if (entry._oid === false) {
+      const map = await this.mapPromise;
+      const obj = map.get(entry._fullpath);
+      entry._oid = obj.oid;
+    }
+    return entry._oid
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {string} [args.ref='HEAD']
+ * @returns {Walker}
+ */
+function TREE({ ref = 'HEAD' }) {
+  const o = Object.create(null);
+  Object.defineProperty(o, GitWalkSymbol, {
+    value: function({ fs, gitdir }) {
+      return new GitWalkerRepo({ fs, gitdir, ref })
+    },
+  });
+  Object.freeze(o);
+  return o
+}
+
+// @ts-check
+
+class GitWalkerFs {
+  constructor({ fs, dir, gitdir, cache }) {
+    this.fs = fs;
+    this.cache = cache;
+    this.dir = dir;
+    this.gitdir = gitdir;
+    const walker = this;
+    this.ConstructEntry = class WorkdirEntry {
+      constructor(fullpath) {
+        this._fullpath = fullpath;
+        this._type = false;
+        this._mode = false;
+        this._stat = false;
+        this._content = false;
+        this._oid = false;
+      }
+
+      async type() {
+        return walker.type(this)
+      }
+
+      async mode() {
+        return walker.mode(this)
+      }
+
+      async stat() {
+        return walker.stat(this)
+      }
+
+      async content() {
+        return walker.content(this)
+      }
+
+      async oid() {
+        return walker.oid(this)
+      }
+    };
+  }
+
+  async readdir(entry) {
+    const filepath = entry._fullpath;
+    const { fs, dir } = this;
+    const names = await fs.readdir(join(dir, filepath));
+    if (names === null) return null
+    return names.map(name => join(filepath, name))
+  }
+
+  async type(entry) {
+    if (entry._type === false) {
+      await entry.stat();
+    }
+    return entry._type
+  }
+
+  async mode(entry) {
+    if (entry._mode === false) {
+      await entry.stat();
+    }
+    return entry._mode
+  }
+
+  async stat(entry) {
+    if (entry._stat === false) {
+      const { fs, dir } = this;
+      let stat = await fs.lstat(`${dir}/${entry._fullpath}`);
+      if (!stat) {
+        throw new Error(
+          `ENOENT: no such file or directory, lstat '${entry._fullpath}'`
+        )
+      }
+      let type = stat.isDirectory() ? 'tree' : 'blob';
+      if (type === 'blob' && !stat.isFile() && !stat.isSymbolicLink()) {
+        type = 'special';
+      }
+      entry._type = type;
+      stat = normalizeStats(stat);
+      entry._mode = stat.mode;
+      // workaround for a BrowserFS edge case
+      if (stat.size === -1 && entry._actualSize) {
+        stat.size = entry._actualSize;
+      }
+      entry._stat = stat;
+    }
+    return entry._stat
+  }
+
+  async content(entry) {
+    if (entry._content === false) {
+      const { fs, dir } = this;
+      if ((await entry.type()) === 'tree') {
+        entry._content = undefined;
+      } else {
+        const content = await fs.read(`${dir}/${entry._fullpath}`);
+        // workaround for a BrowserFS edge case
+        entry._actualSize = content.length;
+        if (entry._stat && entry._stat.size === -1) {
+          entry._stat.size = entry._actualSize;
+        }
+        entry._content = new Uint8Array(content);
+      }
+    }
+    return entry._content
+  }
+
+  async oid(entry) {
+    if (entry._oid === false) {
+      const { fs, gitdir, cache } = this;
+      let oid;
+      // See if we can use the SHA1 hash in the index.
+      await GitIndexManager.acquire({ fs, gitdir, cache }, async function(
+        index
+      ) {
+        const stage = index.entriesMap.get(entry._fullpath);
+        const stats = await entry.stat();
+        if (!stage || compareStats(stats, stage)) {
+          const content = await entry.content();
+          if (content === undefined) {
+            oid = undefined;
+          } else {
+            oid = await shasum(
+              GitObject.wrap({ type: 'blob', object: await entry.content() })
+            );
+            if (stage && oid === stage.oid) {
+              index.insert({
+                filepath: entry._fullpath,
+                stats,
+                oid: oid,
+              });
+            }
+          }
+        } else {
+          // Use the index SHA1 rather than compute it
+          oid = stage.oid;
+        }
+      });
+      entry._oid = oid;
+    }
+    return entry._oid
+  }
+}
+
+// @ts-check
+
+/**
+ * @returns {Walker}
+ */
+function WORKDIR() {
+  const o = Object.create(null);
+  Object.defineProperty(o, GitWalkSymbol, {
+    value: function({ fs, dir, gitdir, cache }) {
+      return new GitWalkerFs({ fs, dir, gitdir, cache })
+    },
+  });
+  Object.freeze(o);
+  return o
+}
+
+// @ts-check
+
+// I'm putting this in a Manager because I reckon it could benefit
+// from a LOT of cacheing.
+
+// TODO: Implement .git/info/exclude
+
+class GitIgnoreManager {
+  static async isIgnored({ fs, dir, gitdir = join(dir, '.git'), filepath }) {
+    // ALWAYS ignore ".git" folders.
+    if (basename(filepath) === '.git') return true
+    // '.' is not a valid gitignore entry, so '.' is never ignored
+    if (filepath === '.') return false
+    // Find all the .gitignore files that could affect this file
+    const pairs = [
+      {
+        gitignore: join(dir, '.gitignore'),
+        filepath,
+      },
+    ];
+    const pieces = filepath.split('/');
+    for (let i = 1; i < pieces.length; i++) {
+      const folder = pieces.slice(0, i).join('/');
+      const file = pieces.slice(i).join('/');
+      pairs.push({
+        gitignore: join(dir, folder, '.gitignore'),
+        filepath: file,
+      });
+    }
+    let ignoredStatus = false;
+    for (const p of pairs) {
+      let file;
+      try {
+        file = await fs.read(p.gitignore, 'utf8');
+      } catch (err) {
+        if (err.code === 'NOENT') continue
+      }
+      const ign = ignore().add(file);
+      // If the parent directory is excluded, we are done.
+      // "It is not possible to re-include a file if a parent directory of that file is excluded. Git doesn’t list excluded directories for performance reasons, so any patterns on contained files have no effect, no matter where they are defined."
+      // source: https://git-scm.com/docs/gitignore
+      const parentdir = dirname(p.filepath);
+      if (parentdir !== '.' && ign.ignores(parentdir)) return true
+      // If the file is currently ignored, test for UNignoring.
+      if (ignoredStatus) {
+        ignoredStatus = !ign.test(p.filepath).unignored;
+      } else {
+        ignoredStatus = ign.test(p.filepath).ignored;
+      }
+    }
+    return ignoredStatus
+  }
+}
+
+/**
+ * This is just a collection of helper functions really. At least that's how it started.
+ */
+class FileSystem {
+  constructor(fs) {
+    if (typeof fs._original_unwrapped_fs !== 'undefined') return fs
+
+    const promises = Object.getOwnPropertyDescriptor(fs, 'promises');
+    if (promises && promises.enumerable) {
+      this._readFile = fs.promises.readFile.bind(fs.promises);
+      this._writeFile = fs.promises.writeFile.bind(fs.promises);
+      this._mkdir = fs.promises.mkdir.bind(fs.promises);
+      this._rmdir = fs.promises.rmdir.bind(fs.promises);
+      this._unlink = fs.promises.unlink.bind(fs.promises);
+      this._stat = fs.promises.stat.bind(fs.promises);
+      this._lstat = fs.promises.lstat.bind(fs.promises);
+      this._readdir = fs.promises.readdir.bind(fs.promises);
+      this._readlink = fs.promises.readlink.bind(fs.promises);
+      this._symlink = fs.promises.symlink.bind(fs.promises);
+    } else {
+      this._readFile = pify(fs.readFile.bind(fs));
+      this._writeFile = pify(fs.writeFile.bind(fs));
+      this._mkdir = pify(fs.mkdir.bind(fs));
+      this._rmdir = pify(fs.rmdir.bind(fs));
+      this._unlink = pify(fs.unlink.bind(fs));
+      this._stat = pify(fs.stat.bind(fs));
+      this._lstat = pify(fs.lstat.bind(fs));
+      this._readdir = pify(fs.readdir.bind(fs));
+      this._readlink = pify(fs.readlink.bind(fs));
+      this._symlink = pify(fs.symlink.bind(fs));
+    }
+    this._original_unwrapped_fs = fs;
+  }
+
+  /**
+   * Return true if a file exists, false if it doesn't exist.
+   * Rethrows errors that aren't related to file existance.
+   */
+  async exists(filepath, options = {}) {
+    try {
+      await this._stat(filepath);
+      return true
+    } catch (err) {
+      if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {
+        return false
+      } else {
+        console.log('Unhandled error in "FileSystem.exists()" function', err);
+        throw err
+      }
+    }
+  }
+
+  /**
+   * Return the contents of a file if it exists, otherwise returns null.
+   *
+   * @param {string} filepath
+   * @param {object} [options]
+   *
+   * @returns {Promise<Buffer|string|null>}
+   */
+  async read(filepath, options = {}) {
+    try {
+      let buffer = await this._readFile(filepath, options);
+      // Convert plain ArrayBuffers to Buffers
+      if (typeof buffer !== 'string') {
+        buffer = Buffer.from(buffer);
+      }
+      return buffer
+    } catch (err) {
+      return null
+    }
+  }
+
+  /**
+   * Write a file (creating missing directories if need be) without throwing errors.
+   *
+   * @param {string} filepath
+   * @param {Buffer|Uint8Array|string} contents
+   * @param {object|string} [options]
+   */
+  async write(filepath, contents, options = {}) {
+    try {
+      await this._writeFile(filepath, contents, options);
+      return
+    } catch (err) {
+      // Hmm. Let's try mkdirp and try again.
+      await this.mkdir(dirname(filepath));
+      await this._writeFile(filepath, contents, options);
+    }
+  }
+
+  /**
+   * Make a directory (or series of nested directories) without throwing an error if it already exists.
+   */
+  async mkdir(filepath, _selfCall = false) {
+    try {
+      await this._mkdir(filepath);
+      return
+    } catch (err) {
+      // If err is null then operation succeeded!
+      if (err === null) return
+      // If the directory already exists, that's OK!
+      if (err.code === 'EEXIST') return
+      // Avoid infinite loops of failure
+      if (_selfCall) throw err
+      // If we got a "no such file or directory error" backup and try again.
+      if (err.code === 'ENOENT') {
+        const parent = dirname(filepath);
+        // Check to see if we've gone too far
+        if (parent === '.' || parent === '/' || parent === filepath) throw err
+        // Infinite recursion, what could go wrong?
+        await this.mkdir(parent);
+        await this.mkdir(filepath, true);
+      }
+    }
+  }
+
+  /**
+   * Delete a file without throwing an error if it is already deleted.
+   */
+  async rm(filepath) {
+    try {
+      await this._unlink(filepath);
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err
+    }
+  }
+
+  /**
+   * Delete a directory without throwing an error if it is already deleted.
+   */
+  async rmdir(filepath) {
+    try {
+      await this._rmdir(filepath);
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err
+    }
+  }
+
+  /**
+   * Read a directory without throwing an error is the directory doesn't exist
+   */
+  async readdir(filepath) {
+    try {
+      const names = await this._readdir(filepath);
+      // Ordering is not guaranteed, and system specific (Windows vs Unix)
+      // so we must sort them ourselves.
+      names.sort(compareStrings);
+      return names
+    } catch (err) {
+      if (err.code === 'ENOTDIR') return null
+      return []
+    }
+  }
+
+  /**
+   * Return a flast list of all the files nested inside a directory
+   *
+   * Based on an elegant concurrent recursive solution from SO
+   * https://stackoverflow.com/a/45130990/2168416
+   */
+  async readdirDeep(dir) {
+    const subdirs = await this._readdir(dir);
+    const files = await Promise.all(
+      subdirs.map(async subdir => {
+        const res = dir + '/' + subdir;
+        return (await this._stat(res)).isDirectory()
+          ? this.readdirDeep(res)
+          : res
+      })
+    );
+    return files.reduce((a, f) => a.concat(f), [])
+  }
+
+  /**
+   * Return the Stats of a file/symlink if it exists, otherwise returns null.
+   * Rethrows errors that aren't related to file existance.
+   */
+  async lstat(filename) {
+    try {
+      const stats = await this._lstat(filename);
+      return stats
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        return null
+      }
+      throw err
+    }
+  }
+
+  /**
+   * Reads the contents of a symlink if it exists, otherwise returns null.
+   * Rethrows errors that aren't related to file existance.
+   */
+  async readlink(filename, opts = { encoding: 'buffer' }) {
+    // Note: FileSystem.readlink returns a buffer by default
+    // so we can dump it into GitObject.write just like any other file.
+    try {
+      return this._readlink(filename, opts)
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        return null
+      }
+      throw err
+    }
+  }
+
+  /**
+   * Write the contents of buffer to a symlink.
+   */
+  async writelink(filename, buffer) {
+    return this._symlink(buffer.toString('utf8'), filename)
+  }
+}
+
+async function writeObjectLoose({ fs, gitdir, object, format, oid }) {
+  if (format !== 'deflated') {
+    throw new InternalError(
+      'GitObjectStoreLoose expects objects to write to be in deflated format'
+    )
+  }
+  const source = `objects/${oid.slice(0, 2)}/${oid.slice(2)}`;
+  const filepath = `${gitdir}/${source}`;
+  // Don't overwrite existing git objects - this helps avoid EPERM errors.
+  // Although I don't know how we'd fix corrupted objects then. Perhaps delete them
+  // on read?
+  if (!(await fs.exists(filepath))) await fs.write(filepath, object);
+}
+
+/* eslint-env node, browser */
+
+let supportsCompressionStream = null;
+
+async function deflate(buffer) {
+  if (supportsCompressionStream === null) {
+    supportsCompressionStream = testCompressionStream();
+  }
+  return supportsCompressionStream
+    ? browserDeflate(buffer)
+    : pako.deflate(buffer)
+}
+
+async function browserDeflate(buffer) {
+  const cs = new CompressionStream('deflate');
+  const c = new Blob([buffer]).stream().pipeThrough(cs);
+  return new Uint8Array(await new Response(c).arrayBuffer())
+}
+
+function testCompressionStream() {
+  try {
+    const cs = new CompressionStream('deflate');
+    if (cs) return true
+  } catch (_) {
+    // no bother
+  }
+  return false
+}
+
+async function _writeObject({
+  fs,
+  gitdir,
+  type,
+  object,
+  format = 'content',
+  oid = undefined,
+  dryRun = false,
+}) {
+  if (format !== 'deflated') {
+    if (format !== 'wrapped') {
+      object = GitObject.wrap({ type, object });
+    }
+    oid = await shasum(object);
+    object = Buffer.from(await deflate(object));
+  }
+  if (!dryRun) {
+    await writeObjectLoose({ fs, gitdir, object, format: 'deflated', oid });
+  }
+  return oid
+}
+
+function assertParameter(name, value) {
+  if (value === undefined) {
+    throw new MissingParameterError(name)
+  }
+}
+
+// @ts-check
+
+/**
+ * Add a file to the git index (aka staging area)
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.filepath - The path to the file to add to the index
+ *
+ * @returns {Promise<void>} Resolves successfully once the git index has been updated
+ *
+ * @example
+ * await fs.promises.writeFile('/tutorial/README.md', `# TEST`)
+ * await git.add({ fs, dir: '/tutorial', filepath: 'README.md' })
+ * console.log('done')
+ *
+ */
+async function add({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  filepath,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('dir', dir);
+    assertParameter('gitdir', gitdir);
+    assertParameter('filepath', filepath);
+
+    const fs = new FileSystem(_fs);
+    const cache = {};
+    await GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+      await addToIndex({ dir, gitdir, fs, filepath, index });
+    });
+  } catch (err) {
+    err.caller = 'git.add';
+    throw err
+  }
+}
+
+async function addToIndex({ dir, gitdir, fs, filepath, index }) {
+  // TODO: Should ignore UNLESS it's already in the index.
+  const ignored = await GitIgnoreManager.isIgnored({
+    fs,
+    dir,
+    gitdir,
+    filepath,
+  });
+  if (ignored) return
+  const stats = await fs.lstat(join(dir, filepath));
+  if (!stats) throw new NotFoundError(filepath)
+  if (stats.isDirectory()) {
+    const children = await fs.readdir(join(dir, filepath));
+    const promises = children.map(child =>
+      addToIndex({ dir, gitdir, fs, filepath: join(filepath, child), index })
+    );
+    await Promise.all(promises);
+  } else {
+    const object = stats.isSymbolicLink()
+      ? await fs.readlink(join(dir, filepath))
+      : await fs.read(join(dir, filepath));
+    if (object === null) throw new NotFoundError(filepath)
+    const oid = await _writeObject({ fs, gitdir, type: 'blob', object });
+    index.insert({ filepath, stats, oid });
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {SignCallback} [args.onSign]
+ * @param {string} args.gitdir
+ * @param {string} args.message
+ * @param {Object} args.author
+ * @param {string} args.author.name
+ * @param {string} args.author.email
+ * @param {number} args.author.timestamp
+ * @param {number} args.author.timezoneOffset
+ * @param {Object} args.committer
+ * @param {string} args.committer.name
+ * @param {string} args.committer.email
+ * @param {number} args.committer.timestamp
+ * @param {number} args.committer.timezoneOffset
+ * @param {string} [args.signingKey]
+ * @param {boolean} [args.dryRun = false]
+ * @param {boolean} [args.noUpdateBranch = false]
+ * @param {string} [args.ref]
+ * @param {string[]} [args.parent]
+ * @param {string} [args.tree]
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly created commit.
+ */
+async function _commit({
+  fs,
+  cache,
+  onSign,
+  gitdir,
+  message,
+  author,
+  committer,
+  signingKey,
+  dryRun = false,
+  noUpdateBranch = false,
+  ref,
+  parent,
+  tree,
+}) {
+  if (!ref) {
+    ref = await GitRefManager.resolve({
+      fs,
+      gitdir,
+      ref: 'HEAD',
+      depth: 2,
+    });
+  }
+
+  return GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+    const inodes = flatFileListToDirectoryStructure(index.entries);
+    const inode = inodes.get('.');
+    if (!tree) {
+      tree = await constructTree({ fs, gitdir, inode, dryRun });
+    }
+    if (!parent) {
+      try {
+        parent = [
+          await GitRefManager.resolve({
+            fs,
+            gitdir,
+            ref,
+          }),
+        ];
+      } catch (err) {
+        // Probably an initial commit
+        parent = [];
+      }
+    }
+    let comm = GitCommit.from({
+      tree,
+      parent,
+      author,
+      committer,
+      message,
+    });
+    if (signingKey) {
+      comm = await GitCommit.sign(comm, onSign, signingKey);
+    }
+    const oid = await _writeObject({
+      fs,
+      gitdir,
+      type: 'commit',
+      object: comm.toObject(),
+      dryRun,
+    });
+    if (!noUpdateBranch && !dryRun) {
+      // Update branch pointer
+      await GitRefManager.writeRef({
+        fs,
+        gitdir,
+        ref,
+        value: oid,
+      });
+    }
+    return oid
+  })
+}
+
+async function constructTree({ fs, gitdir, inode, dryRun }) {
+  // use depth first traversal
+  const children = inode.children;
+  for (const inode of children) {
+    if (inode.type === 'tree') {
+      inode.metadata.mode = '040000';
+      inode.metadata.oid = await constructTree({ fs, gitdir, inode, dryRun });
+    }
+  }
+  const entries = children.map(inode => ({
+    mode: inode.metadata.mode,
+    path: inode.basename,
+    oid: inode.metadata.oid,
+    type: inode.type,
+  }));
+  const tree = GitTree.from(entries);
+  const oid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'tree',
+    object: tree.toObject(),
+    dryRun,
+  });
+  return oid
+}
+
+// @ts-check
+
+async function resolveFilepath({ fs, cache, gitdir, oid, filepath }) {
+  // Ensure there are no leading or trailing directory separators.
+  // I was going to do this automatically, but then found that the Git Terminal for Windows
+  // auto-expands --filepath=/src/utils to --filepath=C:/Users/Will/AppData/Local/Programs/Git/src/utils
+  // so I figured it would be wise to promote the behavior in the application layer not just the library layer.
+  if (filepath.startsWith('/')) {
+    throw new InvalidFilepathError('leading-slash')
+  } else if (filepath.endsWith('/')) {
+    throw new InvalidFilepathError('trailing-slash')
+  }
+  const _oid = oid;
+  const result = await resolveTree({ fs, cache, gitdir, oid });
+  const tree = result.tree;
+  if (filepath === '') {
+    oid = result.oid;
+  } else {
+    const pathArray = filepath.split('/');
+    oid = await _resolveFilepath({
+      fs,
+      cache,
+      gitdir,
+      tree,
+      pathArray,
+      oid: _oid,
+      filepath,
+    });
+  }
+  return oid
+}
+
+async function _resolveFilepath({
+  fs,
+  cache,
+  gitdir,
+  tree,
+  pathArray,
+  oid,
+  filepath,
+}) {
+  const name = pathArray.shift();
+  for (const entry of tree) {
+    if (entry.path === name) {
+      if (pathArray.length === 0) {
+        return entry.oid
+      } else {
+        const { type, object } = await _readObject({
+          fs,
+          cache,
+          gitdir,
+          oid: entry.oid,
+        });
+        if (type !== 'tree') {
+          throw new ObjectTypeError(oid, type, 'blob', filepath)
+        }
+        tree = GitTree.from(object);
+        return _resolveFilepath({
+          fs,
+          cache,
+          gitdir,
+          tree,
+          pathArray,
+          oid,
+          filepath,
+        })
+      }
+    }
+  }
+  throw new NotFoundError(`file or directory found at "${oid}:${filepath}"`)
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} ReadTreeResult - The object returned has the following schema:
+ * @property {string} oid - SHA-1 object id of this tree
+ * @property {TreeObject} tree - the parsed tree object
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ * @param {string} [args.filepath]
+ *
+ * @returns {Promise<ReadTreeResult>}
+ */
+async function _readTree({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  filepath = undefined,
+}) {
+  if (filepath !== undefined) {
+    oid = await resolveFilepath({ fs, cache, gitdir, oid, filepath });
+  }
+  const { tree, oid: treeOid } = await resolveTree({ fs, cache, gitdir, oid });
+  const result = {
+    oid: treeOid,
+    tree: tree.entries(),
+  };
+  return result
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {TreeObject} args.tree
+ *
+ * @returns {Promise<string>}
+ */
+async function _writeTree({ fs, gitdir, tree }) {
+  // Convert object to buffer
+  const object = GitTree.from(tree).toObject();
+  const oid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'tree',
+    object,
+    format: 'content',
+  });
+  return oid
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {SignCallback} [args.onSign]
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {string} args.oid
+ * @param {string|Uint8Array} args.note
+ * @param {boolean} [args.force]
+ * @param {Object} args.author
+ * @param {string} args.author.name
+ * @param {string} args.author.email
+ * @param {number} args.author.timestamp
+ * @param {number} args.author.timezoneOffset
+ * @param {Object} args.committer
+ * @param {string} args.committer.name
+ * @param {string} args.committer.email
+ * @param {number} args.committer.timestamp
+ * @param {number} args.committer.timezoneOffset
+ * @param {string} [args.signingKey]
+ *
+ * @returns {Promise<string>}
+ */
+
+async function _addNote({
+  fs,
+  cache,
+  onSign,
+  gitdir,
+  ref,
+  oid,
+  note,
+  force,
+  author,
+  committer,
+  signingKey,
+}) {
+  // Get the current note commit
+  let parent;
+  try {
+    parent = await GitRefManager.resolve({ gitdir, fs, ref });
+  } catch (err) {
+    if (!(err instanceof NotFoundError)) {
+      throw err
+    }
+  }
+
+  // I'm using the "empty tree" magic number here for brevity
+  const result = await _readTree({
+    fs,
+    cache,
+    gitdir,
+    oid: parent || '4b825dc642cb6eb9a060e54bf8d69288fbee4904',
+  });
+  let tree = result.tree;
+
+  // Handle the case where a note already exists
+  if (force) {
+    tree = tree.filter(entry => entry.path !== oid);
+  } else {
+    for (const entry of tree) {
+      if (entry.path === oid) {
+        throw new AlreadyExistsError('note', oid)
+      }
+    }
+  }
+
+  // Create the note blob
+  if (typeof note === 'string') {
+    note = Buffer.from(note, 'utf8');
+  }
+  const noteOid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'blob',
+    object: note,
+    format: 'content',
+  });
+
+  // Create the new note tree
+  tree.push({ mode: '100644', path: oid, oid: noteOid, type: 'blob' });
+  const treeOid = await _writeTree({
+    fs,
+    gitdir,
+    tree,
+  });
+
+  // Create the new note commit
+  const commitOid = await _commit({
+    fs,
+    cache,
+    onSign,
+    gitdir,
+    ref,
+    tree: treeOid,
+    parent: parent && [parent],
+    message: `Note added by 'isomorphic-git addNote'\n`,
+    author,
+    committer,
+    signingKey,
+  });
+
+  return commitOid
+}
+
+// @ts-check
+
+/**
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.path
+ *
+ * @returns {Promise<any>} Resolves with the config value
+ *
+ * @example
+ * // Read config value
+ * let value = await git.getConfig({
+ *   dir: '$input((/))',
+ *   path: '$input((user.name))'
+ * })
+ * console.log(value)
+ *
+ */
+async function _getConfig({ fs, gitdir, path }) {
+  const config = await GitConfigManager.get({ fs, gitdir });
+  return config.get(path)
+}
+
+/**
+ *
+ * @returns {Promise<void | {name: string, email: string, date: Date, timestamp: number, timezoneOffset: number }>}
+ */
+async function normalizeAuthorObject({ fs, gitdir, author = {} }) {
+  let { name, email, timestamp, timezoneOffset } = author;
+  name = name || (await _getConfig({ fs, gitdir, path: 'user.name' }));
+  email = email || (await _getConfig({ fs, gitdir, path: 'user.email' })) || '';
+
+  if (name === undefined) {
+    return undefined
+  }
+
+  timestamp = timestamp != null ? timestamp : Math.floor(Date.now() / 1000);
+  timezoneOffset =
+    timezoneOffset != null
+      ? timezoneOffset
+      : new Date(timestamp * 1000).getTimezoneOffset();
+
+  return { name, email, timestamp, timezoneOffset }
+}
+
+/**
+ *
+ * @returns {Promise<void | {name: string, email: string, timestamp: number, timezoneOffset: number }>}
+ */
+async function normalizeCommitterObject({
+  fs,
+  gitdir,
+  author,
+  committer,
+}) {
+  committer = Object.assign({}, committer || author);
+  // Match committer's date to author's one, if omitted
+  if (author) {
+    committer.timestamp = committer.timestamp || author.timestamp;
+    committer.timezoneOffset = committer.timezoneOffset || author.timezoneOffset;
+  }
+  committer = await normalizeAuthorObject({ fs, gitdir, author: committer });
+  return committer
+}
+
+// @ts-check
+
+/**
+ * Add or update an object note
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {SignCallback} [args.onSign] - a PGP signing implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - The notes ref to look under
+ * @param {string} args.oid - The SHA-1 object id of the object to add the note to.
+ * @param {string|Uint8Array} args.note - The note to add
+ * @param {boolean} [args.force] - Over-write note if it already exists.
+ * @param {Object} [args.author] - The details about the author.
+ * @param {string} [args.author.name] - Default is `user.name` config.
+ * @param {string} [args.author.email] - Default is `user.email` config.
+ * @param {number} [args.author.timestamp=Math.floor(Date.now()/1000)] - Set the author timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.author.timezoneOffset] - Set the author timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {Object} [args.committer = author] - The details about the note committer, in the same format as the author parameter. If not specified, the author details are used.
+ * @param {string} [args.committer.name] - Default is `user.name` config.
+ * @param {string} [args.committer.email] - Default is `user.email` config.
+ * @param {number} [args.committer.timestamp=Math.floor(Date.now()/1000)] - Set the committer timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.committer.timezoneOffset] - Set the committer timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.signingKey] - Sign the note commit using this private PGP key.
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the commit object for the added note.
+ */
+
+async function addNote({
+  fs: _fs,
+  onSign,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'refs/notes/commits',
+  oid,
+  note,
+  force,
+  author: _author,
+  committer: _committer,
+  signingKey,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+    assertParameter('note', note);
+    if (signingKey) {
+      assertParameter('onSign', onSign);
+    }
+    const fs = new FileSystem(_fs);
+    const cache = {};
+
+    const author = await normalizeAuthorObject({ fs, gitdir, author: _author });
+    if (!author) throw new MissingNameError('author')
+
+    const committer = await normalizeCommitterObject({
+      fs,
+      gitdir,
+      author,
+      committer: _committer,
+    });
+    if (!committer) throw new MissingNameError('committer')
+
+    return await _addNote({
+      fs: new FileSystem(fs),
+      cache,
+      onSign,
+      gitdir,
+      ref,
+      oid,
+      note,
+      force,
+      author,
+      committer,
+      signingKey,
+    })
+  } catch (err) {
+    err.caller = 'git.addNote';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.remote
+ * @param {string} args.url
+ * @param {boolean} args.force
+ *
+ * @returns {Promise<void>}
+ *
+ */
+async function _addRemote({ fs, gitdir, remote, url, force }) {
+  if (remote !== cleanGitRef.clean(remote)) {
+    throw new InvalidRefNameError(remote, cleanGitRef.clean(remote))
+  }
+  const config = await GitConfigManager.get({ fs, gitdir });
+  if (!force) {
+    // Check that setting it wouldn't overwrite.
+    const remoteNames = await config.getSubsections('remote');
+    if (remoteNames.includes(remote)) {
+      // Throw an error if it would overwrite an existing remote,
+      // but not if it's simply setting the same value again.
+      if (url !== (await config.get(`remote.${remote}.url`))) {
+        throw new AlreadyExistsError('remote', remote)
+      }
+    }
+  }
+  await config.set(`remote.${remote}.url`, url);
+  await config.set(
+    `remote.${remote}.fetch`,
+    `+refs/heads/*:refs/remotes/${remote}/*`
+  );
+  await GitConfigManager.save({ fs, gitdir, config });
+}
+
+// @ts-check
+
+/**
+ * Add or update a remote
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.remote - The name of the remote
+ * @param {string} args.url - The URL of the remote
+ * @param {boolean} [args.force = false] - Instead of throwing an error if a remote named `remote` already exists, overwrite the existing remote.
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.addRemote({
+ *   fs,
+ *   dir: '/tutorial',
+ *   remote: 'upstream',
+ *   url: 'https://github.com/isomorphic-git/isomorphic-git'
+ * })
+ * console.log('done')
+ *
+ */
+async function addRemote({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  remote,
+  url,
+  force = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('remote', remote);
+    assertParameter('url', url);
+    return await _addRemote({
+      fs: new FileSystem(fs),
+      gitdir,
+      remote,
+      url,
+      force,
+    })
+  } catch (err) {
+    err.caller = 'git.addRemote';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Create an annotated tag.
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {SignCallback} [args.onSign]
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {string} [args.message = ref]
+ * @param {string} [args.object = 'HEAD']
+ * @param {object} [args.tagger]
+ * @param {string} args.tagger.name
+ * @param {string} args.tagger.email
+ * @param {number} args.tagger.timestamp
+ * @param {number} args.tagger.timezoneOffset
+ * @param {string} [args.gpgsig]
+ * @param {string} [args.signingKey]
+ * @param {boolean} [args.force = false]
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.annotatedTag({
+ *   dir: '$input((/))',
+ *   ref: '$input((test-tag))',
+ *   message: '$input((This commit is awesome))',
+ *   tagger: {
+ *     name: '$input((Mr. Test))',
+ *     email: '$input((mrtest@example.com))'
+ *   }
+ * })
+ * console.log('done')
+ *
+ */
+async function _annotatedTag({
+  fs,
+  cache,
+  onSign,
+  gitdir,
+  ref,
+  tagger,
+  message = ref,
+  gpgsig,
+  object,
+  signingKey,
+  force = false,
+}) {
+  ref = ref.startsWith('refs/tags/') ? ref : `refs/tags/${ref}`;
+
+  if (!force && (await GitRefManager.exists({ fs, gitdir, ref }))) {
+    throw new AlreadyExistsError('tag', ref)
+  }
+
+  // Resolve passed value
+  const oid = await GitRefManager.resolve({
+    fs,
+    gitdir,
+    ref: object || 'HEAD',
+  });
+
+  const { type } = await _readObject({ fs, cache, gitdir, oid });
+  let tagObject = GitAnnotatedTag.from({
+    object: oid,
+    type,
+    tag: ref.replace('refs/tags/', ''),
+    tagger,
+    message,
+    gpgsig,
+  });
+  if (signingKey) {
+    tagObject = await GitAnnotatedTag.sign(tagObject, onSign, signingKey);
+  }
+  const value = await _writeObject({
+    fs,
+    gitdir,
+    type: 'tag',
+    object: tagObject.toObject(),
+  });
+
+  await GitRefManager.writeRef({ fs, gitdir, ref, value });
+}
+
+// @ts-check
+
+/**
+ * Create an annotated tag.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {SignCallback} [args.onSign] - a PGP signing implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - What to name the tag
+ * @param {string} [args.message = ref] - The tag message to use.
+ * @param {string} [args.object = 'HEAD'] - The SHA-1 object id the tag points to. (Will resolve to a SHA-1 object id if value is a ref.) By default, the commit object which is referred by the current `HEAD` is used.
+ * @param {object} [args.tagger] - The details about the tagger.
+ * @param {string} [args.tagger.name] - Default is `user.name` config.
+ * @param {string} [args.tagger.email] - Default is `user.email` config.
+ * @param {number} [args.tagger.timestamp=Math.floor(Date.now()/1000)] - Set the tagger timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.tagger.timezoneOffset] - Set the tagger timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.gpgsig] - The gpgsig attatched to the tag object. (Mutually exclusive with the `signingKey` option.)
+ * @param {string} [args.signingKey] - Sign the tag object using this private PGP key. (Mutually exclusive with the `gpgsig` option.)
+ * @param {boolean} [args.force = false] - Instead of throwing an error if a tag named `ref` already exists, overwrite the existing tag. Note that this option does not modify the original tag object itself.
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.annotatedTag({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ref: 'test-tag',
+ *   message: 'This commit is awesome',
+ *   tagger: {
+ *     name: 'Mr. Test',
+ *     email: 'mrtest@example.com'
+ *   }
+ * })
+ * console.log('done')
+ *
+ */
+async function annotatedTag({
+  fs: _fs,
+  onSign,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  tagger: _tagger,
+  message = ref,
+  gpgsig,
+  object,
+  signingKey,
+  force = false,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    if (signingKey) {
+      assertParameter('onSign', onSign);
+    }
+    const fs = new FileSystem(_fs);
+
+    // Fill in missing arguments with default values
+    const tagger = await normalizeAuthorObject({ fs, gitdir, author: _tagger });
+    if (!tagger) throw new MissingNameError('tagger')
+
+    return await _annotatedTag({
+      fs,
+      cache: {},
+      onSign,
+      gitdir,
+      ref,
+      tagger,
+      message,
+      gpgsig,
+      object,
+      signingKey,
+      force,
+    })
+  } catch (err) {
+    err.caller = 'git.annotatedTag';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Create a branch
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {boolean} [args.checkout = false]
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.branch({ dir: '$input((/))', ref: '$input((develop))' })
+ * console.log('done')
+ *
+ */
+async function _branch({ fs, gitdir, ref, checkout = false }) {
+  if (ref !== cleanGitRef.clean(ref)) {
+    throw new InvalidRefNameError(ref, cleanGitRef.clean(ref))
+  }
+
+  const fullref = `refs/heads/${ref}`;
+
+  const exist = await GitRefManager.exists({ fs, gitdir, ref: fullref });
+  if (exist) {
+    throw new AlreadyExistsError('branch', ref, false)
+  }
+
+  // Get current HEAD tree oid
+  let oid;
+  try {
+    oid = await GitRefManager.resolve({ fs, gitdir, ref: 'HEAD' });
+  } catch (e) {
+    // Probably an empty repo
+  }
+
+  // Create a new ref that points at the current commit
+  if (oid) {
+    await GitRefManager.writeRef({ fs, gitdir, ref: fullref, value: oid });
+  }
+
+  if (checkout) {
+    // Update HEAD
+    await GitRefManager.writeSymbolicRef({
+      fs,
+      gitdir,
+      ref: 'HEAD',
+      value: fullref,
+    });
+  }
+}
+
+// @ts-check
+
+/**
+ * Create a branch
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - What to name the branch
+ * @param {boolean} [args.checkout = false] - Update `HEAD` to point at the newly created branch
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.branch({ fs, dir: '/tutorial', ref: 'develop' })
+ * console.log('done')
+ *
+ */
+async function branch({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  checkout = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    return await _branch({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+      checkout,
+    })
+  } catch (err) {
+    err.caller = 'git.branch';
+    throw err
+  }
+}
+
+// https://dev.to/namirsab/comment/2050
+function arrayRange(start, end) {
+  const length = end - start;
+  return Array.from({ length }, (_, i) => start + i)
+}
+
+// TODO: Should I just polyfill Array.flat?
+const flat =
+  typeof Array.prototype.flat === 'undefined'
+    ? entries => entries.reduce((acc, x) => acc.concat(x), [])
+    : entries => entries.flat();
+
+// This is convenient for computing unions/joins of sorted lists.
+class RunningMinimum {
+  constructor() {
+    // Using a getter for 'value' would just bloat the code.
+    // You know better than to set it directly right?
+    this.value = null;
+  }
+
+  consider(value) {
+    if (value === null || value === undefined) return
+    if (this.value === null) {
+      this.value = value;
+    } else if (value < this.value) {
+      this.value = value;
+    }
+  }
+
+  reset() {
+    this.value = null;
+  }
+}
+
+// Take an array of length N of
+//   iterators of length Q_n
+//     of strings
+// and return an iterator of length max(Q_n) for all n
+//   of arrays of length N
+//     of string|null who all have the same string value
+function* unionOfIterators(sets) {
+  /* NOTE: We can assume all arrays are sorted.
+   * Indexes are sorted because they are defined that way:
+   *
+   * > Index entries are sorted in ascending order on the name field,
+   * > interpreted as a string of unsigned bytes (i.e. memcmp() order, no
+   * > localization, no special casing of directory separator '/'). Entries
+   * > with the same name are sorted by their stage field.
+   *
+   * Trees should be sorted because they are created directly from indexes.
+   * They definitely should be sorted, or else they wouldn't have a unique SHA1.
+   * So that would be very naughty on the part of the tree-creator.
+   *
+   * Lastly, the working dir entries are sorted because I choose to sort them
+   * in my FileSystem.readdir() implementation.
+   */
+
+  // Init
+  const min = new RunningMinimum();
+  let minimum;
+  const heads = [];
+  const numsets = sets.length;
+  for (let i = 0; i < numsets; i++) {
+    // Abuse the fact that iterators continue to return 'undefined' for value
+    // once they are done
+    heads[i] = sets[i].next().value;
+    if (heads[i] !== undefined) {
+      min.consider(heads[i]);
+    }
+  }
+  if (min.value === null) return
+  // Iterate
+  while (true) {
+    const result = [];
+    minimum = min.value;
+    min.reset();
+    for (let i = 0; i < numsets; i++) {
+      if (heads[i] !== undefined && heads[i] === minimum) {
+        result[i] = heads[i];
+        heads[i] = sets[i].next().value;
+      } else {
+        // A little hacky, but eh
+        result[i] = null;
+      }
+      if (heads[i] !== undefined) {
+        min.consider(heads[i]);
+      }
+    }
+    yield result;
+    if (min.value === null) return
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {string} [args.dir]
+ * @param {string} [args.gitdir=join(dir,'.git')]
+ * @param {Walker[]} args.trees
+ * @param {WalkerMap} [args.map]
+ * @param {WalkerReduce} [args.reduce]
+ * @param {WalkerIterate} [args.iterate]
+ *
+ * @returns {Promise<any>} The finished tree-walking result
+ *
+ * @see {WalkerMap}
+ *
+ */
+async function _walk({
+  fs,
+  cache,
+  dir,
+  gitdir,
+  trees,
+  // @ts-ignore
+  map = async (_, entry) => entry,
+  // The default reducer is a flatmap that filters out undefineds.
+  reduce = async (parent, children) => {
+    const flatten = flat(children);
+    if (parent !== undefined) flatten.unshift(parent);
+    return flatten
+  },
+  // The default iterate function walks all children concurrently
+  iterate = (walk, children) => Promise.all([...children].map(walk)),
+}) {
+  const walkers = trees.map(proxy =>
+    proxy[GitWalkSymbol]({ fs, dir, gitdir, cache })
+  );
+
+  const root = new Array(walkers.length).fill('.');
+  const range = arrayRange(0, walkers.length);
+  const unionWalkerFromReaddir = async entries => {
+    range.map(i => {
+      entries[i] = entries[i] && new walkers[i].ConstructEntry(entries[i]);
+    });
+    const subdirs = await Promise.all(
+      range.map(i => (entries[i] ? walkers[i].readdir(entries[i]) : []))
+    );
+    // Now process child directories
+    const iterators = subdirs
+      .map(array => (array === null ? [] : array))
+      .map(array => array[Symbol.iterator]());
+    return {
+      entries,
+      children: unionOfIterators(iterators),
+    }
+  };
+
+  const walk = async root => {
+    const { entries, children } = await unionWalkerFromReaddir(root);
+    const fullpath = entries.find(entry => entry && entry._fullpath)._fullpath;
+    const parent = await map(fullpath, entries);
+    if (parent !== null) {
+      let walkedChildren = await iterate(walk, children);
+      walkedChildren = walkedChildren.filter(x => x !== undefined);
+      return reduce(parent, walkedChildren)
+    }
+  };
+  return walk(root)
+}
+
+const worthWalking = (filepath, root) => {
+  if (filepath === '.' || root == null || root.length === 0 || root === '.') {
+    return true
+  }
+  if (root.length >= filepath.length) {
+    return root.startsWith(filepath)
+  } else {
+    return filepath.startsWith(root)
+  }
+};
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {string} args.dir
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {string[]} [args.filepaths]
+ * @param {string} args.remote
+ * @param {boolean} args.noCheckout
+ * @param {boolean} [args.noUpdateHead]
+ * @param {boolean} [args.dryRun]
+ * @param {boolean} [args.force]
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ */
+async function _checkout({
+  fs,
+  cache,
+  onProgress,
+  dir,
+  gitdir,
+  remote,
+  ref,
+  filepaths,
+  noCheckout,
+  noUpdateHead,
+  dryRun,
+  force,
+}) {
+  // Get tree oid
+  let oid;
+  try {
+    oid = await GitRefManager.resolve({ fs, gitdir, ref });
+    // TODO: Figure out what to do if both 'ref' and 'remote' are specified, ref already exists,
+    // and is configured to track a different remote.
+  } catch (err) {
+    if (ref === 'HEAD') throw err
+    // If `ref` doesn't exist, create a new remote tracking branch
+    // Figure out the commit to checkout
+    const remoteRef = `${remote}/${ref}`;
+    oid = await GitRefManager.resolve({
+      fs,
+      gitdir,
+      ref: remoteRef,
+    });
+    // Set up remote tracking branch
+    const config = await GitConfigManager.get({ fs, gitdir });
+    await config.set(`branch.${ref}.remote`, remote);
+    await config.set(`branch.${ref}.merge`, `refs/heads/${ref}`);
+    await GitConfigManager.save({ fs, gitdir, config });
+    // Create a new branch that points at that same commit
+    await GitRefManager.writeRef({
+      fs,
+      gitdir,
+      ref: `refs/heads/${ref}`,
+      value: oid,
+    });
+  }
+
+  // Update working dir
+  if (!noCheckout) {
+    let ops;
+    // First pass - just analyze files (not directories) and figure out what needs to be done
+    try {
+      ops = await analyze({
+        fs,
+        cache,
+        onProgress,
+        dir,
+        gitdir,
+        ref,
+        force,
+        filepaths,
+      });
+    } catch (err) {
+      // Throw a more helpful error message for this common mistake.
+      if (err instanceof NotFoundError && err.data.what === oid) {
+        throw new CommitNotFetchedError(ref, oid)
+      } else {
+        throw err
+      }
+    }
+
+    // Report conflicts
+    const conflicts = ops
+      .filter(([method]) => method === 'conflict')
+      .map(([method, fullpath]) => fullpath);
+    if (conflicts.length > 0) {
+      throw new CheckoutConflictError(conflicts)
+    }
+
+    // Collect errors
+    const errors = ops
+      .filter(([method]) => method === 'error')
+      .map(([method, fullpath]) => fullpath);
+    if (errors.length > 0) {
+      throw new InternalError(errors.join(', '))
+    }
+
+    if (dryRun) {
+      // Since the format of 'ops' is in flux, I really would rather folk besides myself not start relying on it
+      // return ops
+      return
+    }
+
+    // Second pass - execute planned changes
+    // The cheapest semi-parallel solution without computing a full dependency graph will be
+    // to just do ops in 4 dumb phases: delete files, delete dirs, create dirs, write files
+
+    let count = 0;
+    const total = ops.length;
+    await GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+      await Promise.all(
+        ops
+          .filter(
+            ([method]) => method === 'delete' || method === 'delete-index'
+          )
+          .map(async function([method, fullpath]) {
+            const filepath = `${dir}/${fullpath}`;
+            if (method === 'delete') {
+              await fs.rm(filepath);
+            }
+            index.delete({ filepath: fullpath });
+            if (onProgress) {
+              await onProgress({
+                phase: 'Updating workdir',
+                loaded: ++count,
+                total,
+              });
+            }
+          })
+      );
+    });
+
+    // Note: this is cannot be done naively in parallel
+    await GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+      for (const [method, fullpath] of ops) {
+        if (method === 'rmdir' || method === 'rmdir-index') {
+          const filepath = `${dir}/${fullpath}`;
+          try {
+            if (method === 'rmdir-index') {
+              index.delete({ filepath: fullpath });
+            }
+            await fs.rmdir(filepath);
+            if (onProgress) {
+              await onProgress({
+                phase: 'Updating workdir',
+                loaded: ++count,
+                total,
+              });
+            }
+          } catch (e) {
+            if (e.code === 'ENOTEMPTY') {
+              console.log(
+                `Did not delete ${fullpath} because directory is not empty`
+              );
+            } else {
+              throw e
+            }
+          }
+        }
+      }
+    });
+
+    await Promise.all(
+      ops
+        .filter(([method]) => method === 'mkdir' || method === 'mkdir-index')
+        .map(async function([_, fullpath]) {
+          const filepath = `${dir}/${fullpath}`;
+          await fs.mkdir(filepath);
+          if (onProgress) {
+            await onProgress({
+              phase: 'Updating workdir',
+              loaded: ++count,
+              total,
+            });
+          }
+        })
+    );
+
+    await GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+      await Promise.all(
+        ops
+          .filter(
+            ([method]) =>
+              method === 'create' ||
+              method === 'create-index' ||
+              method === 'update' ||
+              method === 'mkdir-index'
+          )
+          .map(async function([method, fullpath, oid, mode, chmod]) {
+            const filepath = `${dir}/${fullpath}`;
+            try {
+              if (method !== 'create-index' && method !== 'mkdir-index') {
+                const { object } = await _readObject({ fs, cache, gitdir, oid });
+                if (chmod) {
+                  // Note: the mode option of fs.write only works when creating files,
+                  // not updating them. Since the `fs` plugin doesn't expose `chmod` this
+                  // is our only option.
+                  await fs.rm(filepath);
+                }
+                if (mode === 0o100644) {
+                  // regular file
+                  await fs.write(filepath, object);
+                } else if (mode === 0o100755) {
+                  // executable file
+                  await fs.write(filepath, object, { mode: 0o777 });
+                } else if (mode === 0o120000) {
+                  // symlink
+                  await fs.writelink(filepath, object);
+                } else {
+                  throw new InternalError(
+                    `Invalid mode 0o${mode.toString(8)} detected in blob ${oid}`
+                  )
+                }
+              }
+
+              const stats = await fs.lstat(filepath);
+              // We can't trust the executable bit returned by lstat on Windows,
+              // so we need to preserve this value from the TREE.
+              // TODO: Figure out how git handles this internally.
+              if (mode === 0o100755) {
+                stats.mode = 0o755;
+              }
+              // Submodules are present in the git index but use a unique mode different from trees
+              if (method === 'mkdir-index') {
+                stats.mode = 0o160000;
+              }
+              index.insert({
+                filepath: fullpath,
+                stats,
+                oid,
+              });
+              if (onProgress) {
+                await onProgress({
+                  phase: 'Updating workdir',
+                  loaded: ++count,
+                  total,
+                });
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          })
+      );
+    });
+  }
+
+  // Update HEAD
+  if (!noUpdateHead) {
+    const fullRef = await GitRefManager.expand({ fs, gitdir, ref });
+    if (fullRef.startsWith('refs/heads')) {
+      await GitRefManager.writeSymbolicRef({
+        fs,
+        gitdir,
+        ref: 'HEAD',
+        value: fullRef,
+      });
+    } else {
+      // detached head
+      await GitRefManager.writeRef({ fs, gitdir, ref: 'HEAD', value: oid });
+    }
+  }
+}
+
+async function analyze({
+  fs,
+  cache,
+  onProgress,
+  dir,
+  gitdir,
+  ref,
+  force,
+  filepaths,
+}) {
+  let count = 0;
+  return _walk({
+    fs,
+    cache,
+    dir,
+    gitdir,
+    trees: [TREE({ ref }), WORKDIR(), STAGE()],
+    map: async function(fullpath, [commit, workdir, stage]) {
+      if (fullpath === '.') return
+      // match against base paths
+      if (filepaths && !filepaths.some(base => worthWalking(fullpath, base))) {
+        return null
+      }
+      // Emit progress event
+      if (onProgress) {
+        await onProgress({ phase: 'Analyzing workdir', loaded: ++count });
+      }
+
+      // This is a kind of silly pattern but it worked so well for me in the past
+      // and it makes intuitively demonstrating exhaustiveness so *easy*.
+      // This checks for the presense and/or absense of each of the 3 entries,
+      // converts that to a 3-bit binary representation, and then handles
+      // every possible combination (2^3 or 8 cases) with a lookup table.
+      const key = [!!stage, !!commit, !!workdir].map(Number).join('');
+      switch (key) {
+        // Impossible case.
+        case '000':
+          return
+        // Ignore workdir files that are not tracked and not part of the new commit.
+        case '001':
+          // OK, make an exception for explicitly named files.
+          if (force && filepaths && filepaths.includes(fullpath)) {
+            return ['delete', fullpath]
+          }
+          return
+        // New entries
+        case '010': {
+          switch (await commit.type()) {
+            case 'tree': {
+              return ['mkdir', fullpath]
+            }
+            case 'blob': {
+              return [
+                'create',
+                fullpath,
+                await commit.oid(),
+                await commit.mode(),
+              ]
+            }
+            case 'commit': {
+              return [
+                'mkdir-index',
+                fullpath,
+                await commit.oid(),
+                await commit.mode(),
+              ]
+            }
+            default: {
+              return [
+                'error',
+                `new entry Unhandled type ${await commit.type()}`,
+              ]
+            }
+          }
+        }
+        // New entries but there is already something in the workdir there.
+        case '011': {
+          switch (`${await commit.type()}-${await workdir.type()}`) {
+            case 'tree-tree': {
+              return // noop
+            }
+            case 'tree-blob':
+            case 'blob-tree': {
+              return ['conflict', fullpath]
+            }
+            case 'blob-blob': {
+              // Is the incoming file different?
+              if ((await commit.oid()) !== (await workdir.oid())) {
+                if (force) {
+                  return [
+                    'update',
+                    fullpath,
+                    await commit.oid(),
+                    await commit.mode(),
+                    (await commit.mode()) !== (await workdir.mode()),
+                  ]
+                } else {
+                  return ['conflict', fullpath]
+                }
+              } else {
+                // Is the incoming file a different mode?
+                if ((await commit.mode()) !== (await workdir.mode())) {
+                  if (force) {
+                    return [
+                      'update',
+                      fullpath,
+                      await commit.oid(),
+                      await commit.mode(),
+                      true,
+                    ]
+                  } else {
+                    return ['conflict', fullpath]
+                  }
+                } else {
+                  return [
+                    'create-index',
+                    fullpath,
+                    await commit.oid(),
+                    await commit.mode(),
+                  ]
+                }
+              }
+            }
+            case 'commit-tree': {
+              // TODO: submodule
+              // We'll ignore submodule directories for now.
+              // Users prefer we not throw an error for lack of submodule support.
+              // gitlinks
+              return
+            }
+            case 'commit-blob': {
+              // TODO: submodule
+              // But... we'll complain if there is a *file* where we would
+              // put a submodule if we had submodule support.
+              return ['conflict', fullpath]
+            }
+            default: {
+              return ['error', `new entry Unhandled type ${commit.type}`]
+            }
+          }
+        }
+        // Something in stage but not in the commit OR the workdir.
+        // Note: I verified this behavior against canonical git.
+        case '100': {
+          return ['delete-index', fullpath]
+        }
+        // Deleted entries
+        // TODO: How to handle if stage type and workdir type mismatch?
+        case '101': {
+          switch (await stage.type()) {
+            case 'tree': {
+              return ['rmdir', fullpath]
+            }
+            case 'blob': {
+              // Git checks that the workdir.oid === stage.oid before deleting file
+              if ((await stage.oid()) !== (await workdir.oid())) {
+                if (force) {
+                  return ['delete', fullpath]
+                } else {
+                  return ['conflict', fullpath]
+                }
+              } else {
+                return ['delete', fullpath]
+              }
+            }
+            case 'commit': {
+              return ['rmdir-index', fullpath]
+            }
+            default: {
+              return [
+                'error',
+                `delete entry Unhandled type ${await stage.type()}`,
+              ]
+            }
+          }
+        }
+        /* eslint-disable no-fallthrough */
+        // File missing from workdir
+        case '110':
+        // Possibly modified entries
+        case '111': {
+          /* eslint-enable no-fallthrough */
+          switch (`${await stage.type()}-${await commit.type()}`) {
+            case 'tree-tree': {
+              return
+            }
+            case 'blob-blob': {
+              // If the file hasn't changed, there is no need to do anything.
+              // Existing file modifications in the workdir can be be left as is.
+              if (
+                (await stage.oid()) === (await commit.oid()) &&
+                (await stage.mode()) === (await commit.mode()) &&
+                !force
+              ) {
+                return
+              }
+
+              // Check for local changes that would be lost
+              if (workdir) {
+                // Note: canonical git only compares with the stage. But we're smart enough
+                // to compare to the stage AND the incoming commit.
+                if (
+                  (await workdir.oid()) !== (await stage.oid()) &&
+                  (await workdir.oid()) !== (await commit.oid())
+                ) {
+                  if (force) {
+                    return [
+                      'update',
+                      fullpath,
+                      await commit.oid(),
+                      await commit.mode(),
+                      (await commit.mode()) !== (await workdir.mode()),
+                    ]
+                  } else {
+                    return ['conflict', fullpath]
+                  }
+                }
+              } else if (force) {
+                return [
+                  'update',
+                  fullpath,
+                  await commit.oid(),
+                  await commit.mode(),
+                  (await commit.mode()) !== (await stage.mode()),
+                ]
+              }
+              // Has file mode changed?
+              if ((await commit.mode()) !== (await stage.mode())) {
+                return [
+                  'update',
+                  fullpath,
+                  await commit.oid(),
+                  await commit.mode(),
+                  true,
+                ]
+              }
+              // TODO: HANDLE SYMLINKS
+              // Has the file content changed?
+              if ((await commit.oid()) !== (await stage.oid())) {
+                return [
+                  'update',
+                  fullpath,
+                  await commit.oid(),
+                  await commit.mode(),
+                  false,
+                ]
+              } else {
+                return
+              }
+            }
+            case 'tree-blob': {
+              return ['update-dir-to-blob', fullpath, await commit.oid()]
+            }
+            case 'blob-tree': {
+              return ['update-blob-to-tree', fullpath]
+            }
+            case 'commit-commit': {
+              return [
+                'mkdir-index',
+                fullpath,
+                await commit.oid(),
+                await commit.mode(),
+              ]
+            }
+            default: {
+              return [
+                'error',
+                `update entry Unhandled type ${await stage.type()}-${await commit.type()}`,
+              ]
+            }
+          }
+        }
+      }
+    },
+    // Modify the default flat mapping
+    reduce: async function(parent, children) {
+      children = flat(children);
+      if (!parent) {
+        return children
+      } else if (parent && parent[0] === 'rmdir') {
+        children.push(parent);
+        return children
+      } else {
+        children.unshift(parent);
+        return children
+      }
+    },
+  })
+}
+
+// @ts-check
+
+/**
+ * Checkout a branch
+ *
+ * If the branch already exists it will check out that branch. Otherwise, it will create a new remote tracking branch set to track the remote branch of that name.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref = 'HEAD'] - Source to checkout files from
+ * @param {string[]} [args.filepaths] - Limit the checkout to the given files and directories
+ * @param {string} [args.remote = 'origin'] - Which remote repository to use
+ * @param {boolean} [args.noCheckout = false] - If true, will update HEAD but won't update the working directory
+ * @param {boolean} [args.noUpdateHead] - If true, will update the working directory but won't update HEAD. Defaults to `false` when `ref` is provided, and `true` if `ref` is not provided.
+ * @param {boolean} [args.dryRun = false] - If true, simulates a checkout so you can test whether it would succeed.
+ * @param {boolean} [args.force = false] - If true, conflicts will be ignored and files will be overwritten regardless of local changes.
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * // switch to the main branch
+ * await git.checkout({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ref: 'main'
+ * })
+ * console.log('done')
+ *
+ * @example
+ * // restore the 'docs' and 'src/docs' folders to the way they were, overwriting any changes
+ * await git.checkout({
+ *   fs,
+ *   dir: '/tutorial',
+ *   force: true,
+ *   filepaths: ['docs', 'src/docs']
+ * })
+ * console.log('done')
+ *
+ * @example
+ * // restore the 'docs' and 'src/docs' folders to the way they are in the 'develop' branch, overwriting any changes
+ * await git.checkout({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ref: 'develop',
+ *   noUpdateHead: true,
+ *   force: true,
+ *   filepaths: ['docs', 'src/docs']
+ * })
+ * console.log('done')
+ */
+async function checkout({
+  fs,
+  onProgress,
+  dir,
+  gitdir = join(dir, '.git'),
+  remote = 'origin',
+  ref: _ref,
+  filepaths,
+  noCheckout = false,
+  noUpdateHead = _ref === undefined,
+  dryRun = false,
+  force = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('dir', dir);
+    assertParameter('gitdir', gitdir);
+
+    const ref = _ref || 'HEAD';
+    return await _checkout({
+      fs: new FileSystem(fs),
+      cache: {},
+      onProgress,
+      dir,
+      gitdir,
+      remote,
+      ref,
+      filepaths,
+      noCheckout,
+      noUpdateHead,
+      dryRun,
+      force,
+    })
+  } catch (err) {
+    err.caller = 'git.checkout';
+    throw err
+  }
+}
+
+// @see https://git-scm.com/docs/git-rev-parse.html#_specifying_revisions
+const abbreviateRx = new RegExp('^refs/(heads/|tags/|remotes/)?(.*)');
+
+function abbreviateRef(ref) {
+  const match = abbreviateRx.exec(ref);
+  if (match) {
+    if (match[1] === 'remotes/' && ref.endsWith('/HEAD')) {
+      return match[2].slice(0, -5)
+    } else {
+      return match[2]
+    }
+  }
+  return ref
+}
+
+// @ts-check
+
+/**
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {boolean} [args.fullname = false] - Return the full path (e.g. "refs/heads/main") instead of the abbreviated form.
+ * @param {boolean} [args.test = false] - If the current branch doesn't actually exist (such as right after git init) then return `undefined`.
+ *
+ * @returns {Promise<string|void>} The name of the current branch or undefined if the HEAD is detached.
+ *
+ */
+async function _currentBranch({
+  fs,
+  gitdir,
+  fullname = false,
+  test = false,
+}) {
+  const ref = await GitRefManager.resolve({
+    fs,
+    gitdir,
+    ref: 'HEAD',
+    depth: 2,
+  });
+  if (test) {
+    try {
+      await GitRefManager.resolve({ fs, gitdir, ref });
+    } catch (_) {
+      return
+    }
+  }
+  // Return `undefined` for detached HEAD
+  if (!ref.startsWith('refs/')) return
+  return fullname ? ref : abbreviateRef(ref)
+}
+
+function translateSSHtoHTTP(url) {
+  // handle "shorter scp-like syntax"
+  url = url.replace(/^git@([^:]+):/, 'https://$1/');
+  // handle proper SSH URLs
+  url = url.replace(/^ssh:\/\//, 'https://');
+  return url
+}
+
+function calculateBasicAuthHeader({ username = '', password = '' }) {
+  return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`
+}
+
+// Currently 'for await' upsets my linters.
+async function forAwait(iterable, cb) {
+  const iter = getIterator(iterable);
+  while (true) {
+    const { value, done } = await iter.next();
+    if (value) await cb(value);
+    if (done) break
+  }
+  if (iter.return) iter.return();
+}
+
+async function collect(iterable) {
+  let size = 0;
+  const buffers = [];
+  // This will be easier once `for await ... of` loops are available.
+  await forAwait(iterable, value => {
+    buffers.push(value);
+    size += value.byteLength;
+  });
+  const result = new Uint8Array(size);
+  let nextIndex = 0;
+  for (const buffer of buffers) {
+    result.set(buffer, nextIndex);
+    nextIndex += buffer.byteLength;
+  }
+  return result
+}
+
+function extractAuthFromUrl(url) {
+  // For whatever reason, the `fetch` API does not convert credentials embedded in the URL
+  // into Basic Authentication headers automatically. Instead it throws an error!
+  // So we must manually parse the URL, rip out the user:password portion if it is present
+  // and compute the Authorization header.
+  // Note: I tried using new URL(url) but that throws a security exception in Edge. :rolleyes:
+  let userpass = url.match(/^https?:\/\/([^/]+)@/);
+  // No credentials, return the url unmodified and an empty auth object
+  if (userpass == null) return { url, auth: {} }
+  userpass = userpass[1];
+  const [username, password] = userpass.split(':');
+  // Remove credentials from URL
+  url = url.replace(`${userpass}@`, '');
+  // Has credentials, return the fetch-safe URL and the parsed credentials
+  return { url, auth: { username, password } }
+}
+
+function padHex(b, n) {
+  const s = n.toString(16);
+  return '0'.repeat(b - s.length) + s
+}
+
+/**
+pkt-line Format
+---------------
+
+Much (but not all) of the payload is described around pkt-lines.
+
+A pkt-line is a variable length binary string.  The first four bytes
+of the line, the pkt-len, indicates the total length of the line,
+in hexadecimal.  The pkt-len includes the 4 bytes used to contain
+the length's hexadecimal representation.
+
+A pkt-line MAY contain binary data, so implementors MUST ensure
+pkt-line parsing/formatting routines are 8-bit clean.
+
+A non-binary line SHOULD BE terminated by an LF, which if present
+MUST be included in the total length. Receivers MUST treat pkt-lines
+with non-binary data the same whether or not they contain the trailing
+LF (stripping the LF if present, and not complaining when it is
+missing).
+
+The maximum length of a pkt-line's data component is 65516 bytes.
+Implementations MUST NOT send pkt-line whose length exceeds 65520
+(65516 bytes of payload + 4 bytes of length data).
+
+Implementations SHOULD NOT send an empty pkt-line ("0004").
+
+A pkt-line with a length field of 0 ("0000"), called a flush-pkt,
+is a special case and MUST be handled differently than an empty
+pkt-line ("0004").
+
+----
+  pkt-line     =  data-pkt / flush-pkt
+
+  data-pkt     =  pkt-len pkt-payload
+  pkt-len      =  4*(HEXDIG)
+  pkt-payload  =  (pkt-len - 4)*(OCTET)
+
+  flush-pkt    = "0000"
+----
+
+Examples (as C-style strings):
+
+----
+  pkt-line          actual value
+  ---------------------------------
+  "0006a\n"         "a\n"
+  "0005a"           "a"
+  "000bfoobar\n"    "foobar\n"
+  "0004"            ""
+----
+*/
+
+// I'm really using this more as a namespace.
+// There's not a lot of "state" in a pkt-line
+
+class GitPktLine {
+  static flush() {
+    return Buffer.from('0000', 'utf8')
+  }
+
+  static delim() {
+    return Buffer.from('0001', 'utf8')
+  }
+
+  static encode(line) {
+    if (typeof line === 'string') {
+      line = Buffer.from(line);
+    }
+    const length = line.length + 4;
+    const hexlength = padHex(4, length);
+    return Buffer.concat([Buffer.from(hexlength, 'utf8'), line])
+  }
+
+  static streamReader(stream) {
+    const reader = new StreamReader(stream);
+    return async function read() {
+      try {
+        let length = await reader.read(4);
+        if (length == null) return true
+        length = parseInt(length.toString('utf8'), 16);
+        if (length === 0) return null
+        if (length === 1) return null // delim packets
+        const buffer = await reader.read(length - 4);
+        if (buffer == null) return true
+        return buffer
+      } catch (err) {
+        console.log('error', err);
+        return true
+      }
+    }
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {function} read
+ */
+async function parseCapabilitiesV2(read) {
+  /** @type {Object<string, string | true>} */
+  const capabilities2 = {};
+
+  let line;
+  while (true) {
+    line = await read();
+    if (line === true) break
+    if (line === null) continue
+    line = line.toString('utf8').replace(/\n$/, '');
+    const i = line.indexOf('=');
+    if (i > -1) {
+      const key = line.slice(0, i);
+      const value = line.slice(i + 1);
+      capabilities2[key] = value;
+    } else {
+      capabilities2[line] = true;
+    }
+  }
+  return { protocolVersion: 2, capabilities2 }
+}
+
+async function parseRefsAdResponse(stream, { service }) {
+  const capabilities = new Set();
+  const refs = new Map();
+  const symrefs = new Map();
+
+  // There is probably a better way to do this, but for now
+  // let's just throw the result parser inline here.
+  const read = GitPktLine.streamReader(stream);
+  let lineOne = await read();
+  // skip past any flushes
+  while (lineOne === null) lineOne = await read();
+  if (lineOne === true) throw new EmptyServerResponseError()
+  // Clients MUST ignore an LF at the end of the line.
+  if (lineOne.toString('utf8').replace(/\n$/, '') !== `# service=${service}`) {
+    throw new ParseError(`# service=${service}\\n`, lineOne.toString('utf8'))
+  }
+  let lineTwo = await read();
+  // skip past any flushes
+  while (lineTwo === null) lineTwo = await read();
+  // In the edge case of a brand new repo, zero refs (and zero capabilities)
+  // are returned.
+  if (lineTwo === true) return { capabilities, refs, symrefs }
+  lineTwo = lineTwo.toString('utf8');
+  // Handle protocol v2 responses
+  if (lineTwo.includes('version 2')) {
+    return parseCapabilitiesV2(read)
+  }
+  const [firstRef, capabilitiesLine] = splitAndAssert(lineTwo, '\x00', '\\x00');
+  capabilitiesLine.split(' ').map(x => capabilities.add(x));
+  const [ref, name] = splitAndAssert(firstRef, ' ', ' ');
+  refs.set(name, ref);
+  while (true) {
+    const line = await read();
+    if (line === true) break
+    if (line !== null) {
+      const [ref, name] = splitAndAssert(line.toString('utf8'), ' ', ' ');
+      refs.set(name, ref);
+    }
+  }
+  // Symrefs are thrown into the "capabilities" unfortunately.
+  for (const cap of capabilities) {
+    if (cap.startsWith('symref=')) {
+      const m = cap.match(/symref=([^:]+):(.*)/);
+      if (m.length === 3) {
+        symrefs.set(m[1], m[2]);
+      }
+    }
+  }
+  return { protocolVersion: 1, capabilities, refs, symrefs }
+}
+
+function splitAndAssert(line, sep, expected) {
+  const split = line.trim().split(sep);
+  if (split.length !== 2) {
+    throw new ParseError(
+      `Two strings separated by '${expected}'`,
+      line.toString('utf8')
+    )
+  }
+  return split
+}
+
+// Try to accomodate known CORS proxy implementations:
+// - https://jcubic.pl/proxy.php?  <-- uses query string
+// - https://cors.isomorphic-git.org  <-- uses path
+const corsProxify = (corsProxy, url) =>
+  corsProxy.endsWith('?')
+    ? `${corsProxy}${url}`
+    : `${corsProxy}/${url.replace(/^https?:\/\//, '')}`;
+
+const updateHeaders = (headers, auth) => {
+  // Update the basic auth header
+  if (auth.username || auth.password) {
+    headers.Authorization = calculateBasicAuthHeader(auth);
+  }
+  // but any manually provided headers take precedence
+  if (auth.headers) {
+    Object.assign(headers, auth.headers);
+  }
+};
+
+/**
+ * @param {GitHttpResponse} res
+ *
+ * @returns {{ preview: string, response: string, data: Buffer }}
+ */
+const stringifyBody = async res => {
+  try {
+    // Some services provide a meaningful error message in the body of 403s like "token lacks the scopes necessary to perform this action"
+    const data = Buffer.from(await collect(res.body));
+    const response = data.toString('utf8');
+    const preview =
+      response.length < 256 ? response : response.slice(0, 256) + '...';
+    return { preview, response, data }
+  } catch (e) {
+    return {}
+  }
+};
+
+class GitRemoteHTTP {
+  static async capabilities() {
+    return ['discover', 'connect']
+  }
+
+  /**
+   * @param {Object} args
+   * @param {HttpClient} args.http
+   * @param {ProgressCallback} [args.onProgress]
+   * @param {AuthCallback} [args.onAuth]
+   * @param {AuthFailureCallback} [args.onAuthFailure]
+   * @param {AuthSuccessCallback} [args.onAuthSuccess]
+   * @param {string} [args.corsProxy]
+   * @param {string} args.service
+   * @param {string} args.url
+   * @param {Object<string, string>} args.headers
+   * @param {1 | 2} args.protocolVersion - Git Protocol Version
+   */
+  static async discover({
+    http,
+    onProgress,
+    onAuth,
+    onAuthSuccess,
+    onAuthFailure,
+    corsProxy,
+    service,
+    url: _origUrl,
+    headers,
+    protocolVersion,
+  }) {
+    let { url, auth } = extractAuthFromUrl(_origUrl);
+    const proxifiedURL = corsProxy ? corsProxify(corsProxy, url) : url;
+    if (auth.username || auth.password) {
+      headers.Authorization = calculateBasicAuthHeader(auth);
+    }
+    if (protocolVersion === 2) {
+      headers['Git-Protocol'] = 'version=2';
+    }
+
+    let res;
+    let tryAgain;
+    let providedAuthBefore = false;
+    do {
+      res = await http.request({
+        onProgress,
+        method: 'GET',
+        url: `${proxifiedURL}/info/refs?service=${service}`,
+        headers,
+      });
+
+      // the default loop behavior
+      tryAgain = false;
+
+      // 401 is the "correct" response for access denied. 203 is Non-Authoritative Information and comes from Azure DevOps, which
+      // apparently doesn't realize this is a git request and is returning the HTML for the "Azure DevOps Services | Sign In" page.
+      if (res.statusCode === 401 || res.statusCode === 203) {
+        // On subsequent 401s, call `onAuthFailure` instead of `onAuth`.
+        // This is so that naive `onAuth` callbacks that return a fixed value don't create an infinite loop of retrying.
+        const getAuth = providedAuthBefore ? onAuthFailure : onAuth;
+        if (getAuth) {
+          // Acquire credentials and try again
+          // TODO: read `useHttpPath` value from git config and pass along?
+          auth = await getAuth(url, {
+            ...auth,
+            headers: { ...headers },
+          });
+          if (auth && auth.cancel) {
+            throw new UserCanceledError()
+          } else if (auth) {
+            updateHeaders(headers, auth);
+            providedAuthBefore = true;
+            tryAgain = true;
+          }
+        }
+      } else if (
+        res.statusCode === 200 &&
+        providedAuthBefore &&
+        onAuthSuccess
+      ) {
+        await onAuthSuccess(url, auth);
+      }
+    } while (tryAgain)
+
+    if (res.statusCode !== 200) {
+      const { response } = await stringifyBody(res);
+      throw new HttpError(res.statusCode, res.statusMessage, response)
+    }
+    // Git "smart" HTTP servers should respond with the correct Content-Type header.
+    if (
+      res.headers['content-type'] === `application/x-${service}-advertisement`
+    ) {
+      const remoteHTTP = await parseRefsAdResponse(res.body, { service });
+      remoteHTTP.auth = auth;
+      return remoteHTTP
+    } else {
+      // If they don't send the correct content-type header, that's a good indicator it is either a "dumb" HTTP
+      // server, or the user specified an incorrect remote URL and the response is actually an HTML page.
+      // In this case, we save the response as plain text so we can generate a better error message if needed.
+      const { preview, response, data } = await stringifyBody(res);
+      // For backwards compatibility, try to parse it anyway.
+      // TODO: maybe just throw instead of trying?
+      try {
+        const remoteHTTP = await parseRefsAdResponse([data], { service });
+        remoteHTTP.auth = auth;
+        return remoteHTTP
+      } catch (e) {
+        throw new SmartHttpError(preview, response)
+      }
+    }
+  }
+
+  /**
+   * @param {Object} args
+   * @param {HttpClient} args.http
+   * @param {ProgressCallback} [args.onProgress]
+   * @param {string} [args.corsProxy]
+   * @param {string} args.service
+   * @param {string} args.url
+   * @param {Object<string, string>} [args.headers]
+   * @param {any} args.body
+   * @param {any} args.auth
+   */
+  static async connect({
+    http,
+    onProgress,
+    corsProxy,
+    service,
+    url,
+    auth,
+    body,
+    headers,
+  }) {
+    // We already have the "correct" auth value at this point, but
+    // we need to strip out the username/password from the URL yet again.
+    const urlAuth = extractAuthFromUrl(url);
+    if (urlAuth) url = urlAuth.url;
+
+    if (corsProxy) url = corsProxify(corsProxy, url);
+
+    headers['content-type'] = `application/x-${service}-request`;
+    headers.accept = `application/x-${service}-result`;
+    updateHeaders(headers, auth);
+
+    const res = await http.request({
+      onProgress,
+      method: 'POST',
+      url: `${url}/${service}`,
+      body,
+      headers,
+    });
+    if (res.statusCode !== 200) {
+      const { response } = stringifyBody(res);
+      throw new HttpError(res.statusCode, res.statusMessage, response)
+    }
+    return res
+  }
+}
+
+function parseRemoteUrl({ url }) {
+  // the stupid "shorter scp-like syntax"
+  if (url.startsWith('git@')) {
+    return {
+      transport: 'ssh',
+      address: url,
+    }
+  }
+  const matches = url.match(/(\w+)(:\/\/|::)(.*)/);
+  if (matches === null) return
+  /*
+   * When git encounters a URL of the form <transport>://<address>, where <transport> is
+   * a protocol that it cannot handle natively, it automatically invokes git remote-<transport>
+   * with the full URL as the second argument.
+   *
+   * @see https://git-scm.com/docs/git-remote-helpers
+   */
+  if (matches[2] === '://') {
+    return {
+      transport: matches[1],
+      address: matches[0],
+    }
+  }
+  /*
+   * A URL of the form <transport>::<address> explicitly instructs git to invoke
+   * git remote-<transport> with <address> as the second argument.
+   *
+   * @see https://git-scm.com/docs/git-remote-helpers
+   */
+  if (matches[2] === '::') {
+    return {
+      transport: matches[1],
+      address: matches[3],
+    }
+  }
+}
+
+class GitRemoteManager {
+  static getRemoteHelperFor({ url }) {
+    // TODO: clean up the remoteHelper API and move into PluginCore
+    const remoteHelpers = new Map();
+    remoteHelpers.set('http', GitRemoteHTTP);
+    remoteHelpers.set('https', GitRemoteHTTP);
+
+    const parts = parseRemoteUrl({ url });
+    if (!parts) {
+      throw new UrlParseError(url)
+    }
+    if (remoteHelpers.has(parts.transport)) {
+      return remoteHelpers.get(parts.transport)
+    }
+    throw new UnknownTransportError(
+      url,
+      parts.transport,
+      parts.transport === 'ssh' ? translateSSHtoHTTP(url) : undefined
+    )
+  }
+}
+
+let lock$1 = null;
+
+class GitShallowManager {
+  static async read({ fs, gitdir }) {
+    if (lock$1 === null) lock$1 = new AsyncLock();
+    const filepath = join(gitdir, 'shallow');
+    const oids = new Set();
+    await lock$1.acquire(filepath, async function() {
+      const text = await fs.read(filepath, { encoding: 'utf8' });
+      if (text === null) return oids // no file
+      if (text.trim() === '') return oids // empty file
+      text
+        .trim()
+        .split('\n')
+        .map(oid => oids.add(oid));
+    });
+    return oids
+  }
+
+  static async write({ fs, gitdir, oids }) {
+    if (lock$1 === null) lock$1 = new AsyncLock();
+    const filepath = join(gitdir, 'shallow');
+    if (oids.size > 0) {
+      const text = [...oids].join('\n') + '\n';
+      await lock$1.acquire(filepath, async function() {
+        await fs.write(filepath, text, {
+          encoding: 'utf8',
+        });
+      });
+    } else {
+      // No shallows
+      await lock$1.acquire(filepath, async function() {
+        await fs.rm(filepath);
+      });
+    }
+  }
+}
+
+async function hasObjectLoose({ fs, gitdir, oid }) {
+  const source = `objects/${oid.slice(0, 2)}/${oid.slice(2)}`;
+  return fs.exists(`${gitdir}/${source}`)
+}
+
+async function hasObjectPacked({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  getExternalRefDelta,
+}) {
+  // Check to see if it's in a packfile.
+  // Iterate through all the .idx files
+  let list = await fs.readdir(join(gitdir, 'objects/pack'));
+  list = list.filter(x => x.endsWith('.idx'));
+  for (const filename of list) {
+    const indexFile = `${gitdir}/objects/pack/${filename}`;
+    const p = await readPackIndex({
+      fs,
+      cache,
+      filename: indexFile,
+      getExternalRefDelta,
+    });
+    if (p.error) throw new InternalError(p.error)
+    // If the packfile DOES have the oid we're looking for...
+    if (p.offsets.has(oid)) {
+      return true
+    }
+  }
+  // Failed to find it
+  return false
+}
+
+async function hasObject({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  format = 'content',
+}) {
+  // Curry the current read method so that the packfile un-deltification
+  // process can acquire external ref-deltas.
+  const getExternalRefDelta = oid => _readObject({ fs, cache, gitdir, oid });
+
+  // Look for it in the loose object directory.
+  let result = await hasObjectLoose({ fs, gitdir, oid });
+  // Check to see if it's in a packfile.
+  if (!result) {
+    result = await hasObjectPacked({
+      fs,
+      cache,
+      gitdir,
+      oid,
+      getExternalRefDelta,
+    });
+  }
+  // Finally
+  return result
+}
+
+// TODO: make a function that just returns obCount. then emptyPackfile = () => sizePack(pack) === 0
+function emptyPackfile(pack) {
+  const pheader = '5041434b';
+  const version = '00000002';
+  const obCount = '00000000';
+  const header = pheader + version + obCount;
+  return pack.slice(0, 12).toString('hex') === header
+}
+
+function filterCapabilities(server, client) {
+  const serverNames = server.map(cap => cap.split('=', 1)[0]);
+  return client.filter(cap => {
+    const name = cap.split('=', 1)[0];
+    return serverNames.includes(name)
+  })
+}
+
+const pkg = {
+  name: 'isomorphic-git',
+  version: '1.7.8',
+  agent: 'git/isomorphic-git@1.7.8',
+};
+
+class FIFO {
+  constructor() {
+    this._queue = [];
+  }
+
+  write(chunk) {
+    if (this._ended) {
+      throw Error('You cannot write to a FIFO that has already been ended!')
+    }
+    if (this._waiting) {
+      const resolve = this._waiting;
+      this._waiting = null;
+      resolve({ value: chunk });
+    } else {
+      this._queue.push(chunk);
+    }
+  }
+
+  end() {
+    this._ended = true;
+    if (this._waiting) {
+      const resolve = this._waiting;
+      this._waiting = null;
+      resolve({ done: true });
+    }
+  }
+
+  destroy(err) {
+    this._ended = true;
+    this.error = err;
+  }
+
+  async next() {
+    if (this._queue.length > 0) {
+      return { value: this._queue.shift() }
+    }
+    if (this._ended) {
+      return { done: true }
+    }
+    if (this._waiting) {
+      throw Error(
+        'You cannot call read until the previous call to read has returned!'
+      )
+    }
+    return new Promise(resolve => {
+      this._waiting = resolve;
+    })
+  }
+}
+
+// Note: progress messages are designed to be written directly to the terminal,
+// so they are often sent with just a carriage return to overwrite the last line of output.
+// But there are also messages delimited with newlines.
+// I also include CRLF just in case.
+function findSplit(str) {
+  const r = str.indexOf('\r');
+  const n = str.indexOf('\n');
+  if (r === -1 && n === -1) return -1
+  if (r === -1) return n + 1 // \n
+  if (n === -1) return r + 1 // \r
+  if (n === r + 1) return n + 1 // \r\n
+  return Math.min(r, n) + 1 // \r or \n
+}
+
+function splitLines(input) {
+  const output = new FIFO();
+  let tmp = ''
+  ;(async () => {
+    await forAwait(input, chunk => {
+      chunk = chunk.toString('utf8');
+      tmp += chunk;
+      while (true) {
+        const i = findSplit(tmp);
+        if (i === -1) break
+        output.write(tmp.slice(0, i));
+        tmp = tmp.slice(i);
+      }
+    });
+    if (tmp.length > 0) {
+      output.write(tmp);
+    }
+    output.end();
+  })();
+  return output
+}
+
+/*
+If 'side-band' or 'side-band-64k' capabilities have been specified by
+the client, the server will send the packfile data multiplexed.
+
+Each packet starting with the packet-line length of the amount of data
+that follows, followed by a single byte specifying the sideband the
+following data is coming in on.
+
+In 'side-band' mode, it will send up to 999 data bytes plus 1 control
+code, for a total of up to 1000 bytes in a pkt-line.  In 'side-band-64k'
+mode it will send up to 65519 data bytes plus 1 control code, for a
+total of up to 65520 bytes in a pkt-line.
+
+The sideband byte will be a '1', '2' or a '3'. Sideband '1' will contain
+packfile data, sideband '2' will be used for progress information that the
+client will generally print to stderr and sideband '3' is used for error
+information.
+
+If no 'side-band' capability was specified, the server will stream the
+entire packfile without multiplexing.
+*/
+
+class GitSideBand {
+  static demux(input) {
+    const read = GitPktLine.streamReader(input);
+    // And now for the ridiculous side-band or side-band-64k protocol
+    const packetlines = new FIFO();
+    const packfile = new FIFO();
+    const progress = new FIFO();
+    // TODO: Use a proper through stream?
+    const nextBit = async function() {
+      const line = await read();
+      // Skip over flush packets
+      if (line === null) return nextBit()
+      // A made up convention to signal there's no more to read.
+      if (line === true) {
+        packetlines.end();
+        progress.end();
+        packfile.end();
+        return
+      }
+      // Examine first byte to determine which output "stream" to use
+      switch (line[0]) {
+        case 1: {
+          // pack data
+          packfile.write(line.slice(1));
+          break
+        }
+        case 2: {
+          // progress message
+          progress.write(line.slice(1));
+          break
+        }
+        case 3: {
+          // fatal error message just before stream aborts
+          const error = line.slice(1);
+          progress.write(error);
+          packfile.destroy(new Error(error.toString('utf8')));
+          return
+        }
+        default: {
+          // Not part of the side-band-64k protocol
+          packetlines.write(line.slice(0));
+        }
+      }
+      // Careful not to blow up the stack.
+      // I think Promises in a tail-call position should be OK.
+      nextBit();
+    };
+    nextBit();
+    return {
+      packetlines,
+      packfile,
+      progress,
+    }
+  }
+  // static mux ({
+  //   protocol, // 'side-band' or 'side-band-64k'
+  //   packetlines,
+  //   packfile,
+  //   progress,
+  //   error
+  // }) {
+  //   const MAX_PACKET_LENGTH = protocol === 'side-band-64k' ? 999 : 65519
+  //   let output = new PassThrough()
+  //   packetlines.on('data', data => {
+  //     if (data === null) {
+  //       output.write(GitPktLine.flush())
+  //     } else {
+  //       output.write(GitPktLine.encode(data))
+  //     }
+  //   })
+  //   let packfileWasEmpty = true
+  //   let packfileEnded = false
+  //   let progressEnded = false
+  //   let errorEnded = false
+  //   let goodbye = Buffer.concat([
+  //     GitPktLine.encode(Buffer.from('010A', 'hex')),
+  //     GitPktLine.flush()
+  //   ])
+  //   packfile
+  //     .on('data', data => {
+  //       packfileWasEmpty = false
+  //       const buffers = splitBuffer(data, MAX_PACKET_LENGTH)
+  //       for (const buffer of buffers) {
+  //         output.write(
+  //           GitPktLine.encode(Buffer.concat([Buffer.from('01', 'hex'), buffer]))
+  //         )
+  //       }
+  //     })
+  //     .on('end', () => {
+  //       packfileEnded = true
+  //       if (!packfileWasEmpty) output.write(goodbye)
+  //       if (progressEnded && errorEnded) output.end()
+  //     })
+  //   progress
+  //     .on('data', data => {
+  //       const buffers = splitBuffer(data, MAX_PACKET_LENGTH)
+  //       for (const buffer of buffers) {
+  //         output.write(
+  //           GitPktLine.encode(Buffer.concat([Buffer.from('02', 'hex'), buffer]))
+  //         )
+  //       }
+  //     })
+  //     .on('end', () => {
+  //       progressEnded = true
+  //       if (packfileEnded && errorEnded) output.end()
+  //     })
+  //   error
+  //     .on('data', data => {
+  //       const buffers = splitBuffer(data, MAX_PACKET_LENGTH)
+  //       for (const buffer of buffers) {
+  //         output.write(
+  //           GitPktLine.encode(Buffer.concat([Buffer.from('03', 'hex'), buffer]))
+  //         )
+  //       }
+  //     })
+  //     .on('end', () => {
+  //       errorEnded = true
+  //       if (progressEnded && packfileEnded) output.end()
+  //     })
+  //   return output
+  // }
+}
+
+async function parseUploadPackResponse(stream) {
+  const { packetlines, packfile, progress } = GitSideBand.demux(stream);
+  const shallows = [];
+  const unshallows = [];
+  const acks = [];
+  let nak = false;
+  let done = false;
+  return new Promise((resolve, reject) => {
+    // Parse the response
+    forAwait(packetlines, data => {
+      const line = data.toString('utf8').trim();
+      if (line.startsWith('shallow')) {
+        const oid = line.slice(-41).trim();
+        if (oid.length !== 40) {
+          reject(new InvalidOidError(oid));
+        }
+        shallows.push(oid);
+      } else if (line.startsWith('unshallow')) {
+        const oid = line.slice(-41).trim();
+        if (oid.length !== 40) {
+          reject(new InvalidOidError(oid));
+        }
+        unshallows.push(oid);
+      } else if (line.startsWith('ACK')) {
+        const [, oid, status] = line.split(' ');
+        acks.push({ oid, status });
+        if (!status) done = true;
+      } else if (line.startsWith('NAK')) {
+        nak = true;
+        done = true;
+      }
+      if (done) {
+        resolve({ shallows, unshallows, acks, nak, packfile, progress });
+      }
+    });
+  })
+}
+
+function writeUploadPackRequest({
+  capabilities = [],
+  wants = [],
+  haves = [],
+  shallows = [],
+  depth = null,
+  since = null,
+  exclude = [],
+}) {
+  const packstream = [];
+  wants = [...new Set(wants)]; // remove duplicates
+  let firstLineCapabilities = ` ${capabilities.join(' ')}`;
+  for (const oid of wants) {
+    packstream.push(GitPktLine.encode(`want ${oid}${firstLineCapabilities}\n`));
+    firstLineCapabilities = '';
+  }
+  for (const oid of shallows) {
+    packstream.push(GitPktLine.encode(`shallow ${oid}\n`));
+  }
+  if (depth !== null) {
+    packstream.push(GitPktLine.encode(`deepen ${depth}\n`));
+  }
+  if (since !== null) {
+    packstream.push(
+      GitPktLine.encode(`deepen-since ${Math.floor(since.valueOf() / 1000)}\n`)
+    );
+  }
+  for (const oid of exclude) {
+    packstream.push(GitPktLine.encode(`deepen-not ${oid}\n`));
+  }
+  packstream.push(GitPktLine.flush());
+  for (const oid of haves) {
+    packstream.push(GitPktLine.encode(`have ${oid}\n`));
+  }
+  packstream.push(GitPktLine.encode(`done\n`));
+  return packstream
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {object} FetchResult - The object returned has the following schema:
+ * @property {string | null} defaultBranch - The branch that is cloned if no branch is specified
+ * @property {string | null} fetchHead - The SHA-1 object id of the fetched head commit
+ * @property {string | null} fetchHeadDescription - a textual description of the branch that was fetched
+ * @property {Object<string, string>} [headers] - The HTTP response headers returned by the git server
+ * @property {string[]} [pruned] - A list of branches that were pruned, if you provided the `prune` parameter
+ *
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {HttpClient} args.http
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {MessageCallback} [args.onMessage]
+ * @param {AuthCallback} [args.onAuth]
+ * @param {AuthFailureCallback} [args.onAuthFailure]
+ * @param {AuthSuccessCallback} [args.onAuthSuccess]
+ * @param {string} args.gitdir
+ * @param {string|void} [args.url]
+ * @param {string} [args.corsProxy]
+ * @param {string} [args.ref]
+ * @param {string} [args.remoteRef]
+ * @param {string} [args.remote]
+ * @param {boolean} [args.singleBranch = false]
+ * @param {boolean} [args.tags = false]
+ * @param {number} [args.depth]
+ * @param {Date} [args.since]
+ * @param {string[]} [args.exclude = []]
+ * @param {boolean} [args.relative = false]
+ * @param {Object<string, string>} [args.headers]
+ * @param {boolean} [args.prune]
+ * @param {boolean} [args.pruneTags]
+ *
+ * @returns {Promise<FetchResult>}
+ * @see FetchResult
+ */
+async function _fetch({
+  fs,
+  cache,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  gitdir,
+  ref: _ref,
+  remoteRef: _remoteRef,
+  remote: _remote,
+  url: _url,
+  corsProxy,
+  depth = null,
+  since = null,
+  exclude = [],
+  relative = false,
+  tags = false,
+  singleBranch = false,
+  headers = {},
+  prune = false,
+  pruneTags = false,
+}) {
+  const ref = _ref || (await _currentBranch({ fs, gitdir, test: true }));
+  const config = await GitConfigManager.get({ fs, gitdir });
+  // Figure out what remote to use.
+  const remote =
+    _remote || (ref && (await config.get(`branch.${ref}.remote`))) || 'origin';
+  // Lookup the URL for the given remote.
+  const url = _url || (await config.get(`remote.${remote}.url`));
+  if (typeof url === 'undefined') {
+    throw new MissingParameterError('remote OR url')
+  }
+  // Figure out what remote ref to use.
+  const remoteRef =
+    _remoteRef ||
+    (ref && (await config.get(`branch.${ref}.merge`))) ||
+    _ref ||
+    'HEAD';
+
+  if (corsProxy === undefined) {
+    corsProxy = await config.get('http.corsProxy');
+  }
+
+  const GitRemoteHTTP = GitRemoteManager.getRemoteHelperFor({ url });
+  const remoteHTTP = await GitRemoteHTTP.discover({
+    http,
+    onAuth,
+    onAuthSuccess,
+    onAuthFailure,
+    corsProxy,
+    service: 'git-upload-pack',
+    url,
+    headers,
+    protocolVersion: 1,
+  });
+  const auth = remoteHTTP.auth; // hack to get new credentials from CredentialManager API
+  const remoteRefs = remoteHTTP.refs;
+  // For the special case of an empty repository with no refs, return null.
+  if (remoteRefs.size === 0) {
+    return {
+      defaultBranch: null,
+      fetchHead: null,
+      fetchHeadDescription: null,
+    }
+  }
+  // Check that the remote supports the requested features
+  if (depth !== null && !remoteHTTP.capabilities.has('shallow')) {
+    throw new RemoteCapabilityError('shallow', 'depth')
+  }
+  if (since !== null && !remoteHTTP.capabilities.has('deepen-since')) {
+    throw new RemoteCapabilityError('deepen-since', 'since')
+  }
+  if (exclude.length > 0 && !remoteHTTP.capabilities.has('deepen-not')) {
+    throw new RemoteCapabilityError('deepen-not', 'exclude')
+  }
+  if (relative === true && !remoteHTTP.capabilities.has('deepen-relative')) {
+    throw new RemoteCapabilityError('deepen-relative', 'relative')
+  }
+  // Figure out the SHA for the requested ref
+  const { oid, fullref } = GitRefManager.resolveAgainstMap({
+    ref: remoteRef,
+    map: remoteRefs,
+  });
+  // Filter out refs we want to ignore: only keep ref we're cloning, HEAD, branches, and tags (if we're keeping them)
+  for (const remoteRef of remoteRefs.keys()) {
+    if (
+      remoteRef === fullref ||
+      remoteRef === 'HEAD' ||
+      remoteRef.startsWith('refs/heads/') ||
+      (tags && remoteRef.startsWith('refs/tags/'))
+    ) {
+      continue
+    }
+    remoteRefs.delete(remoteRef);
+  }
+  // Assemble the application/x-git-upload-pack-request
+  const capabilities = filterCapabilities(
+    [...remoteHTTP.capabilities],
+    [
+      'multi_ack_detailed',
+      'no-done',
+      'side-band-64k',
+      // Note: I removed 'thin-pack' option since our code doesn't "fatten" packfiles,
+      // which is necessary for compatibility with git. It was the cause of mysterious
+      // 'fatal: pack has [x] unresolved deltas' errors that plagued us for some time.
+      // isomorphic-git is perfectly happy with thin packfiles in .git/objects/pack but
+      // canonical git it turns out is NOT.
+      'ofs-delta',
+      `agent=${pkg.agent}`,
+    ]
+  );
+  if (relative) capabilities.push('deepen-relative');
+  // Start figuring out which oids from the remote we want to request
+  const wants = singleBranch ? [oid] : remoteRefs.values();
+  // Come up with a reasonable list of oids to tell the remote we already have
+  // (preferably oids that are close ancestors of the branch heads we're fetching)
+  const haveRefs = singleBranch
+    ? [ref]
+    : await GitRefManager.listRefs({
+        fs,
+        gitdir,
+        filepath: `refs`,
+      });
+  let haves = [];
+  for (let ref of haveRefs) {
+    try {
+      ref = await GitRefManager.expand({ fs, gitdir, ref });
+      const oid = await GitRefManager.resolve({ fs, gitdir, ref });
+      if (await hasObject({ fs, cache, gitdir, oid })) {
+        haves.push(oid);
+      }
+    } catch (err) {}
+  }
+  haves = [...new Set(haves)];
+  const oids = await GitShallowManager.read({ fs, gitdir });
+  const shallows = remoteHTTP.capabilities.has('shallow') ? [...oids] : [];
+  const packstream = writeUploadPackRequest({
+    capabilities,
+    wants,
+    haves,
+    shallows,
+    depth,
+    since,
+    exclude,
+  });
+  // CodeCommit will hang up if we don't send a Content-Length header
+  // so we can't stream the body.
+  const packbuffer = Buffer.from(await collect(packstream));
+  const raw = await GitRemoteHTTP.connect({
+    http,
+    onProgress,
+    corsProxy,
+    service: 'git-upload-pack',
+    url,
+    auth,
+    body: [packbuffer],
+    headers,
+  });
+  const response = await parseUploadPackResponse(raw.body);
+  if (raw.headers) {
+    response.headers = raw.headers;
+  }
+  // Apply all the 'shallow' and 'unshallow' commands
+  for (const oid of response.shallows) {
+    if (!oids.has(oid)) {
+      // this is in a try/catch mostly because my old test fixtures are missing objects
+      try {
+        // server says it's shallow, but do we have the parents?
+        const { object } = await _readObject({ fs, cache, gitdir, oid });
+        const commit = new GitCommit(object);
+        const hasParents = await Promise.all(
+          commit
+            .headers()
+            .parent.map(oid => hasObject({ fs, cache, gitdir, oid }))
+        );
+        const haveAllParents =
+          hasParents.length === 0 || hasParents.every(has => has);
+        if (!haveAllParents) {
+          oids.add(oid);
+        }
+      } catch (err) {
+        oids.add(oid);
+      }
+    }
+  }
+  for (const oid of response.unshallows) {
+    oids.delete(oid);
+  }
+  await GitShallowManager.write({ fs, gitdir, oids });
+  // Update local remote refs
+  if (singleBranch) {
+    const refs = new Map([[fullref, oid]]);
+    // But wait, maybe it was a symref, like 'HEAD'!
+    // We need to save all the refs in the symref chain (sigh).
+    const symrefs = new Map();
+    let bail = 10;
+    let key = fullref;
+    while (bail--) {
+      const value = remoteHTTP.symrefs.get(key);
+      if (value === undefined) break
+      symrefs.set(key, value);
+      key = value;
+    }
+    // final value must not be a symref but a real ref
+    const realRef = remoteRefs.get(key);
+    // There may be no ref at all if we've fetched a specific commit hash
+    if (realRef) {
+      refs.set(key, realRef);
+    }
+    const { pruned } = await GitRefManager.updateRemoteRefs({
+      fs,
+      gitdir,
+      remote,
+      refs,
+      symrefs,
+      tags,
+      prune,
+    });
+    if (prune) {
+      response.pruned = pruned;
+    }
+  } else {
+    const { pruned } = await GitRefManager.updateRemoteRefs({
+      fs,
+      gitdir,
+      remote,
+      refs: remoteRefs,
+      symrefs: remoteHTTP.symrefs,
+      tags,
+      prune,
+      pruneTags,
+    });
+    if (prune) {
+      response.pruned = pruned;
+    }
+  }
+  // We need this value later for the `clone` command.
+  response.HEAD = remoteHTTP.symrefs.get('HEAD');
+  // AWS CodeCommit doesn't list HEAD as a symref, but we can reverse engineer it
+  // Find the SHA of the branch called HEAD
+  if (response.HEAD === undefined) {
+    const { oid } = GitRefManager.resolveAgainstMap({
+      ref: 'HEAD',
+      map: remoteRefs,
+    });
+    // Use the name of the first branch that's not called HEAD that has
+    // the same SHA as the branch called HEAD.
+    for (const [key, value] of remoteRefs.entries()) {
+      if (key !== 'HEAD' && value === oid) {
+        response.HEAD = key;
+        break
+      }
+    }
+  }
+  const noun = fullref.startsWith('refs/tags') ? 'tag' : 'branch';
+  response.FETCH_HEAD = {
+    oid,
+    description: `${noun} '${abbreviateRef(fullref)}' of ${url}`,
+  };
+
+  if (onProgress || onMessage) {
+    const lines = splitLines(response.progress);
+    forAwait(lines, async line => {
+      if (onMessage) await onMessage(line);
+      if (onProgress) {
+        const matches = line.match(/([^:]*).*\((\d+?)\/(\d+?)\)/);
+        if (matches) {
+          await onProgress({
+            phase: matches[1].trim(),
+            loaded: parseInt(matches[2], 10),
+            total: parseInt(matches[3], 10),
+          });
+        }
+      }
+    });
+  }
+  const packfile = Buffer.from(await collect(response.packfile));
+  const packfileSha = packfile.slice(-20).toString('hex');
+  const res = {
+    defaultBranch: response.HEAD,
+    fetchHead: response.FETCH_HEAD.oid,
+    fetchHeadDescription: response.FETCH_HEAD.description,
+  };
+  if (response.headers) {
+    res.headers = response.headers;
+  }
+  if (prune) {
+    res.pruned = response.pruned;
+  }
+  // This is a quick fix for the empty .git/objects/pack/pack-.pack file error,
+  // which due to the way `git-list-pack` works causes the program to hang when it tries to read it.
+  // TODO: Longer term, we should actually:
+  // a) NOT concatenate the entire packfile into memory (line 78),
+  // b) compute the SHA of the stream except for the last 20 bytes, using the same library used in push.js, and
+  // c) compare the computed SHA with the last 20 bytes of the stream before saving to disk, and throwing a "packfile got corrupted during download" error if the SHA doesn't match.
+  if (packfileSha !== '' && !emptyPackfile(packfile)) {
+    res.packfile = `objects/pack/pack-${packfileSha}.pack`;
+    const fullpath = join(gitdir, res.packfile);
+    await fs.write(fullpath, packfile);
+    const getExternalRefDelta = oid => _readObject({ fs, cache, gitdir, oid });
+    const idx = await GitPackIndex.fromPack({
+      pack: packfile,
+      getExternalRefDelta,
+      onProgress,
+    });
+    await fs.write(fullpath.replace(/\.pack$/, '.idx'), await idx.toBuffer());
+  }
+  return res
+}
+
+// @ts-check
+
+/**
+ * Initialize a new repository
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} [args.dir]
+ * @param {string} [args.gitdir]
+ * @param {boolean} [args.bare = false]
+ * @param {string} [args.defaultBranch = 'master']
+ * @returns {Promise<void>}
+ */
+async function _init({
+  fs,
+  bare = false,
+  dir,
+  gitdir = bare ? dir : join(dir, '.git'),
+  defaultBranch = 'master',
+}) {
+  // Don't overwrite an existing config
+  if (await fs.exists(gitdir + '/config')) return
+
+  let folders = [
+    'hooks',
+    'info',
+    'objects/info',
+    'objects/pack',
+    'refs/heads',
+    'refs/tags',
+  ];
+  folders = folders.map(dir => gitdir + '/' + dir);
+  for (const folder of folders) {
+    await fs.mkdir(folder);
+  }
+
+  await fs.write(
+    gitdir + '/config',
+    '[core]\n' +
+      '\trepositoryformatversion = 0\n' +
+      '\tfilemode = false\n' +
+      `\tbare = ${bare}\n` +
+      (bare ? '' : '\tlogallrefupdates = true\n') +
+      '\tsymlinks = false\n' +
+      '\tignorecase = true\n'
+  );
+  await fs.write(gitdir + '/HEAD', `ref: refs/heads/${defaultBranch}\n`);
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {HttpClient} args.http
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {MessageCallback} [args.onMessage]
+ * @param {AuthCallback} [args.onAuth]
+ * @param {AuthFailureCallback} [args.onAuthFailure]
+ * @param {AuthSuccessCallback} [args.onAuthSuccess]
+ * @param {string} [args.dir]
+ * @param {string} args.gitdir
+ * @param {string} args.url
+ * @param {string} args.corsProxy
+ * @param {string} args.ref
+ * @param {boolean} args.singleBranch
+ * @param {boolean} args.noCheckout
+ * @param {boolean} args.noTags
+ * @param {string} args.remote
+ * @param {number} args.depth
+ * @param {Date} args.since
+ * @param {string[]} args.exclude
+ * @param {boolean} args.relative
+ * @param {Object<string, string>} args.headers
+ *
+ * @returns {Promise<void>} Resolves successfully when clone completes
+ *
+ */
+async function _clone({
+  fs,
+  cache,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir,
+  url,
+  corsProxy,
+  ref,
+  remote,
+  depth,
+  since,
+  exclude,
+  relative,
+  singleBranch,
+  noCheckout,
+  noTags,
+  headers,
+}) {
+  await _init({ fs, gitdir });
+  await _addRemote({ fs, gitdir, remote, url, force: false });
+  if (corsProxy) {
+    const config = await GitConfigManager.get({ fs, gitdir });
+    await config.set(`http.corsProxy`, corsProxy);
+    await GitConfigManager.save({ fs, gitdir, config });
+  }
+  const { defaultBranch, fetchHead } = await _fetch({
+    fs,
+    cache,
+    http,
+    onProgress,
+    onMessage,
+    onAuth,
+    onAuthSuccess,
+    onAuthFailure,
+    gitdir,
+    ref,
+    remote,
+    depth,
+    since,
+    exclude,
+    relative,
+    singleBranch,
+    headers,
+    tags: !noTags,
+  });
+  if (fetchHead === null) return
+  ref = ref || defaultBranch;
+  ref = ref.replace('refs/heads/', '');
+  // Checkout that branch
+  await _checkout({
+    fs,
+    cache,
+    onProgress,
+    dir,
+    gitdir,
+    ref,
+    remote,
+    noCheckout,
+  });
+}
+
+// @ts-check
+
+/**
+ * Clone a repository
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {MessageCallback} [args.onMessage] - optional message event callback
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.url - The URL of the remote repository
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Value is stored in the git config file for that repo.
+ * @param {string} [args.ref] - Which branch to checkout. By default this is the designated "main branch" of the repository.
+ * @param {boolean} [args.singleBranch = false] - Instead of the default behavior of fetching all the branches, only fetch a single branch.
+ * @param {boolean} [args.noCheckout = false] - If true, clone will only fetch the repo, not check out a branch. Skipping checkout can save a lot of time normally spent writing files to disk.
+ * @param {boolean} [args.noTags = false] - By default clone will fetch all tags. `noTags` disables that behavior.
+ * @param {string} [args.remote = 'origin'] - What to name the remote that is created.
+ * @param {number} [args.depth] - Integer. Determines how much of the git repository's history to retrieve
+ * @param {Date} [args.since] - Only fetch commits created after the given date. Mutually exclusive with `depth`.
+ * @param {string[]} [args.exclude = []] - A list of branches or tags. Instructs the remote server not to send us any commits reachable from these refs.
+ * @param {boolean} [args.relative = false] - Changes the meaning of `depth` to be measured from the current shallow depth rather than from the branch tip.
+ * @param {Object<string, string>} [args.headers = {}] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ *
+ * @returns {Promise<void>} Resolves successfully when clone completes
+ *
+ * @example
+ * await git.clone({
+ *   fs,
+ *   http,
+ *   dir: '/tutorial',
+ *   corsProxy: 'https://cors.isomorphic-git.org',
+ *   url: 'https://github.com/isomorphic-git/isomorphic-git',
+ *   singleBranch: true,
+ *   depth: 1
+ * })
+ * console.log('done')
+ *
+ */
+async function clone({
+  fs,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir = join(dir, '.git'),
+  url,
+  corsProxy = undefined,
+  ref = undefined,
+  remote = 'origin',
+  depth = undefined,
+  since = undefined,
+  exclude = [],
+  relative = false,
+  singleBranch = false,
+  noCheckout = false,
+  noTags = false,
+  headers = {},
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('http', http);
+    assertParameter('gitdir', gitdir);
+    if (!noCheckout) {
+      assertParameter('dir', dir);
+    }
+    assertParameter('url', url);
+
+    return await _clone({
+      fs: new FileSystem(fs),
+      cache: {},
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      dir,
+      gitdir,
+      url,
+      corsProxy,
+      ref,
+      remote,
+      depth,
+      since,
+      exclude,
+      relative,
+      singleBranch,
+      noCheckout,
+      noTags,
+      headers,
+    })
+  } catch (err) {
+    err.caller = 'git.clone';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Create a new commit
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {SignCallback} [args.onSign] - a PGP signing implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.message - The commit message to use.
+ * @param {Object} [args.author] - The details about the author.
+ * @param {string} [args.author.name] - Default is `user.name` config.
+ * @param {string} [args.author.email] - Default is `user.email` config.
+ * @param {number} [args.author.timestamp=Math.floor(Date.now()/1000)] - Set the author timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.author.timezoneOffset] - Set the author timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {Object} [args.committer = author] - The details about the commit committer, in the same format as the author parameter. If not specified, the author details are used.
+ * @param {string} [args.committer.name] - Default is `user.name` config.
+ * @param {string} [args.committer.email] - Default is `user.email` config.
+ * @param {number} [args.committer.timestamp=Math.floor(Date.now()/1000)] - Set the committer timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.committer.timezoneOffset] - Set the committer timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.signingKey] - Sign the tag object using this private PGP key.
+ * @param {boolean} [args.dryRun = false] - If true, simulates making a commit so you can test whether it would succeed. Implies `noUpdateBranch`.
+ * @param {boolean} [args.noUpdateBranch = false] - If true, does not update the branch pointer after creating the commit.
+ * @param {string} [args.ref] - The fully expanded name of the branch to commit to. Default is the current branch pointed to by HEAD. (TODO: fix it so it can expand branch names without throwing if the branch doesn't exist yet.)
+ * @param {string[]} [args.parent] - The SHA-1 object ids of the commits to use as parents. If not specified, the commit pointed to by `ref` is used.
+ * @param {string} [args.tree] - The SHA-1 object id of the tree to use. If not specified, a new tree object is created from the current git index.
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly created commit.
+ *
+ * @example
+ * let sha = await git.commit({
+ *   fs,
+ *   dir: '/tutorial',
+ *   author: {
+ *     name: 'Mr. Test',
+ *     email: 'mrtest@example.com',
+ *   },
+ *   message: 'Added the a.txt file'
+ * })
+ * console.log(sha)
+ *
+ */
+async function commit({
+  fs: _fs,
+  onSign,
+  dir,
+  gitdir = join(dir, '.git'),
+  message,
+  author: _author,
+  committer: _committer,
+  signingKey,
+  dryRun = false,
+  noUpdateBranch = false,
+  ref,
+  parent,
+  tree,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('message', message);
+    if (signingKey) {
+      assertParameter('onSign', onSign);
+    }
+    const fs = new FileSystem(_fs);
+    const cache = {};
+
+    const author = await normalizeAuthorObject({ fs, gitdir, author: _author });
+    if (!author) throw new MissingNameError('author')
+
+    const committer = await normalizeCommitterObject({
+      fs,
+      gitdir,
+      author,
+      committer: _committer,
+    });
+    if (!committer) throw new MissingNameError('committer')
+
+    return await _commit({
+      fs,
+      cache,
+      onSign,
+      gitdir,
+      message,
+      author,
+      committer,
+      signingKey,
+      dryRun,
+      noUpdateBranch,
+      ref,
+      parent,
+      tree,
+    })
+  } catch (err) {
+    err.caller = 'git.commit';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Get the name of the branch currently pointed to by .git/HEAD
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {boolean} [args.fullname = false] - Return the full path (e.g. "refs/heads/main") instead of the abbreviated form.
+ * @param {boolean} [args.test = false] - If the current branch doesn't actually exist (such as right after git init) then return `undefined`.
+ *
+ * @returns {Promise<string|void>} The name of the current branch or undefined if the HEAD is detached.
+ *
+ * @example
+ * // Get the current branch name
+ * let branch = await git.currentBranch({
+ *   fs,
+ *   dir: '/tutorial',
+ *   fullname: false
+ * })
+ * console.log(branch)
+ *
+ */
+async function currentBranch({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  fullname = false,
+  test = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    return await _currentBranch({
+      fs: new FileSystem(fs),
+      gitdir,
+      fullname,
+      test,
+    })
+  } catch (err) {
+    err.caller = 'git.currentBranch';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ *
+ * @returns {Promise<void>}
+ */
+async function _deleteBranch({ fs, gitdir, ref }) {
+  const exist = await GitRefManager.exists({ fs, gitdir, ref });
+  if (!exist) {
+    throw new NotFoundError(ref)
+  }
+
+  const fullRef = await GitRefManager.expand({ fs, gitdir, ref });
+  const currentRef = await _currentBranch({ fs, gitdir, fullname: true });
+  if (fullRef === currentRef) {
+    // detach HEAD
+    const value = await GitRefManager.resolve({ fs, gitdir, ref: fullRef });
+    await GitRefManager.writeRef({ fs, gitdir, ref: 'HEAD', value });
+  }
+
+  // Delete a specified branch
+  await GitRefManager.deleteRef({ fs, gitdir, ref: fullRef });
+}
+
+// @ts-check
+
+/**
+ * Delete a local branch
+ *
+ * > Note: This only deletes loose branches - it should be fixed in the future to delete packed branches as well.
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The branch to delete
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.deleteBranch({ fs, dir: '/tutorial', ref: 'local-branch' })
+ * console.log('done')
+ *
+ */
+async function deleteBranch({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('ref', ref);
+    return await _deleteBranch({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+    })
+  } catch (err) {
+    err.caller = 'git.deleteBranch';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Delete a local ref
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The ref to delete
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.deleteRef({ fs, dir: '/tutorial', ref: 'refs/tags/test-tag' })
+ * console.log('done')
+ *
+ */
+async function deleteRef({ fs, dir, gitdir = join(dir, '.git'), ref }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('ref', ref);
+    await GitRefManager.deleteRef({ fs: new FileSystem(fs), gitdir, ref });
+  } catch (err) {
+    err.caller = 'git.deleteRef';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.remote
+ *
+ * @returns {Promise<void>}
+ */
+async function _deleteRemote({ fs, gitdir, remote }) {
+  const config = await GitConfigManager.get({ fs, gitdir });
+  await config.deleteSection('remote', remote);
+  await GitConfigManager.save({ fs, gitdir, config });
+}
+
+// @ts-check
+
+/**
+ * Removes the local config entry for a given remote
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.remote - The name of the remote to delete
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.deleteRemote({ fs, dir: '/tutorial', remote: 'upstream' })
+ * console.log('done')
+ *
+ */
+async function deleteRemote({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  remote,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('remote', remote);
+    return await _deleteRemote({
+      fs: new FileSystem(fs),
+      gitdir,
+      remote,
+    })
+  } catch (err) {
+    err.caller = 'git.deleteRemote';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Delete a local tag ref
+ *
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.ref - The tag to delete
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.deleteTag({ dir: '$input((/))', ref: '$input((test-tag))' })
+ * console.log('done')
+ *
+ */
+async function _deleteTag({ fs, gitdir, ref }) {
+  ref = ref.startsWith('refs/tags/') ? ref : `refs/tags/${ref}`;
+  await GitRefManager.deleteRef({ fs, gitdir, ref });
+}
+
+// @ts-check
+
+/**
+ * Delete a local tag ref
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The tag to delete
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.deleteTag({ fs, dir: '/tutorial', ref: 'test-tag' })
+ * console.log('done')
+ *
+ */
+async function deleteTag({ fs, dir, gitdir = join(dir, '.git'), ref }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('ref', ref);
+    return await _deleteTag({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+    })
+  } catch (err) {
+    err.caller = 'git.deleteTag';
+    throw err
+  }
+}
+
+async function expandOidLoose({ fs, gitdir, oid: short }) {
+  const prefix = short.slice(0, 2);
+  const objectsSuffixes = await fs.readdir(`${gitdir}/objects/${prefix}`);
+  return objectsSuffixes
+    .map(suffix => `${prefix}${suffix}`)
+    .filter(_oid => _oid.startsWith(short))
+}
+
+async function expandOidPacked({
+  fs,
+  cache,
+  gitdir,
+  oid: short,
+  getExternalRefDelta,
+}) {
+  // Iterate through all the .pack files
+  const results = [];
+  let list = await fs.readdir(join(gitdir, 'objects/pack'));
+  list = list.filter(x => x.endsWith('.idx'));
+  for (const filename of list) {
+    const indexFile = `${gitdir}/objects/pack/${filename}`;
+    const p = await readPackIndex({
+      fs,
+      cache,
+      filename: indexFile,
+      getExternalRefDelta,
+    });
+    if (p.error) throw new InternalError(p.error)
+    // Search through the list of oids in the packfile
+    for (const oid of p.offsets.keys()) {
+      if (oid.startsWith(short)) results.push(oid);
+    }
+  }
+  return results
+}
+
+async function _expandOid({ fs, cache, gitdir, oid: short }) {
+  // Curry the current read method so that the packfile un-deltification
+  // process can acquire external ref-deltas.
+  const getExternalRefDelta = oid => _readObject({ fs, cache, gitdir, oid });
+
+  const results1 = await expandOidLoose({ fs, gitdir, oid: short });
+  const results2 = await expandOidPacked({
+    fs,
+    cache,
+    gitdir,
+    oid: short,
+    getExternalRefDelta,
+  });
+  const results = results1.concat(results2);
+
+  if (results.length === 1) {
+    return results[0]
+  }
+  if (results.length > 1) {
+    throw new AmbiguousError('oids', short, results)
+  }
+  throw new NotFoundError(`an object matching "${short}"`)
+}
+
+// @ts-check
+
+/**
+ * Expand and resolve a short oid into a full oid
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The shortened oid prefix to expand (like "0414d2a")
+ *
+ * @returns {Promise<string>} Resolves successfully with the full oid (like "0414d2a286d7bbc7a4a326a61c1f9f888a8ab87f")
+ *
+ * @example
+ * let oid = await git.expandOid({ fs, dir: '/tutorial', oid: '0414d2a'})
+ * console.log(oid)
+ *
+ */
+async function expandOid({ fs, dir, gitdir = join(dir, '.git'), oid }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+    return await _expandOid({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+    })
+  } catch (err) {
+    err.caller = 'git.expandOid';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Expand an abbreviated ref to its full name
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The ref to expand (like "v1.0.0")
+ *
+ * @returns {Promise<string>} Resolves successfully with a full ref name ("refs/tags/v1.0.0")
+ *
+ * @example
+ * let fullRef = await git.expandRef({ fs, dir: '/tutorial', ref: 'main'})
+ * console.log(fullRef)
+ *
+ */
+async function expandRef({ fs, dir, gitdir = join(dir, '.git'), ref }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    return await GitRefManager.expand({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+    })
+  } catch (err) {
+    err.caller = 'git.expandRef';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string[]} args.oids
+ *
+ */
+async function _findMergeBase({ fs, cache, gitdir, oids }) {
+  // Note: right now, the tests are geared so that the output should match that of
+  // `git merge-base --all --octopus`
+  // because without the --octopus flag, git's output seems to depend on the ORDER of the oids,
+  // and computing virtual merge bases is just too much for me to fathom right now.
+
+  // If we start N independent walkers, one at each of the given `oids`, and walk backwards
+  // through ancestors, eventually we'll discover a commit where each one of these N walkers
+  // has passed through. So we just need to keep track of which walkers have visited each commit
+  // until we find a commit that N distinct walkers has visited.
+  const visits = {};
+  const passes = oids.length;
+  let heads = oids.map((oid, index) => ({ index, oid }));
+  while (heads.length) {
+    // Count how many times we've passed each commit
+    const result = new Set();
+    for (const { oid, index } of heads) {
+      if (!visits[oid]) visits[oid] = new Set();
+      visits[oid].add(index);
+      if (visits[oid].size === passes) {
+        result.add(oid);
+      }
+    }
+    if (result.size > 0) {
+      return [...result]
+    }
+    // We haven't found a common ancestor yet
+    const newheads = new Map();
+    for (const { oid, index } of heads) {
+      try {
+        const { object } = await _readObject({ fs, cache, gitdir, oid });
+        const commit = GitCommit.from(object);
+        const { parent } = commit.parseHeaders();
+        for (const oid of parent) {
+          if (!visits[oid] || !visits[oid].has(index)) {
+            newheads.set(oid + ':' + index, { oid, index });
+          }
+        }
+      } catch (err) {
+        // do nothing
+      }
+    }
+    heads = Array.from(newheads.values());
+  }
+  return []
+}
+
+const LINEBREAKS = /^.*(\r?\n|$)/gm;
+
+function mergeFile({
+  ourContent,
+  baseContent,
+  theirContent,
+  ourName = 'ours',
+  baseName = 'base',
+  theirName = 'theirs',
+  format = 'diff',
+  markerSize = 7,
+}) {
+  const ours = ourContent.match(LINEBREAKS);
+  const base = baseContent.match(LINEBREAKS);
+  const theirs = theirContent.match(LINEBREAKS);
+
+  // Here we let the diff3 library do the heavy lifting.
+  const result = diff3Merge(ours, base, theirs);
+
+  // Here we note whether there are conflicts and format the results
+  let mergedText = '';
+  let cleanMerge = true;
+  for (const item of result) {
+    if (item.ok) {
+      mergedText += item.ok.join('');
+    }
+    if (item.conflict) {
+      cleanMerge = false;
+      mergedText += `${'<'.repeat(markerSize)} ${ourName}\n`;
+      mergedText += item.conflict.a.join('');
+      if (format === 'diff3') {
+        mergedText += `${'|'.repeat(markerSize)} ${baseName}\n`;
+        mergedText += item.conflict.o.join('');
+      }
+      mergedText += `${'='.repeat(markerSize)}\n`;
+      mergedText += item.conflict.b.join('');
+      mergedText += `${'>'.repeat(markerSize)} ${theirName}\n`;
+    }
+  }
+  return { cleanMerge, mergedText }
+}
+
+// @ts-check
+
+/**
+ * Create a merged tree
+ *
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ourOid - The SHA-1 object id of our tree
+ * @param {string} args.baseOid - The SHA-1 object id of the base tree
+ * @param {string} args.theirOid - The SHA-1 object id of their tree
+ * @param {string} [args.ourName='ours'] - The name to use in conflicted files for our hunks
+ * @param {string} [args.baseName='base'] - The name to use in conflicted files (in diff3 format) for the base hunks
+ * @param {string} [args.theirName='theirs'] - The name to use in conflicted files for their hunks
+ * @param {boolean} [args.dryRun=false]
+ *
+ * @returns {Promise<string>} - The SHA-1 object id of the merged tree
+ *
+ */
+async function mergeTree({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ourOid,
+  baseOid,
+  theirOid,
+  ourName = 'ours',
+  baseName = 'base',
+  theirName = 'theirs',
+  dryRun = false,
+}) {
+  const ourTree = TREE({ ref: ourOid });
+  const baseTree = TREE({ ref: baseOid });
+  const theirTree = TREE({ ref: theirOid });
+
+  const results = await _walk({
+    fs,
+    dir,
+    gitdir,
+    trees: [ourTree, baseTree, theirTree],
+    map: async function(filepath, [ours, base, theirs]) {
+      const path = basename(filepath);
+      // What we did, what they did
+      const ourChange = await modified(ours, base);
+      const theirChange = await modified(theirs, base);
+      switch (`${ourChange}-${theirChange}`) {
+        case 'false-false': {
+          return {
+            mode: await base.mode(),
+            path,
+            oid: await base.oid(),
+            type: await base.type(),
+          }
+        }
+        case 'false-true': {
+          return theirs
+            ? {
+                mode: await theirs.mode(),
+                path,
+                oid: await theirs.oid(),
+                type: await theirs.type(),
+              }
+            : undefined
+        }
+        case 'true-false': {
+          return ours
+            ? {
+                mode: await ours.mode(),
+                path,
+                oid: await ours.oid(),
+                type: await ours.type(),
+              }
+            : undefined
+        }
+        case 'true-true': {
+          // Modifications
+          if (
+            ours &&
+            base &&
+            theirs &&
+            (await ours.type()) === 'blob' &&
+            (await base.type()) === 'blob' &&
+            (await theirs.type()) === 'blob'
+          ) {
+            return mergeBlobs({
+              fs,
+              gitdir,
+              path,
+              ours,
+              base,
+              theirs,
+              ourName,
+              baseName,
+              theirName,
+            })
+          }
+          // all other types of conflicts fail
+          throw new MergeNotSupportedError()
+        }
+      }
+    },
+    /**
+     * @param {TreeEntry} [parent]
+     * @param {Array<TreeEntry>} children
+     */
+    reduce: async (parent, children) => {
+      const entries = children.filter(Boolean); // remove undefineds
+
+      // automatically delete directories if they have been emptied
+      if (parent && parent.type === 'tree' && entries.length === 0) return
+
+      if (entries.length > 0) {
+        const tree = new GitTree(entries);
+        const object = tree.toObject();
+        const oid = await _writeObject({
+          fs,
+          gitdir,
+          type: 'tree',
+          object,
+          dryRun,
+        });
+        parent.oid = oid;
+      }
+      return parent
+    },
+  });
+  return results.oid
+}
+
+/**
+ *
+ * @param {WalkerEntry} entry
+ * @param {WalkerEntry} base
+ *
+ */
+async function modified(entry, base) {
+  if (!entry && !base) return false
+  if (entry && !base) return true
+  if (!entry && base) return true
+  if ((await entry.type()) === 'tree' && (await base.type()) === 'tree') {
+    return false
+  }
+  if (
+    (await entry.type()) === (await base.type()) &&
+    (await entry.mode()) === (await base.mode()) &&
+    (await entry.oid()) === (await base.oid())
+  ) {
+    return false
+  }
+  return true
+}
+
+/**
+ *
+ * @param {Object} args
+ * @param {import('../models/FileSystem').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.path
+ * @param {WalkerEntry} args.ours
+ * @param {WalkerEntry} args.base
+ * @param {WalkerEntry} args.theirs
+ * @param {string} [args.ourName]
+ * @param {string} [args.baseName]
+ * @param {string} [args.theirName]
+ * @param {string} [args.format]
+ * @param {number} [args.markerSize]
+ * @param {boolean} [args.dryRun = false]
+ *
+ */
+async function mergeBlobs({
+  fs,
+  gitdir,
+  path,
+  ours,
+  base,
+  theirs,
+  ourName,
+  theirName,
+  baseName,
+  format,
+  markerSize,
+  dryRun,
+}) {
+  const type = 'blob';
+  // Compute the new mode.
+  // Since there are ONLY two valid blob modes ('100755' and '100644') it boils down to this
+  const mode =
+    (await base.mode()) === (await ours.mode())
+      ? await theirs.mode()
+      : await ours.mode();
+  // The trivial case: nothing to merge except maybe mode
+  if ((await ours.oid()) === (await theirs.oid())) {
+    return { mode, path, oid: await ours.oid(), type }
+  }
+  // if only one side made oid changes, return that side's oid
+  if ((await ours.oid()) === (await base.oid())) {
+    return { mode, path, oid: await theirs.oid(), type }
+  }
+  if ((await theirs.oid()) === (await base.oid())) {
+    return { mode, path, oid: await ours.oid(), type }
+  }
+  // if both sides made changes do a merge
+  const { mergedText, cleanMerge } = mergeFile({
+    ourContent: Buffer.from(await ours.content()).toString('utf8'),
+    baseContent: Buffer.from(await base.content()).toString('utf8'),
+    theirContent: Buffer.from(await theirs.content()).toString('utf8'),
+    ourName,
+    theirName,
+    baseName,
+    format,
+    markerSize,
+  });
+  if (!cleanMerge) {
+    // all other types of conflicts fail
+    throw new MergeNotSupportedError()
+  }
+  const oid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'blob',
+    object: Buffer.from(mergedText, 'utf8'),
+    dryRun,
+  });
+  return { mode, path, oid, type }
+}
+
+// @ts-check
+
+// import diff3 from 'node-diff3'
+/**
+ *
+ * @typedef {Object} MergeResult - Returns an object with a schema like this:
+ * @property {string} [oid] - The SHA-1 object id that is now at the head of the branch. Absent only if `dryRun` was specified and `mergeCommit` is true.
+ * @property {boolean} [alreadyMerged] - True if the branch was already merged so no changes were made
+ * @property {boolean} [fastForward] - True if it was a fast-forward merge
+ * @property {boolean} [mergeCommit] - True if merge resulted in a merge commit
+ * @property {string} [tree] - The SHA-1 object id of the tree resulting from a merge commit
+ *
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {string} args.gitdir
+ * @param {string} [args.ours]
+ * @param {string} args.theirs
+ * @param {boolean} args.fastForwardOnly
+ * @param {boolean} args.dryRun
+ * @param {boolean} args.noUpdateBranch
+ * @param {string} [args.message]
+ * @param {Object} args.author
+ * @param {string} args.author.name
+ * @param {string} args.author.email
+ * @param {number} args.author.timestamp
+ * @param {number} args.author.timezoneOffset
+ * @param {Object} args.committer
+ * @param {string} args.committer.name
+ * @param {string} args.committer.email
+ * @param {number} args.committer.timestamp
+ * @param {number} args.committer.timezoneOffset
+ * @param {string} [args.signingKey]
+ *
+ * @returns {Promise<MergeResult>} Resolves to a description of the merge operation
+ *
+ */
+async function _merge({
+  fs,
+  cache,
+  gitdir,
+  ours,
+  theirs,
+  fastForwardOnly = false,
+  dryRun = false,
+  noUpdateBranch = false,
+  message,
+  author,
+  committer,
+  signingKey,
+}) {
+  if (ours === undefined) {
+    ours = await _currentBranch({ fs, gitdir, fullname: true });
+  }
+  ours = await GitRefManager.expand({
+    fs,
+    gitdir,
+    ref: ours,
+  });
+  theirs = await GitRefManager.expand({
+    fs,
+    gitdir,
+    ref: theirs,
+  });
+  const ourOid = await GitRefManager.resolve({
+    fs,
+    gitdir,
+    ref: ours,
+  });
+  const theirOid = await GitRefManager.resolve({
+    fs,
+    gitdir,
+    ref: theirs,
+  });
+  // find most recent common ancestor of ref a and ref b
+  const baseOids = await _findMergeBase({
+    fs,
+    cache,
+    gitdir,
+    oids: [ourOid, theirOid],
+  });
+  if (baseOids.length !== 1) {
+    throw new MergeNotSupportedError()
+  }
+  const baseOid = baseOids[0];
+  // handle fast-forward case
+  if (baseOid === theirOid) {
+    return {
+      oid: ourOid,
+      alreadyMerged: true,
+    }
+  }
+  if (baseOid === ourOid) {
+    if (!dryRun && !noUpdateBranch) {
+      await GitRefManager.writeRef({ fs, gitdir, ref: ours, value: theirOid });
+    }
+    return {
+      oid: theirOid,
+      fastForward: true,
+    }
+  } else {
+    // not a simple fast-forward
+    if (fastForwardOnly) {
+      throw new FastForwardError()
+    }
+    // try a fancier merge
+    const tree = await mergeTree({
+      fs,
+      gitdir,
+      ourOid,
+      theirOid,
+      baseOid,
+      ourName: ours,
+      baseName: 'base',
+      theirName: theirs,
+      dryRun,
+    });
+    if (!message) {
+      message = `Merge branch '${abbreviateRef(theirs)}' into ${abbreviateRef(
+        ours
+      )}`;
+    }
+    const oid = await _commit({
+      fs,
+      cache,
+      gitdir,
+      message,
+      ref: ours,
+      tree,
+      parent: [ourOid, theirOid],
+      author,
+      committer,
+      signingKey,
+      dryRun,
+      noUpdateBranch,
+    });
+    return {
+      oid,
+      tree,
+      mergeCommit: true,
+    }
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {HttpClient} args.http
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {MessageCallback} [args.onMessage]
+ * @param {AuthCallback} [args.onAuth]
+ * @param {AuthFailureCallback} [args.onAuthFailure]
+ * @param {AuthSuccessCallback} [args.onAuthSuccess]
+ * @param {string} args.dir
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {string} [args.url]
+ * @param {string} [args.remote]
+ * @param {string} [args.remoteRef]
+ * @param {string} [args.corsProxy]
+ * @param {boolean} args.singleBranch
+ * @param {boolean} args.fastForwardOnly
+ * @param {Object<string, string>} [args.headers]
+ * @param {Object} args.author
+ * @param {string} args.author.name
+ * @param {string} args.author.email
+ * @param {number} args.author.timestamp
+ * @param {number} args.author.timezoneOffset
+ * @param {Object} args.committer
+ * @param {string} args.committer.name
+ * @param {string} args.committer.email
+ * @param {number} args.committer.timestamp
+ * @param {number} args.committer.timezoneOffset
+ * @param {string} [args.signingKey]
+ *
+ * @returns {Promise<void>} Resolves successfully when pull operation completes
+ *
+ */
+async function _pull({
+  fs,
+  cache,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir,
+  ref,
+  url,
+  remote,
+  remoteRef,
+  fastForwardOnly,
+  corsProxy,
+  singleBranch,
+  headers,
+  author,
+  committer,
+  signingKey,
+}) {
+  try {
+    // If ref is undefined, use 'HEAD'
+    if (!ref) {
+      const head = await _currentBranch({ fs, gitdir });
+      // TODO: use a better error.
+      if (!head) {
+        throw new MissingParameterError('ref')
+      }
+      ref = head;
+    }
+
+    const { fetchHead, fetchHeadDescription } = await _fetch({
+      fs,
+      cache,
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      gitdir,
+      corsProxy,
+      ref,
+      url,
+      remote,
+      remoteRef,
+      singleBranch,
+      headers,
+    });
+    // Merge the remote tracking branch into the local one.
+    await _merge({
+      fs,
+      cache,
+      gitdir,
+      ours: ref,
+      theirs: fetchHead,
+      fastForwardOnly,
+      message: `Merge ${fetchHeadDescription}`,
+      author,
+      committer,
+      signingKey,
+      dryRun: false,
+      noUpdateBranch: false,
+    });
+    await _checkout({
+      fs,
+      cache,
+      onProgress,
+      dir,
+      gitdir,
+      ref,
+      remote,
+      noCheckout: false,
+    });
+  } catch (err) {
+    err.caller = 'git.pull';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Like `pull`, but hard-coded with `fastForward: true` so there is no need for an `author` parameter.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {MessageCallback} [args.onMessage] - optional message event callback
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - Which branch to merge into. By default this is the currently checked out branch.
+ * @param {string} [args.url] - (Added in 1.1.0) The URL of the remote repository. The default is the value set in the git config for that remote.
+ * @param {string} [args.remote] - (Added in 1.1.0) If URL is not specified, determines which remote to use.
+ * @param {string} [args.remoteRef] - (Added in 1.1.0) The name of the branch on the remote to fetch. By default this is the configured remote tracking branch.
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {boolean} [args.singleBranch = false] - Instead of the default behavior of fetching all the branches, only fetch a single branch.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ *
+ * @returns {Promise<void>} Resolves successfully when pull operation completes
+ *
+ * @example
+ * await git.fastForward({
+ *   fs,
+ *   http,
+ *   dir: '/tutorial',
+ *   ref: 'main',
+ *   singleBranch: true
+ * })
+ * console.log('done')
+ *
+ */
+async function fastForward({
+  fs,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  url,
+  remote,
+  remoteRef,
+  corsProxy,
+  singleBranch,
+  headers = {},
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('http', http);
+    assertParameter('gitdir', gitdir);
+
+    const thisWillNotBeUsed = {
+      name: '',
+      email: '',
+      timestamp: Date.now(),
+      timezoneOffset: 0,
+    };
+
+    return await _pull({
+      fs: new FileSystem(fs),
+      cache: {},
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      dir,
+      gitdir,
+      ref,
+      url,
+      remote,
+      remoteRef,
+      fastForwardOnly: true,
+      corsProxy,
+      singleBranch,
+      headers,
+      author: thisWillNotBeUsed,
+      committer: thisWillNotBeUsed,
+    })
+  } catch (err) {
+    err.caller = 'git.fastForward';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {object} FetchResult - The object returned has the following schema:
+ * @property {string | null} defaultBranch - The branch that is cloned if no branch is specified
+ * @property {string | null} fetchHead - The SHA-1 object id of the fetched head commit
+ * @property {string | null} fetchHeadDescription - a textual description of the branch that was fetched
+ * @property {Object<string, string>} [headers] - The HTTP response headers returned by the git server
+ * @property {string[]} [pruned] - A list of branches that were pruned, if you provided the `prune` parameter
+ *
+ */
+
+/**
+ * Fetch commits from a remote repository
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {MessageCallback} [args.onMessage] - optional message event callback
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.url] - The URL of the remote repository. The default is the value set in the git config for that remote.
+ * @param {string} [args.remote] - If URL is not specified, determines which remote to use.
+ * @param {boolean} [args.singleBranch = false] - Instead of the default behavior of fetching all the branches, only fetch a single branch.
+ * @param {string} [args.ref] - Which branch to fetch if `singleBranch` is true. By default this is the current branch or the remote's default branch.
+ * @param {string} [args.remoteRef] - The name of the branch on the remote to fetch if `singleBranch` is true. By default this is the configured remote tracking branch.
+ * @param {boolean} [args.tags = false] - Also fetch tags
+ * @param {number} [args.depth] - Integer. Determines how much of the git repository's history to retrieve
+ * @param {boolean} [args.relative = false] - Changes the meaning of `depth` to be measured from the current shallow depth rather than from the branch tip.
+ * @param {Date} [args.since] - Only fetch commits created after the given date. Mutually exclusive with `depth`.
+ * @param {string[]} [args.exclude = []] - A list of branches or tags. Instructs the remote server not to send us any commits reachable from these refs.
+ * @param {boolean} [args.prune] - Delete local remote-tracking branches that are not present on the remote
+ * @param {boolean} [args.pruneTags] - Prune local tags that don’t exist on the remote, and force-update those tags that differ
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ *
+ * @returns {Promise<FetchResult>} Resolves successfully when fetch completes
+ * @see FetchResult
+ *
+ * @example
+ * let result = await git.fetch({
+ *   fs,
+ *   http,
+ *   dir: '/tutorial',
+ *   corsProxy: 'https://cors.isomorphic-git.org',
+ *   url: 'https://github.com/isomorphic-git/isomorphic-git',
+ *   ref: 'main',
+ *   depth: 1,
+ *   singleBranch: true,
+ *   tags: false
+ * })
+ * console.log(result)
+ *
+ */
+async function fetch({
+  fs,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  remote,
+  remoteRef,
+  url,
+  corsProxy,
+  depth = null,
+  since = null,
+  exclude = [],
+  relative = false,
+  tags = false,
+  singleBranch = false,
+  headers = {},
+  prune = false,
+  pruneTags = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('http', http);
+    assertParameter('gitdir', gitdir);
+
+    return await _fetch({
+      fs: new FileSystem(fs),
+      cache: {},
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      gitdir,
+      ref,
+      remote,
+      remoteRef,
+      url,
+      corsProxy,
+      depth,
+      since,
+      exclude,
+      relative,
+      tags,
+      singleBranch,
+      headers,
+      prune,
+      pruneTags,
+    })
+  } catch (err) {
+    err.caller = 'git.fetch';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Find the merge base for a set of commits
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string[]} args.oids - Which commits
+ *
+ */
+async function findMergeBase({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oids,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oids', oids);
+
+    return await _findMergeBase({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oids,
+    })
+  } catch (err) {
+    err.caller = 'git.findMergeBase';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Find the root git directory
+ *
+ * Starting at `filepath`, walks upward until it finds a directory that contains a subdirectory called '.git'.
+ *
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.filepath
+ *
+ * @returns {Promise<string>} Resolves successfully with a root git directory path
+ */
+async function _findRoot({ fs, filepath }) {
+  if (await fs.exists(join(filepath, '.git'))) {
+    return filepath
+  } else {
+    const parent = dirname(filepath);
+    if (parent === filepath) {
+      throw new NotFoundError(`git root for ${filepath}`)
+    }
+    return _findRoot({ fs, filepath: parent })
+  }
+}
+
+// @ts-check
+
+/**
+ * Find the root git directory
+ *
+ * Starting at `filepath`, walks upward until it finds a directory that contains a subdirectory called '.git'.
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} args.filepath - The file directory to start searching in.
+ *
+ * @returns {Promise<string>} Resolves successfully with a root git directory path
+ * @throws {NotFoundError}
+ *
+ * @example
+ * let gitroot = await git.findRoot({
+ *   fs,
+ *   filepath: '/tutorial/src/utils'
+ * })
+ * console.log(gitroot)
+ *
+ */
+async function findRoot({ fs, filepath }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('filepath', filepath);
+
+    return await _findRoot({ fs: new FileSystem(fs), filepath })
+  } catch (err) {
+    err.caller = 'git.findRoot';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Read an entry from the git config files.
+ *
+ * *Caveats:*
+ * - Currently only the local `$GIT_DIR/config` file can be read or written. However support for the global `~/.gitconfig` and system `$(prefix)/etc/gitconfig` will be added in the future.
+ * - The current parser does not support the more exotic features of the git-config file format such as `[include]` and `[includeIf]`.
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.path - The key of the git config entry
+ *
+ * @returns {Promise<any>} Resolves with the config value
+ *
+ * @example
+ * // Read config value
+ * let value = await git.getConfig({
+ *   fs,
+ *   dir: '/tutorial',
+ *   path: 'remote.origin.url'
+ * })
+ * console.log(value)
+ *
+ */
+async function getConfig({ fs, dir, gitdir = join(dir, '.git'), path }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('path', path);
+
+    return await _getConfig({
+      fs: new FileSystem(fs),
+      gitdir,
+      path,
+    })
+  } catch (err) {
+    err.caller = 'git.getConfig';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {Object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.path
+ *
+ * @returns {Promise<Array<any>>} Resolves with an array of the config value
+ *
+ */
+async function _getConfigAll({ fs, gitdir, path }) {
+  const config = await GitConfigManager.get({ fs, gitdir });
+  return config.getall(path)
+}
+
+// @ts-check
+
+/**
+ * Read a multi-valued entry from the git config files.
+ *
+ * *Caveats:*
+ * - Currently only the local `$GIT_DIR/config` file can be read or written. However support for the global `~/.gitconfig` and system `$(prefix)/etc/gitconfig` will be added in the future.
+ * - The current parser does not support the more exotic features of the git-config file format such as `[include]` and `[includeIf]`.
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.path - The key of the git config entry
+ *
+ * @returns {Promise<Array<any>>} Resolves with the config value
+ *
+ */
+async function getConfigAll({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  path,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('path', path);
+
+    return await _getConfigAll({
+      fs: new FileSystem(fs),
+      gitdir,
+      path,
+    })
+  } catch (err) {
+    err.caller = 'git.getConfigAll';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} GetRemoteInfoResult - The object returned has the following schema:
+ * @property {string[]} capabilities - The list of capabilities returned by the server (part of the Git protocol)
+ * @property {Object} [refs]
+ * @property {Object<string, string>} [refs.heads] - The branches on the remote
+ * @property {Object<string, string>} [refs.pull] - The special branches representing pull requests (non-standard)
+ * @property {Object<string, string>} [refs.tags] - The tags on the remote
+ *
+ */
+
+/**
+ * List a remote servers branches, tags, and capabilities.
+ *
+ * This is a rare command that doesn't require an `fs`, `dir`, or even `gitdir` argument.
+ * It just communicates to a remote git server, using the first step of the `git-upload-pack` handshake, but stopping short of fetching the packfile.
+ *
+ * @param {object} args
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.url - The URL of the remote repository. Will be gotten from gitconfig if absent.
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {boolean} [args.forPush = false] - By default, the command queries the 'fetch' capabilities. If true, it will ask for the 'push' capabilities.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ *
+ * @returns {Promise<GetRemoteInfoResult>} Resolves successfully with an object listing the branches, tags, and capabilities of the remote.
+ * @see GetRemoteInfoResult
+ *
+ * @example
+ * let info = await git.getRemoteInfo({
+ *   http,
+ *   url:
+ *     "https://cors.isomorphic-git.org/github.com/isomorphic-git/isomorphic-git.git"
+ * });
+ * console.log(info);
+ *
+ */
+async function getRemoteInfo({
+  http,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  corsProxy,
+  url,
+  headers = {},
+  forPush = false,
+}) {
+  try {
+    assertParameter('http', http);
+    assertParameter('url', url);
+
+    const GitRemoteHTTP = GitRemoteManager.getRemoteHelperFor({ url });
+    const remote = await GitRemoteHTTP.discover({
+      http,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      corsProxy,
+      service: forPush ? 'git-receive-pack' : 'git-upload-pack',
+      url,
+      headers,
+      protocolVersion: 1,
+    });
+
+    // Note: remote.capabilities, remote.refs, and remote.symrefs are Set and Map objects,
+    // but one of the objectives of the public API is to always return JSON-compatible objects
+    // so we must JSONify them.
+    const result = {
+      capabilities: [...remote.capabilities],
+    };
+    // Convert the flat list into an object tree, because I figure 99% of the time
+    // that will be easier to use.
+    for (const [ref, oid] of remote.refs) {
+      const parts = ref.split('/');
+      const last = parts.pop();
+      let o = result;
+      for (const part of parts) {
+        o[part] = o[part] || {};
+        o = o[part];
+      }
+      o[last] = oid;
+    }
+    // Merge symrefs on top of refs to more closely match actual git repo layouts
+    for (const [symref, ref] of remote.symrefs) {
+      const parts = symref.split('/');
+      const last = parts.pop();
+      let o = result;
+      for (const part of parts) {
+        o[part] = o[part] || {};
+        o = o[part];
+      }
+      o[last] = ref;
+    }
+    return result
+  } catch (err) {
+    err.caller = 'git.getRemoteInfo';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {any} remote
+ * @param {string} prefix
+ * @param {boolean} symrefs
+ * @param {boolean} peelTags
+ * @returns {ServerRef[]}
+ */
+function formatInfoRefs(remote, prefix, symrefs, peelTags) {
+  const refs = [];
+  for (const [key, value] of remote.refs) {
+    if (prefix && !key.startsWith(prefix)) continue
+
+    if (key.endsWith('^{}')) {
+      if (peelTags) {
+        const _key = key.replace('^{}', '');
+        // Peeled tags are almost always listed immediately after the original tag
+        const last = refs[refs.length - 1];
+        const r = last.ref === _key ? last : refs.find(x => x.ref === _key);
+        if (r === undefined) {
+          throw new Error('I did not expect this to happen')
+        }
+        r.peeled = value;
+      }
+      continue
+    }
+    /** @type ServerRef */
+    const ref = { ref: key, oid: value };
+    if (symrefs) {
+      if (remote.symrefs.has(key)) {
+        ref.target = remote.symrefs.get(key);
+      }
+    }
+    refs.push(ref);
+  }
+  return refs
+}
+
+// @ts-check
+
+/**
+ * @typedef {Object} GetRemoteInfo2Result - This object has the following schema:
+ * @property {1 | 2} protocolVersion - Git protocol version the server supports
+ * @property {Object<string, string | true>} capabilities - An object of capabilities represented as keys and values
+ * @property {ServerRef[]} [refs] - Server refs (they get returned by protocol version 1 whether you want them or not)
+ */
+
+/**
+ * List a remote server's capabilities.
+ *
+ * This is a rare command that doesn't require an `fs`, `dir`, or even `gitdir` argument.
+ * It just communicates to a remote git server, determining what protocol version, commands, and features it supports.
+ *
+ * > The successor to [`getRemoteInfo`](./getRemoteInfo.md), this command supports Git Wire Protocol Version 2.
+ * > Therefore its return type is more complicated as either:
+ * >
+ * > - v1 capabilities (and refs) or
+ * > - v2 capabilities (and no refs)
+ * >
+ * > are returned.
+ * > If you just care about refs, use [`listServerRefs`](./listServerRefs.md)
+ *
+ * @param {object} args
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.url - The URL of the remote repository. Will be gotten from gitconfig if absent.
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {boolean} [args.forPush = false] - By default, the command queries the 'fetch' capabilities. If true, it will ask for the 'push' capabilities.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ * @param {1 | 2} [args.protocolVersion = 2] - Which version of the Git Protocol to use.
+ *
+ * @returns {Promise<GetRemoteInfo2Result>} Resolves successfully with an object listing the capabilities of the remote.
+ * @see GetRemoteInfo2Result
+ * @see ServerRef
+ *
+ * @example
+ * let info = await git.getRemoteInfo2({
+ *   http,
+ *   corsProxy: "https://cors.isomorphic-git.org",
+ *   url: "https://github.com/isomorphic-git/isomorphic-git.git"
+ * });
+ * console.log(info);
+ *
+ */
+async function getRemoteInfo2({
+  http,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  corsProxy,
+  url,
+  headers = {},
+  forPush = false,
+  protocolVersion = 2,
+}) {
+  try {
+    assertParameter('http', http);
+    assertParameter('url', url);
+
+    const GitRemoteHTTP = GitRemoteManager.getRemoteHelperFor({ url });
+    const remote = await GitRemoteHTTP.discover({
+      http,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      corsProxy,
+      service: forPush ? 'git-receive-pack' : 'git-upload-pack',
+      url,
+      headers,
+      protocolVersion,
+    });
+
+    if (remote.protocolVersion === 2) {
+      /** @type GetRemoteInfo2Result */
+      return {
+        protocolVersion: remote.protocolVersion,
+        capabilities: remote.capabilities2,
+      }
+    }
+
+    // Note: remote.capabilities, remote.refs, and remote.symrefs are Set and Map objects,
+    // but one of the objectives of the public API is to always return JSON-compatible objects
+    // so we must JSONify them.
+    /** @type Object<string, true> */
+    const capabilities = {};
+    for (const cap of remote.capabilities) {
+      const [key, value] = cap.split('=');
+      if (value) {
+        capabilities[key] = value;
+      } else {
+        capabilities[key] = true;
+      }
+    }
+    /** @type GetRemoteInfo2Result */
+    return {
+      protocolVersion: 1,
+      capabilities,
+      refs: formatInfoRefs(remote, undefined, true, true),
+    }
+  } catch (err) {
+    err.caller = 'git.getRemoteInfo2';
+    throw err
+  }
+}
+
+async function hashObject({
+  type,
+  object,
+  format = 'content',
+  oid = undefined,
+}) {
+  if (format !== 'deflated') {
+    if (format !== 'wrapped') {
+      object = GitObject.wrap({ type, object });
+    }
+    oid = await shasum(object);
+  }
+  return { oid, object }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {object} HashBlobResult - The object returned has the following schema:
+ * @property {string} oid - The SHA-1 object id
+ * @property {'blob'} type - The type of the object
+ * @property {Uint8Array} object - The wrapped git object (the thing that is hashed)
+ * @property {'wrapped'} format - The format of the object
+ *
+ */
+
+/**
+ * Compute what the SHA-1 object id of a file would be
+ *
+ * @param {object} args
+ * @param {Uint8Array|string} args.object - The object to write. If `object` is a String then it will be converted to a Uint8Array using UTF-8 encoding.
+ *
+ * @returns {Promise<HashBlobResult>} Resolves successfully with the SHA-1 object id and the wrapped object Uint8Array.
+ * @see HashBlobResult
+ *
+ * @example
+ * let { oid, type, object, format } = await git.hashBlob({
+ *   object: 'Hello world!',
+ * })
+ *
+ * console.log('oid', oid)
+ * console.log('type', type)
+ * console.log('object', object)
+ * console.log('format', format)
+ *
+ */
+async function hashBlob({ object }) {
+  try {
+    assertParameter('object', object);
+
+    // Convert object to buffer
+    if (typeof object === 'string') {
+      object = Buffer.from(object, 'utf8');
+    } else {
+      object = Buffer.from(object);
+    }
+
+    const type = 'blob';
+    const { oid, object: _object } = await hashObject({
+      type: 'blob',
+      format: 'content',
+      object,
+    });
+    return { oid, type, object: new Uint8Array(_object), format: 'wrapped' }
+  } catch (err) {
+    err.caller = 'git.hashBlob';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {string} args.dir
+ * @param {string} args.gitdir
+ * @param {string} args.filepath
+ *
+ * @returns {Promise<{oids: string[]}>}
+ */
+async function _indexPack({
+  fs,
+  cache,
+  onProgress,
+  dir,
+  gitdir,
+  filepath,
+}) {
+  try {
+    filepath = join(dir, filepath);
+    const pack = await fs.read(filepath);
+    const getExternalRefDelta = oid => _readObject({ fs, cache, gitdir, oid });
+    const idx = await GitPackIndex.fromPack({
+      pack,
+      getExternalRefDelta,
+      onProgress,
+    });
+    await fs.write(filepath.replace(/\.pack$/, '.idx'), await idx.toBuffer());
+    return {
+      oids: [...idx.hashes],
+    }
+  } catch (err) {
+    err.caller = 'git.indexPack';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Create the .idx file for a given .pack file
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.filepath - The path to the .pack file to index
+ *
+ * @returns {Promise<{oids: string[]}>} Resolves with a list of the SHA-1 object ids contained in the packfile
+ *
+ * @example
+ * let packfiles = await fs.promises.readdir('/tutorial/.git/objects/pack')
+ * packfiles = packfiles.filter(name => name.endsWith('.pack'))
+ * console.log('packfiles', packfiles)
+ *
+ * const { oids } = await git.indexPack({
+ *   fs,
+ *   dir: '/tutorial',
+ *   filepath: `.git/objects/pack/${packfiles[0]}`,
+ *   async onProgress (evt) {
+ *     console.log(`${evt.phase}: ${evt.loaded} / ${evt.total}`)
+ *   }
+ * })
+ * console.log(oids)
+ *
+ */
+async function indexPack({
+  fs,
+  onProgress,
+  dir,
+  gitdir = join(dir, '.git'),
+  filepath,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('dir', dir);
+    assertParameter('gitdir', dir);
+    assertParameter('filepath', filepath);
+
+    return await _indexPack({
+      fs: new FileSystem(fs),
+      cache: {},
+      onProgress,
+      dir,
+      gitdir,
+      filepath,
+    })
+  } catch (err) {
+    err.caller = 'git.indexPack';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Initialize a new repository
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {boolean} [args.bare = false] - Initialize a bare repository
+ * @param {string} [args.defaultBranch = 'master'] - The name of the default branch (might be changed to a required argument in 2.0.0)
+ * @returns {Promise<void>}  Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.init({ fs, dir: '/tutorial' })
+ * console.log('done')
+ *
+ */
+async function init({
+  fs,
+  bare = false,
+  dir,
+  gitdir = bare ? dir : join(dir, '.git'),
+  defaultBranch = 'master',
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    if (!bare) {
+      assertParameter('dir', dir);
+    }
+
+    return await _init({
+      fs: new FileSystem(fs),
+      bare,
+      dir,
+      gitdir,
+      defaultBranch,
+    })
+  } catch (err) {
+    err.caller = 'git.init';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ * @param {string} args.ancestor
+ * @param {number} args.depth - Maximum depth to search before giving up. -1 means no maximum depth.
+ *
+ * @returns {Promise<boolean>}
+ */
+async function _isDescendent({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  ancestor,
+  depth,
+}) {
+  const shallows = await GitShallowManager.read({ fs, gitdir });
+  if (!oid) {
+    throw new MissingParameterError('oid')
+  }
+  if (!ancestor) {
+    throw new MissingParameterError('ancestor')
+  }
+  // If you don't like this behavior, add your own check.
+  // Edge cases are hard to define a perfect solution.
+  if (oid === ancestor) return false
+  // We do not use recursion here, because that would lead to depth-first traversal,
+  // and we want to maintain a breadth-first traversal to avoid hitting shallow clone depth cutoffs.
+  const queue = [oid];
+  const visited = new Set();
+  let searchdepth = 0;
+  while (queue.length) {
+    if (searchdepth++ === depth) {
+      throw new MaxDepthError(depth)
+    }
+    const oid = queue.shift();
+    const { type, object } = await _readObject({
+      fs,
+      cache,
+      gitdir,
+      oid,
+    });
+    if (type !== 'commit') {
+      throw new ObjectTypeError(oid, type, 'commit')
+    }
+    const commit = GitCommit.from(object).parse();
+    // Are any of the parents the sought-after ancestor?
+    for (const parent of commit.parent) {
+      if (parent === ancestor) return true
+    }
+    // If not, add them to heads (unless we know this is a shallow commit)
+    if (!shallows.has(oid)) {
+      for (const parent of commit.parent) {
+        if (!visited.has(parent)) {
+          queue.push(parent);
+          visited.add(parent);
+        }
+      }
+    }
+    // Eventually, we'll travel entire tree to the roots where all the parents are empty arrays,
+    // or hit the shallow depth and throw an error. Excluding the possibility of grafts, or
+    // different branches cloned to different depths, you would hit this error at the same time
+    // for all parents, so trying to continue is futile.
+  }
+  return false
+}
+
+// @ts-check
+
+/**
+ * Check whether a git commit is descended from another
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The descendent commit
+ * @param {string} args.ancestor - The (proposed) ancestor commit
+ * @param {number} [args.depth = -1] - Maximum depth to search before giving up. -1 means no maximum depth.
+ *
+ * @returns {Promise<boolean>} Resolves to true if `oid` is a descendent of `ancestor`
+ *
+ * @example
+ * let oid = await git.resolveRef({ fs, dir: '/tutorial', ref: 'main' })
+ * let ancestor = await git.resolveRef({ fs, dir: '/tutorial', ref: 'v0.20.0' })
+ * console.log(oid, ancestor)
+ * await git.isDescendent({ fs, dir: '/tutorial', oid, ancestor, depth: -1 })
+ *
+ */
+async function isDescendent({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oid,
+  ancestor,
+  depth = -1,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+    assertParameter('ancestor', ancestor);
+
+    return await _isDescendent({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+      ancestor,
+      depth,
+    })
+  } catch (err) {
+    err.caller = 'git.isDescendent';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * List branches
+ *
+ * By default it lists local branches. If a 'remote' is specified, it lists the remote's branches. When listing remote branches, the HEAD branch is not filtered out, so it may be included in the list of results.
+ *
+ * Note that specifying a remote does not actually contact the server and update the list of branches.
+ * If you want an up-to-date list, first do a `fetch` to that remote.
+ * (Which branch you fetch doesn't matter - the list of branches available on the remote is updated during the fetch handshake.)
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.remote] - Instead of the branches in `refs/heads`, list the branches in `refs/remotes/${remote}`.
+ *
+ * @returns {Promise<Array<string>>} Resolves successfully with an array of branch names
+ *
+ * @example
+ * let branches = await git.listBranches({ fs, dir: '/tutorial' })
+ * console.log(branches)
+ * let remoteBranches = await git.listBranches({ fs, dir: '/tutorial', remote: 'origin' })
+ * console.log(remoteBranches)
+ *
+ */
+async function listBranches({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  remote,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+
+    return GitRefManager.listBranches({
+      fs: new FileSystem(fs),
+      gitdir,
+      remote,
+    })
+  } catch (err) {
+    err.caller = 'git.listBranches';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {string} args.gitdir
+ * @param {string} [args.ref]
+ *
+ * @returns {Promise<Array<string>>}
+ */
+async function _listFiles({ fs, gitdir, ref, cache }) {
+  if (ref) {
+    const oid = await GitRefManager.resolve({ gitdir, fs, ref });
+    const filenames = [];
+    await accumulateFilesFromOid({
+      fs,
+      cache,
+      gitdir,
+      oid,
+      filenames,
+      prefix: '',
+    });
+    return filenames
+  } else {
+    return GitIndexManager.acquire({ fs, gitdir, cache }, async function(
+      index
+    ) {
+      return index.entries.map(x => x.path)
+    })
+  }
+}
+
+async function accumulateFilesFromOid({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  filenames,
+  prefix,
+}) {
+  const { tree } = await _readTree({ fs, cache, gitdir, oid });
+  // TODO: Use `walk` to do this. Should be faster.
+  for (const entry of tree) {
+    if (entry.type === 'tree') {
+      await accumulateFilesFromOid({
+        fs,
+        cache,
+        gitdir,
+        oid: entry.oid,
+        filenames,
+        prefix: join(prefix, entry.path),
+      });
+    } else {
+      filenames.push(join(prefix, entry.path));
+    }
+  }
+}
+
+// @ts-check
+
+/**
+ * List all the files in the git index or a commit
+ *
+ * > Note: This function is efficient for listing the files in the staging area, but listing all the files in a commit requires recursively walking through the git object store.
+ * > If you do not require a complete list of every file, better performance can be achieved by using [walk](./walk) and ignoring subdirectories you don't care about.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - Return a list of all the files in the commit at `ref` instead of the files currently in the git index (aka staging area)
+ *
+ * @returns {Promise<Array<string>>} Resolves successfully with an array of filepaths
+ *
+ * @example
+ * // All the files in the previous commit
+ * let files = await git.listFiles({ fs, dir: '/tutorial', ref: 'HEAD' })
+ * console.log(files)
+ * // All the files in the current staging area
+ * files = await git.listFiles({ fs, dir: '/tutorial' })
+ * console.log(files)
+ *
+ */
+async function listFiles({ fs, dir, gitdir = join(dir, '.git'), ref }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+
+    return await _listFiles({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      ref,
+    })
+  } catch (err) {
+    err.caller = 'git.listFiles';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * List all the object notes
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ *
+ * @returns {Promise<Array<{target: string, note: string}>>}
+ */
+
+async function _listNotes({ fs, cache, gitdir, ref }) {
+  // Get the current note commit
+  let parent;
+  try {
+    parent = await GitRefManager.resolve({ gitdir, fs, ref });
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      return []
+    }
+  }
+
+  // Create the current note tree
+  const result = await _readTree({
+    fs,
+    cache,
+    gitdir,
+    oid: parent,
+  });
+
+  // Format the tree entries
+  const notes = result.tree.map(entry => ({
+    target: entry.path,
+    note: entry.oid,
+  }));
+  return notes
+}
+
+// @ts-check
+
+/**
+ * List all the object notes
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - The notes ref to look under
+ *
+ * @returns {Promise<Array<{target: string, note: string}>>} Resolves successfully with an array of entries containing SHA-1 object ids of the note and the object the note targets
+ */
+
+async function listNotes({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'refs/notes/commits',
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+
+    return await _listNotes({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      ref,
+    })
+  } catch (err) {
+    err.caller = 'git.listNotes';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ *
+ * @returns {Promise<Array<{remote: string, url: string}>>}
+ */
+async function _listRemotes({ fs, gitdir }) {
+  const config = await GitConfigManager.get({ fs, gitdir });
+  const remoteNames = await config.getSubsections('remote');
+  const remotes = Promise.all(
+    remoteNames.map(async remote => {
+      const url = await config.get(`remote.${remote}.url`);
+      return { remote, url }
+    })
+  );
+  return remotes
+}
+
+// @ts-check
+
+/**
+ * List remotes
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ *
+ * @returns {Promise<Array<{remote: string, url: string}>>} Resolves successfully with an array of `{remote, url}` objects
+ *
+ * @example
+ * let remotes = await git.listRemotes({ fs, dir: '/tutorial' })
+ * console.log(remotes)
+ *
+ */
+async function listRemotes({ fs, dir, gitdir = join(dir, '.git') }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+
+    return await _listRemotes({
+      fs: new FileSystem(fs),
+      gitdir,
+    })
+  } catch (err) {
+    err.caller = 'git.listRemotes';
+    throw err
+  }
+}
+
+/**
+ * @typedef {Object} ServerRef - This object has the following schema:
+ * @property {string} ref - The name of the ref
+ * @property {string} oid - The SHA-1 object id the ref points to
+ * @property {string} [target] - The target ref pointed to by a symbolic ref
+ * @property {string} [peeled] - If the oid is the SHA-1 object id of an annotated tag, this is the SHA-1 object id that the annotated tag points to
+ */
+
+async function parseListRefsResponse(stream) {
+  const read = GitPktLine.streamReader(stream);
+
+  // TODO: when we re-write everything to minimize memory usage,
+  // we could make this a generator
+  const refs = [];
+
+  let line;
+  while (true) {
+    line = await read();
+    if (line === true) break
+    if (line === null) continue
+    line = line.toString('utf8').replace(/\n$/, '');
+    const [oid, ref, ...attrs] = line.split(' ');
+    const r = { ref, oid };
+    for (const attr of attrs) {
+      const [name, value] = attr.split(':');
+      if (name === 'symref-target') {
+        r.target = value;
+      } else if (name === 'peeled') {
+        r.peeled = value;
+      }
+    }
+    refs.push(r);
+  }
+
+  return refs
+}
+
+/**
+ * @param {object} args
+ * @param {string} [args.prefix] - Only list refs that start with this prefix
+ * @param {boolean} [args.symrefs = false] - Include symbolic ref targets
+ * @param {boolean} [args.peelTags = false] - Include peeled tags values
+ * @returns {Uint8Array[]}
+ */
+async function writeListRefsRequest({ prefix, symrefs, peelTags }) {
+  const packstream = [];
+  // command
+  packstream.push(GitPktLine.encode('command=ls-refs\n'));
+  // capability-list
+  packstream.push(GitPktLine.encode(`agent=${pkg.agent}\n`));
+  // [command-args]
+  if (peelTags || symrefs || prefix) {
+    packstream.push(GitPktLine.delim());
+  }
+  if (peelTags) packstream.push(GitPktLine.encode('peel'));
+  if (symrefs) packstream.push(GitPktLine.encode('symrefs'));
+  if (prefix) packstream.push(GitPktLine.encode(`ref-prefix ${prefix}`));
+  packstream.push(GitPktLine.flush());
+  return packstream
+}
+
+// @ts-check
+
+/**
+ * Fetch a list of refs (branches, tags, etc) from a server.
+ *
+ * This is a rare command that doesn't require an `fs`, `dir`, or even `gitdir` argument.
+ * It just requires an `http` argument.
+ *
+ * ### About `protocolVersion`
+ *
+ * There's a rather fun trade-off between Git Protocol Version 1 and Git Protocol Version 2.
+ * Version 2 actually requires 2 HTTP requests instead of 1, making it similar to fetch or push in that regard.
+ * However, version 2 supports server-side filtering by prefix, whereas that filtering is done client-side in version 1.
+ * Which protocol is most efficient therefore depends on the number of refs on the remote, the latency of the server, and speed of the network connection.
+ * For an small repos (or fast Internet connections), the requirement to make two trips to the server makes protocol 2 slower.
+ * But for large repos (or slow Internet connections), the decreased payload size of the second request makes up for the additional request.
+ *
+ * Hard numbers vary by situation, but here's some numbers from my machine:
+ *
+ * Using isomorphic-git in a browser, with a CORS proxy, listing only the branches (refs/heads) of https://github.com/isomorphic-git/isomorphic-git
+ * - Protocol Version 1 took ~300ms and transfered 84 KB.
+ * - Protocol Version 2 took ~500ms and transfered 4.1 KB.
+ *
+ * Using isomorphic-git in a browser, with a CORS proxy, listing only the branches (refs/heads) of https://gitlab.com/gitlab-org/gitlab
+ * - Protocol Version 1 took ~4900ms and transfered 9.41 MB.
+ * - Protocol Version 2 took ~1280ms and transfered 433 KB.
+ *
+ * Finally, there is a fun quirk regarding the `symrefs` parameter.
+ * Protocol Version 1 will generally only return the `HEAD` symref and not others.
+ * Historically, this meant that servers don't use symbolic refs except for `HEAD`, which is used to point at the "default branch".
+ * However Protocol Version 2 can return *all* the symbolic refs on the server.
+ * So if you are running your own git server, you could take advantage of that I guess.
+ *
+ * #### TL;DR
+ * If you are _not_ taking advantage of `prefix` I would recommend `protocolVersion: 1`.
+ * Otherwise, I recommend to use the default which is `protocolVersion: 2`.
+ *
+ * @param {object} args
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.url - The URL of the remote repository. Will be gotten from gitconfig if absent.
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {boolean} [args.forPush = false] - By default, the command queries the 'fetch' capabilities. If true, it will ask for the 'push' capabilities.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ * @param {1 | 2} [args.protocolVersion = 2] - Which version of the Git Protocol to use.
+ * @param {string} [args.prefix] - Only list refs that start with this prefix
+ * @param {boolean} [args.symrefs = false] - Include symbolic ref targets
+ * @param {boolean} [args.peelTags = false] - Include annotated tag peeled targets
+ *
+ * @returns {Promise<ServerRef[]>} Resolves successfully with an array of ServerRef objects
+ * @see ServerRef
+ *
+ * @example
+ * // List all the branches on a repo
+ * let refs = await git.listServerRefs({
+ *   http,
+ *   corsProxy: "https://cors.isomorphic-git.org",
+ *   url: "https://github.com/isomorphic-git/isomorphic-git.git",
+ *   prefix: "refs/heads/",
+ * });
+ * console.log(refs);
+ *
+ * @example
+ * // Get the default branch on a repo
+ * let refs = await git.listServerRefs({
+ *   http,
+ *   corsProxy: "https://cors.isomorphic-git.org",
+ *   url: "https://github.com/isomorphic-git/isomorphic-git.git",
+ *   prefix: "HEAD",
+ *   symrefs: true,
+ * });
+ * console.log(refs);
+ *
+ * @example
+ * // List all the tags on a repo
+ * let refs = await git.listServerRefs({
+ *   http,
+ *   corsProxy: "https://cors.isomorphic-git.org",
+ *   url: "https://github.com/isomorphic-git/isomorphic-git.git",
+ *   prefix: "refs/tags/",
+ *   peelTags: true,
+ * });
+ * console.log(refs);
+ *
+ * @example
+ * // List all the pull requests on a repo
+ * let refs = await git.listServerRefs({
+ *   http,
+ *   corsProxy: "https://cors.isomorphic-git.org",
+ *   url: "https://github.com/isomorphic-git/isomorphic-git.git",
+ *   prefix: "refs/pull/",
+ * });
+ * console.log(refs);
+ *
+ */
+async function listServerRefs({
+  http,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  corsProxy,
+  url,
+  headers = {},
+  forPush = false,
+  protocolVersion = 2,
+  prefix,
+  symrefs,
+  peelTags,
+}) {
+  try {
+    assertParameter('http', http);
+    assertParameter('url', url);
+
+    const remote = await GitRemoteHTTP.discover({
+      http,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      corsProxy,
+      service: forPush ? 'git-receive-pack' : 'git-upload-pack',
+      url,
+      headers,
+      protocolVersion,
+    });
+
+    if (remote.protocolVersion === 1) {
+      return formatInfoRefs(remote, prefix, symrefs, peelTags)
+    }
+
+    // Protocol Version 2
+    const body = await writeListRefsRequest({ prefix, symrefs, peelTags });
+
+    const res = await GitRemoteHTTP.connect({
+      http,
+      auth: remote.auth,
+      headers,
+      corsProxy,
+      service: forPush ? 'git-receive-pack' : 'git-upload-pack',
+      url,
+      body,
+    });
+
+    return parseListRefsResponse(res.body)
+  } catch (err) {
+    err.caller = 'git.listServerRefs';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * List tags
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ *
+ * @returns {Promise<Array<string>>} Resolves successfully with an array of tag names
+ *
+ * @example
+ * let tags = await git.listTags({ fs, dir: '/tutorial' })
+ * console.log(tags)
+ *
+ */
+async function listTags({ fs, dir, gitdir = join(dir, '.git') }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    return GitRefManager.listTags({ fs: new FileSystem(fs), gitdir })
+  } catch (err) {
+    err.caller = 'git.listTags';
+    throw err
+  }
+}
+
+async function resolveCommit({ fs, cache, gitdir, oid }) {
+  const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+  // Resolve annotated tag objects to whatever
+  if (type === 'tag') {
+    oid = GitAnnotatedTag.from(object).parse().object;
+    return resolveCommit({ fs, cache, gitdir, oid })
+  }
+  if (type !== 'commit') {
+    throw new ObjectTypeError(oid, type, 'commit')
+  }
+  return { commit: GitCommit.from(object), oid }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ *
+ * @returns {Promise<ReadCommitResult>} Resolves successfully with a git commit object
+ * @see ReadCommitResult
+ * @see CommitObject
+ *
+ */
+async function _readCommit({ fs, cache, gitdir, oid }) {
+  const { commit, oid: commitOid } = await resolveCommit({
+    fs,
+    cache,
+    gitdir,
+    oid,
+  });
+  const result = {
+    oid: commitOid,
+    commit: commit.parse(),
+    payload: commit.withoutSignature(),
+  };
+  // @ts-ignore
+  return result
+}
+
+function compareAge(a, b) {
+  return a.committer.timestamp - b.committer.timestamp
+}
+
+// @ts-check
+
+/**
+ * Get commit descriptions from the git history
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.ref
+ * @param {number|void} args.depth
+ * @param {Date|void} args.since
+ *
+ * @returns {Promise<Array<ReadCommitResult>>}
+ */
+async function _log({ fs, cache, gitdir, ref, depth, since }) {
+  const sinceTimestamp =
+    typeof since === 'undefined'
+      ? undefined
+      : Math.floor(since.valueOf() / 1000);
+  // TODO: In the future, we may want to have an API where we return a
+  // async iterator that emits commits.
+  const commits = [];
+  const shallowCommits = await GitShallowManager.read({ fs, gitdir });
+  const oid = await GitRefManager.resolve({ fs, gitdir, ref });
+  const tips = [await _readCommit({ fs, cache, gitdir, oid })];
+
+  while (true) {
+    const commit = tips.pop();
+
+    // Stop the log if we've hit the age limit
+    if (
+      sinceTimestamp !== undefined &&
+      commit.commit.committer.timestamp <= sinceTimestamp
+    ) {
+      break
+    }
+
+    commits.push(commit);
+
+    // Stop the loop if we have enough commits now.
+    if (depth !== undefined && commits.length === depth) break
+
+    // If this is not a shallow commit...
+    if (!shallowCommits.has(commit.oid)) {
+      // Add the parents of this commit to the queue
+      // Note: for the case of a commit with no parents, it will concat an empty array, having no net effect.
+      for (const oid of commit.commit.parent) {
+        const commit = await _readCommit({ fs, cache, gitdir, oid });
+        if (!tips.map(commit => commit.oid).includes(commit.oid)) {
+          tips.push(commit);
+        }
+      }
+    }
+
+    // Stop the loop if there are no more commit parents
+    if (tips.length === 0) break
+
+    // Process tips in order by age
+    tips.sort((a, b) => compareAge(a.commit, b.commit));
+  }
+  return commits
+}
+
+// @ts-check
+
+/**
+ * Get commit descriptions from the git history
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref = 'HEAD'] - The commit to begin walking backwards through the history from
+ * @param {number} [args.depth] - Limit the number of commits returned. No limit by default.
+ * @param {Date} [args.since] - Return history newer than the given date. Can be combined with `depth` to get whichever is shorter.
+ *
+ * @returns {Promise<Array<ReadCommitResult>>} Resolves to an array of ReadCommitResult objects
+ * @see ReadCommitResult
+ * @see CommitObject
+ *
+ * @example
+ * let commits = await git.log({
+ *   fs,
+ *   dir: '/tutorial',
+ *   depth: 5,
+ *   ref: 'main'
+ * })
+ * console.log(commits)
+ *
+ */
+async function log({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'HEAD',
+  depth,
+  since, // Date
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+
+    return await _log({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      ref,
+      depth,
+      since,
+    })
+  } catch (err) {
+    err.caller = 'git.log';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} MergeResult - Returns an object with a schema like this:
+ * @property {string} [oid] - The SHA-1 object id that is now at the head of the branch. Absent only if `dryRun` was specified and `mergeCommit` is true.
+ * @property {boolean} [alreadyMerged] - True if the branch was already merged so no changes were made
+ * @property {boolean} [fastForward] - True if it was a fast-forward merge
+ * @property {boolean} [mergeCommit] - True if merge resulted in a merge commit
+ * @property {string} [tree] - The SHA-1 object id of the tree resulting from a merge commit
+ *
+ */
+
+/**
+ * Merge two branches
+ *
+ * ## Limitations
+ *
+ * Currently it does not support incomplete merges. That is, if there are merge conflicts it cannot solve
+ * with the built in diff3 algorithm it will not modify the working dir, and will throw a [`MergeNotSupportedError`](./errors.md#mergenotsupportedError) error.
+ *
+ * Currently it will fail if multiple candidate merge bases are found. (It doesn't yet implement the recursive merge strategy.)
+ *
+ * Currently it does not support selecting alternative merge strategies.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {SignCallback} [args.onSign] - a PGP signing implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ours] - The branch receiving the merge. If undefined, defaults to the current branch.
+ * @param {string} args.theirs - The branch to be merged
+ * @param {boolean} [args.fastForwardOnly = false] - If true, then non-fast-forward merges will throw an Error instead of performing a merge.
+ * @param {boolean} [args.dryRun = false] - If true, simulates a merge so you can test whether it would succeed.
+ * @param {boolean} [args.noUpdateBranch = false] - If true, does not update the branch pointer after creating the commit.
+ * @param {string} [args.message] - Overrides the default auto-generated merge commit message
+ * @param {Object} [args.author] - passed to [commit](commit.md) when creating a merge commit
+ * @param {string} [args.author.name] - Default is `user.name` config.
+ * @param {string} [args.author.email] - Default is `user.email` config.
+ * @param {number} [args.author.timestamp=Math.floor(Date.now()/1000)] - Set the author timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.author.timezoneOffset] - Set the author timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {Object} [args.committer] - passed to [commit](commit.md) when creating a merge commit
+ * @param {string} [args.committer.name] - Default is `user.name` config.
+ * @param {string} [args.committer.email] - Default is `user.email` config.
+ * @param {number} [args.committer.timestamp=Math.floor(Date.now()/1000)] - Set the committer timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.committer.timezoneOffset] - Set the committer timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.signingKey] - passed to [commit](commit.md) when creating a merge commit
+ *
+ * @returns {Promise<MergeResult>} Resolves to a description of the merge operation
+ * @see MergeResult
+ *
+ * @example
+ * let m = await git.merge({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ours: 'main',
+ *   theirs: 'remotes/origin/main'
+ * })
+ * console.log(m)
+ *
+ */
+async function merge({
+  fs: _fs,
+  onSign,
+  dir,
+  gitdir = join(dir, '.git'),
+  ours,
+  theirs,
+  fastForwardOnly = false,
+  dryRun = false,
+  noUpdateBranch = false,
+  message,
+  author: _author,
+  committer: _committer,
+  signingKey,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    if (signingKey) {
+      assertParameter('onSign', onSign);
+    }
+    const fs = new FileSystem(_fs);
+    const cache = {};
+
+    const author = await normalizeAuthorObject({ fs, gitdir, author: _author });
+    if (!author && !fastForwardOnly) throw new MissingNameError('author')
+
+    const committer = await normalizeCommitterObject({
+      fs,
+      gitdir,
+      author,
+      committer: _committer,
+    });
+    if (!committer && !fastForwardOnly) {
+      throw new MissingNameError('committer')
+    }
+
+    return await _merge({
+      fs,
+      cache,
+      gitdir,
+      ours,
+      theirs,
+      fastForwardOnly,
+      dryRun,
+      noUpdateBranch,
+      message,
+      author,
+      committer,
+      signingKey,
+    })
+  } catch (err) {
+    err.caller = 'git.merge';
+    throw err
+  }
+}
+
+/**
+ * @enum {number}
+ */
+const types = {
+  commit: 0b0010000,
+  tree: 0b0100000,
+  blob: 0b0110000,
+  tag: 0b1000000,
+  ofs_delta: 0b1100000,
+  ref_delta: 0b1110000,
+};
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string[]} args.oids
+ */
+async function _pack({
+  fs,
+  cache,
+  dir,
+  gitdir = join(dir, '.git'),
+  oids,
+}) {
+  const hash = new Hash();
+  const outputStream = [];
+  function write(chunk, enc) {
+    const buff = Buffer.from(chunk, enc);
+    outputStream.push(buff);
+    hash.update(buff);
+  }
+  async function writeObject({ stype, object }) {
+    // Object type is encoded in bits 654
+    const type = types[stype];
+    // The length encoding gets complicated.
+    let length = object.length;
+    // Whether the next byte is part of the variable-length encoded number
+    // is encoded in bit 7
+    let multibyte = length > 0b1111 ? 0b10000000 : 0b0;
+    // Last four bits of length is encoded in bits 3210
+    const lastFour = length & 0b1111;
+    // Discard those bits
+    length = length >>> 4;
+    // The first byte is then (1-bit multibyte?), (3-bit type), (4-bit least sig 4-bits of length)
+    let byte = (multibyte | type | lastFour).toString(16);
+    write(byte, 'hex');
+    // Now we keep chopping away at length 7-bits at a time until its zero,
+    // writing out the bytes in what amounts to little-endian order.
+    while (multibyte) {
+      multibyte = length > 0b01111111 ? 0b10000000 : 0b0;
+      byte = multibyte | (length & 0b01111111);
+      write(padHex(2, byte), 'hex');
+      length = length >>> 7;
+    }
+    // Lastly, we can compress and write the object.
+    write(Buffer.from(await deflate(object)));
+  }
+  write('PACK');
+  write('00000002', 'hex');
+  // Write a 4 byte (32-bit) int
+  write(padHex(8, oids.length), 'hex');
+  for (const oid of oids) {
+    const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+    await writeObject({ write, object, stype: type });
+  }
+  // Write SHA1 checksum
+  const digest = hash.digest();
+  outputStream.push(digest);
+  return outputStream
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} PackObjectsResult The packObjects command returns an object with two properties:
+ * @property {string} filename - The suggested filename for the packfile if you want to save it to disk somewhere. It includes the packfile SHA.
+ * @property {Uint8Array} [packfile] - The packfile contents. Not present if `write` parameter was true, in which case the packfile was written straight to disk.
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string[]} args.oids
+ * @param {boolean} args.write
+ *
+ * @returns {Promise<PackObjectsResult>}
+ * @see PackObjectsResult
+ */
+async function _packObjects({ fs, cache, gitdir, oids, write }) {
+  const buffers = await _pack({ fs, cache, gitdir, oids });
+  const packfile = Buffer.from(await collect(buffers));
+  const packfileSha = packfile.slice(-20).toString('hex');
+  const filename = `pack-${packfileSha}.pack`;
+  if (write) {
+    await fs.write(join(gitdir, `objects/pack/${filename}`), packfile);
+    return { filename }
+  }
+  return {
+    filename,
+    packfile: new Uint8Array(packfile),
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} PackObjectsResult The packObjects command returns an object with two properties:
+ * @property {string} filename - The suggested filename for the packfile if you want to save it to disk somewhere. It includes the packfile SHA.
+ * @property {Uint8Array} [packfile] - The packfile contents. Not present if `write` parameter was true, in which case the packfile was written straight to disk.
+ */
+
+/**
+ * Create a packfile from an array of SHA-1 object ids
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string[]} args.oids - An array of SHA-1 object ids to be included in the packfile
+ * @param {boolean} [args.write = false] - Whether to save the packfile to disk or not
+ *
+ * @returns {Promise<PackObjectsResult>} Resolves successfully when the packfile is ready with the filename and buffer
+ * @see PackObjectsResult
+ *
+ * @example
+ * // Create a packfile containing only an empty tree
+ * let { packfile } = await git.packObjects({
+ *   fs,
+ *   dir: '/tutorial',
+ *   oids: ['4b825dc642cb6eb9a060e54bf8d69288fbee4904']
+ * })
+ * console.log(packfile)
+ *
+ */
+async function packObjects({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oids,
+  write = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oids', oids);
+
+    return await _packObjects({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oids,
+      write,
+    })
+  } catch (err) {
+    err.caller = 'git.packObjects';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Fetch and merge commits from a remote repository
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {MessageCallback} [args.onMessage] - optional message event callback
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - Which branch to merge into. By default this is the currently checked out branch.
+ * @param {string} [args.url] - (Added in 1.1.0) The URL of the remote repository. The default is the value set in the git config for that remote.
+ * @param {string} [args.remote] - (Added in 1.1.0) If URL is not specified, determines which remote to use.
+ * @param {string} [args.remoteRef] - (Added in 1.1.0) The name of the branch on the remote to fetch. By default this is the configured remote tracking branch.
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {boolean} [args.singleBranch = false] - Instead of the default behavior of fetching all the branches, only fetch a single branch.
+ * @param {boolean} [args.fastForwardOnly = false] - Only perform simple fast-forward merges. (Don't create merge commits.)
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ * @param {Object} [args.author] - The details about the author.
+ * @param {string} [args.author.name] - Default is `user.name` config.
+ * @param {string} [args.author.email] - Default is `user.email` config.
+ * @param {number} [args.author.timestamp=Math.floor(Date.now()/1000)] - Set the author timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.author.timezoneOffset] - Set the author timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {Object} [args.committer = author] - The details about the commit committer, in the same format as the author parameter. If not specified, the author details are used.
+ * @param {string} [args.committer.name] - Default is `user.name` config.
+ * @param {string} [args.committer.email] - Default is `user.email` config.
+ * @param {number} [args.committer.timestamp=Math.floor(Date.now()/1000)] - Set the committer timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.committer.timezoneOffset] - Set the committer timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.signingKey] - passed to [commit](commit.md) when creating a merge commit
+ *
+ * @returns {Promise<void>} Resolves successfully when pull operation completes
+ *
+ * @example
+ * await git.pull({
+ *   fs,
+ *   http,
+ *   dir: '/tutorial',
+ *   ref: 'main',
+ *   singleBranch: true
+ * })
+ * console.log('done')
+ *
+ */
+async function pull({
+  fs: _fs,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  url,
+  remote,
+  remoteRef,
+  fastForwardOnly = false,
+  corsProxy,
+  singleBranch,
+  headers = {},
+  author: _author,
+  committer: _committer,
+  signingKey,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+
+    const fs = new FileSystem(_fs);
+
+    const author = await normalizeAuthorObject({ fs, gitdir, author: _author });
+    if (!author) throw new MissingNameError('author')
+
+    const committer = await normalizeCommitterObject({
+      fs,
+      gitdir,
+      author,
+      committer: _committer,
+    });
+    if (!committer) throw new MissingNameError('committer')
+
+    return await _pull({
+      fs,
+      cache: {},
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      dir,
+      gitdir,
+      ref,
+      url,
+      remote,
+      remoteRef,
+      fastForwardOnly,
+      corsProxy,
+      singleBranch,
+      headers,
+      author,
+      committer,
+      signingKey,
+    })
+  } catch (err) {
+    err.caller = 'git.pull';
+    throw err
+  }
+}
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} [args.dir]
+ * @param {string} args.gitdir
+ * @param {Iterable<string>} args.start
+ * @param {Iterable<string>} args.finish
+ * @returns {Promise<Set<string>>}
+ */
+async function listCommitsAndTags({
+  fs,
+  cache,
+  dir,
+  gitdir = join(dir, '.git'),
+  start,
+  finish,
+}) {
+  const shallows = await GitShallowManager.read({ fs, gitdir });
+  const startingSet = new Set();
+  const finishingSet = new Set();
+  for (const ref of start) {
+    startingSet.add(await GitRefManager.resolve({ fs, gitdir, ref }));
+  }
+  for (const ref of finish) {
+    // We may not have these refs locally so we must try/catch
+    try {
+      const oid = await GitRefManager.resolve({ fs, gitdir, ref });
+      finishingSet.add(oid);
+    } catch (err) {}
+  }
+  const visited = new Set();
+  // Because git commits are named by their hash, there is no
+  // way to construct a cycle. Therefore we won't worry about
+  // setting a default recursion limit.
+  async function walk(oid) {
+    visited.add(oid);
+    const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+    // Recursively resolve annotated tags
+    if (type === 'tag') {
+      const tag = GitAnnotatedTag.from(object);
+      const commit = tag.headers().object;
+      return walk(commit)
+    }
+    if (type !== 'commit') {
+      throw new ObjectTypeError(oid, type, 'commit')
+    }
+    if (!shallows.has(oid)) {
+      const commit = GitCommit.from(object);
+      const parents = commit.headers().parent;
+      for (oid of parents) {
+        if (!finishingSet.has(oid) && !visited.has(oid)) {
+          await walk(oid);
+        }
+      }
+    }
+  }
+  // Let's go walking!
+  for (const oid of startingSet) {
+    await walk(oid);
+  }
+  return visited
+}
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} [args.dir]
+ * @param {string} args.gitdir
+ * @param {Iterable<string>} args.oids
+ * @returns {Promise<Set<string>>}
+ */
+async function listObjects({
+  fs,
+  cache,
+  dir,
+  gitdir = join(dir, '.git'),
+  oids,
+}) {
+  const visited = new Set();
+  // We don't do the purest simplest recursion, because we can
+  // avoid reading Blob objects entirely since the Tree objects
+  // tell us which oids are Blobs and which are Trees.
+  async function walk(oid) {
+    if (visited.has(oid)) return
+    visited.add(oid);
+    const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+    if (type === 'tag') {
+      const tag = GitAnnotatedTag.from(object);
+      const obj = tag.headers().object;
+      await walk(obj);
+    } else if (type === 'commit') {
+      const commit = GitCommit.from(object);
+      const tree = commit.headers().tree;
+      await walk(tree);
+    } else if (type === 'tree') {
+      const tree = GitTree.from(object);
+      for (const entry of tree) {
+        // add blobs to the set
+        // skip over submodules whose type is 'commit'
+        if (entry.type === 'blob') {
+          visited.add(entry.oid);
+        }
+        // recurse for trees
+        if (entry.type === 'tree') {
+          await walk(entry.oid);
+        }
+      }
+    }
+  }
+  // Let's go walking!
+  for (const oid of oids) {
+    await walk(oid);
+  }
+  return visited
+}
+
+async function parseReceivePackResponse(packfile) {
+  /** @type PushResult */
+  const result = {};
+  let response = '';
+  const read = GitPktLine.streamReader(packfile);
+  let line = await read();
+  while (line !== true) {
+    if (line !== null) response += line.toString('utf8') + '\n';
+    line = await read();
+  }
+
+  const lines = response.toString('utf8').split('\n');
+  // We're expecting "unpack {unpack-result}"
+  line = lines.shift();
+  if (!line.startsWith('unpack ')) {
+    throw new ParseError('unpack ok" or "unpack [error message]', line)
+  }
+  result.ok = line === 'unpack ok';
+  if (!result.ok) {
+    result.error = line.slice('unpack '.length);
+  }
+  result.refs = {};
+  for (const line of lines) {
+    if (line.trim() === '') continue
+    const status = line.slice(0, 2);
+    const refAndMessage = line.slice(3);
+    let space = refAndMessage.indexOf(' ');
+    if (space === -1) space = refAndMessage.length;
+    const ref = refAndMessage.slice(0, space);
+    const error = refAndMessage.slice(space + 1);
+    result.refs[ref] = {
+      ok: status === 'ok',
+      error,
+    };
+  }
+  return result
+}
+
+async function writeReceivePackRequest({
+  capabilities = [],
+  triplets = [],
+}) {
+  const packstream = [];
+  let capsFirstLine = `\x00 ${capabilities.join(' ')}`;
+  for (const trip of triplets) {
+    packstream.push(
+      GitPktLine.encode(
+        `${trip.oldoid} ${trip.oid} ${trip.fullRef}${capsFirstLine}\n`
+      )
+    );
+    capsFirstLine = '';
+  }
+  packstream.push(GitPktLine.flush());
+  return packstream
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {HttpClient} args.http
+ * @param {ProgressCallback} [args.onProgress]
+ * @param {MessageCallback} [args.onMessage]
+ * @param {AuthCallback} [args.onAuth]
+ * @param {AuthFailureCallback} [args.onAuthFailure]
+ * @param {AuthSuccessCallback} [args.onAuthSuccess]
+ * @param {string} args.gitdir
+ * @param {string} [args.ref]
+ * @param {string} [args.remoteRef]
+ * @param {string} [args.remote]
+ * @param {boolean} [args.force = false]
+ * @param {boolean} [args.delete = false]
+ * @param {string} [args.url]
+ * @param {string} [args.corsProxy]
+ * @param {Object<string, string>} [args.headers]
+ *
+ * @returns {Promise<PushResult>}
+ */
+async function _push({
+  fs,
+  cache,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  gitdir,
+  ref: _ref,
+  remoteRef: _remoteRef,
+  remote,
+  url: _url,
+  force = false,
+  delete: _delete = false,
+  corsProxy,
+  headers = {},
+}) {
+  const ref = _ref || (await _currentBranch({ fs, gitdir }));
+  if (typeof ref === 'undefined') {
+    throw new MissingParameterError('ref')
+  }
+  const config = await GitConfigManager.get({ fs, gitdir });
+  // Figure out what remote to use.
+  remote =
+    remote ||
+    (await config.get(`branch.${ref}.pushRemote`)) ||
+    (await config.get('remote.pushDefault')) ||
+    (await config.get(`branch.${ref}.remote`)) ||
+    'origin';
+  // Lookup the URL for the given remote.
+  const url =
+    _url ||
+    (await config.get(`remote.${remote}.pushurl`)) ||
+    (await config.get(`remote.${remote}.url`));
+  if (typeof url === 'undefined') {
+    throw new MissingParameterError('remote OR url')
+  }
+  // Figure out what remote ref to use.
+  const remoteRef = _remoteRef || (await config.get(`branch.${ref}.merge`));
+  if (typeof url === 'undefined') {
+    throw new MissingParameterError('remoteRef')
+  }
+
+  if (corsProxy === undefined) {
+    corsProxy = await config.get('http.corsProxy');
+  }
+
+  const fullRef = await GitRefManager.expand({ fs, gitdir, ref });
+  const oid = _delete
+    ? '0000000000000000000000000000000000000000'
+    : await GitRefManager.resolve({ fs, gitdir, ref: fullRef });
+
+  /** @type typeof import("../managers/GitRemoteHTTP").GitRemoteHTTP */
+  const GitRemoteHTTP = GitRemoteManager.getRemoteHelperFor({ url });
+  const httpRemote = await GitRemoteHTTP.discover({
+    http,
+    onAuth,
+    onAuthSuccess,
+    onAuthFailure,
+    corsProxy,
+    service: 'git-receive-pack',
+    url,
+    headers,
+    protocolVersion: 1,
+  });
+  const auth = httpRemote.auth; // hack to get new credentials from CredentialManager API
+  let fullRemoteRef;
+  if (!remoteRef) {
+    fullRemoteRef = fullRef;
+  } else {
+    try {
+      fullRemoteRef = await GitRefManager.expandAgainstMap({
+        ref: remoteRef,
+        map: httpRemote.refs,
+      });
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        // The remote reference doesn't exist yet.
+        // If it is fully specified, use that value. Otherwise, treat it as a branch.
+        fullRemoteRef = remoteRef.startsWith('refs/')
+          ? remoteRef
+          : `refs/heads/${remoteRef}`;
+      } else {
+        throw err
+      }
+    }
+  }
+  const oldoid =
+    httpRemote.refs.get(fullRemoteRef) ||
+    '0000000000000000000000000000000000000000';
+
+  // Remotes can always accept thin-packs UNLESS they specify the 'no-thin' capability
+  const thinPack = !httpRemote.capabilities.has('no-thin');
+
+  let objects = new Set();
+  if (!_delete) {
+    const finish = [...httpRemote.refs.values()];
+    let skipObjects = new Set();
+
+    // If remote branch is present, look for a common merge base.
+    if (oldoid !== '0000000000000000000000000000000000000000') {
+      // trick to speed up common force push scenarios
+      const mergebase = await _findMergeBase({
+        fs,
+        cache,
+        gitdir,
+        oids: [oid, oldoid],
+      });
+      for (const oid of mergebase) finish.push(oid);
+      if (thinPack) {
+        skipObjects = await listObjects({ fs, cache, gitdir, oids: mergebase });
+      }
+    }
+
+    // If remote does not have the commit, figure out the objects to send
+    if (!finish.includes(oid)) {
+      const commits = await listCommitsAndTags({
+        fs,
+        cache,
+        gitdir,
+        start: [oid],
+        finish,
+      });
+      objects = await listObjects({ fs, cache, gitdir, oids: commits });
+    }
+
+    if (thinPack) {
+      // If there's a default branch for the remote lets skip those objects too.
+      // Since this is an optional optimization, we just catch and continue if there is
+      // an error (because we can't find a default branch, or can't find a commit, etc)
+      try {
+        // Sadly, the discovery phase with 'forPush' doesn't return symrefs, so we have to
+        // rely on existing ones.
+        const ref = await GitRefManager.resolve({
+          fs,
+          gitdir,
+          ref: `refs/remotes/${remote}/HEAD`,
+          depth: 2,
+        });
+        const { oid } = await GitRefManager.resolveAgainstMap({
+          ref: ref.replace(`refs/remotes/${remote}/`, ''),
+          fullref: ref,
+          map: httpRemote.refs,
+        });
+        const oids = [oid];
+        for (const oid of await listObjects({ fs, cache, gitdir, oids })) {
+          skipObjects.add(oid);
+        }
+      } catch (e) {}
+
+      // Remove objects that we know the remote already has
+      for (const oid of skipObjects) {
+        objects.delete(oid);
+      }
+    }
+
+    if (!force) {
+      // Is it a tag that already exists?
+      if (
+        fullRef.startsWith('refs/tags') &&
+        oldoid !== '0000000000000000000000000000000000000000'
+      ) {
+        throw new PushRejectedError('tag-exists')
+      }
+      // Is it a non-fast-forward commit?
+      if (
+        oid !== '0000000000000000000000000000000000000000' &&
+        oldoid !== '0000000000000000000000000000000000000000' &&
+        !(await _isDescendent({
+          fs,
+          cache,
+          gitdir,
+          oid,
+          ancestor: oldoid,
+          depth: -1,
+        }))
+      ) {
+        throw new PushRejectedError('not-fast-forward')
+      }
+    }
+  }
+  // We can only safely use capabilities that the server also understands.
+  // For instance, AWS CodeCommit aborts a push if you include the `agent`!!!
+  const capabilities = filterCapabilities(
+    [...httpRemote.capabilities],
+    ['report-status', 'side-band-64k', `agent=${pkg.agent}`]
+  );
+  const packstream1 = await writeReceivePackRequest({
+    capabilities,
+    triplets: [{ oldoid, oid, fullRef: fullRemoteRef }],
+  });
+  const packstream2 = _delete
+    ? []
+    : await _pack({
+        fs,
+        cache,
+        gitdir,
+        oids: [...objects],
+      });
+  const res = await GitRemoteHTTP.connect({
+    http,
+    onProgress,
+    corsProxy,
+    service: 'git-receive-pack',
+    url,
+    auth,
+    headers,
+    body: [...packstream1, ...packstream2],
+  });
+  const { packfile, progress } = await GitSideBand.demux(res.body);
+  if (onMessage) {
+    const lines = splitLines(progress);
+    forAwait(lines, async line => {
+      await onMessage(line);
+    });
+  }
+  // Parse the response!
+  const result = await parseReceivePackResponse(packfile);
+  if (res.headers) {
+    result.headers = res.headers;
+  }
+
+  // Update the local copy of the remote ref
+  if (remote && result.ok && result.refs[fullRemoteRef].ok) {
+    // TODO: I think this should actually be using a refspec transform rather than assuming 'refs/remotes/{remote}'
+    const ref = `refs/remotes/${remote}/${fullRemoteRef.replace(
+      'refs/heads',
+      ''
+    )}`;
+    if (_delete) {
+      await GitRefManager.deleteRef({ fs, gitdir, ref });
+    } else {
+      await GitRefManager.writeRef({ fs, gitdir, ref, value: oid });
+    }
+  }
+  if (result.ok && Object.values(result.refs).every(result => result.ok)) {
+    return result
+  } else {
+    const prettyDetails = Object.entries(result.refs)
+      .filter(([k, v]) => !v.ok)
+      .map(([k, v]) => `\n  - ${k}: ${v.error}`)
+      .join('');
+    throw new GitPushError(prettyDetails, result)
+  }
+}
+
+// @ts-check
+
+/**
+ * Push a branch or tag
+ *
+ * The push command returns an object that describes the result of the attempted push operation.
+ * *Notes:* If there were no errors, then there will be no `errors` property. There can be a mix of `ok` messages and `errors` messages.
+ *
+ * | param  | type [= default] | description                                                                                                                                                                                                      |
+ * | ------ | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ * | ok     | Array\<string\>  | The first item is "unpack" if the overall operation was successful. The remaining items are the names of refs that were updated successfully.                                                                    |
+ * | errors | Array\<string\>  | If the overall operation threw and error, the first item will be "unpack {Overall error message}". The remaining items are individual refs that failed to be updated in the format "{ref name} {error message}". |
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {HttpClient} args.http - an HTTP client
+ * @param {ProgressCallback} [args.onProgress] - optional progress event callback
+ * @param {MessageCallback} [args.onMessage] - optional message event callback
+ * @param {AuthCallback} [args.onAuth] - optional auth fill callback
+ * @param {AuthFailureCallback} [args.onAuthFailure] - optional auth rejected callback
+ * @param {AuthSuccessCallback} [args.onAuthSuccess] - optional auth approved callback
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - Which branch to push. By default this is the currently checked out branch.
+ * @param {string} [args.url] - The URL of the remote repository. The default is the value set in the git config for that remote.
+ * @param {string} [args.remote] - If URL is not specified, determines which remote to use.
+ * @param {string} [args.remoteRef] - The name of the receiving branch on the remote. By default this is the configured remote tracking branch.
+ * @param {boolean} [args.force = false] - If true, behaves the same as `git push --force`
+ * @param {boolean} [args.delete = false] - If true, delete the remote ref
+ * @param {string} [args.corsProxy] - Optional [CORS proxy](https://www.npmjs.com/%40isomorphic-git/cors-proxy). Overrides value in repo config.
+ * @param {Object<string, string>} [args.headers] - Additional headers to include in HTTP requests, similar to git's `extraHeader` config
+ *
+ * @returns {Promise<PushResult>} Resolves successfully when push completes with a detailed description of the operation from the server.
+ * @see PushResult
+ * @see RefUpdateStatus
+ *
+ * @example
+ * let pushResult = await git.push({
+ *   fs,
+ *   http,
+ *   dir: '/tutorial',
+ *   remote: 'origin',
+ *   ref: 'main',
+ *   onAuth: () => ({ username: process.env.GITHUB_TOKEN }),
+ * })
+ * console.log(pushResult)
+ *
+ */
+async function push({
+  fs,
+  http,
+  onProgress,
+  onMessage,
+  onAuth,
+  onAuthSuccess,
+  onAuthFailure,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  remoteRef,
+  remote = 'origin',
+  url,
+  force = false,
+  delete: _delete = false,
+  corsProxy,
+  headers = {},
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('http', http);
+    assertParameter('gitdir', gitdir);
+
+    return await _push({
+      fs: new FileSystem(fs),
+      cache: {},
+      http,
+      onProgress,
+      onMessage,
+      onAuth,
+      onAuthSuccess,
+      onAuthFailure,
+      gitdir,
+      ref,
+      remoteRef,
+      remote,
+      url,
+      force,
+      delete: _delete,
+      corsProxy,
+      headers,
+    })
+  } catch (err) {
+    err.caller = 'git.push';
+    throw err
+  }
+}
+
+async function resolveBlob({ fs, cache, gitdir, oid }) {
+  const { type, object } = await _readObject({ fs, cache, gitdir, oid });
+  // Resolve annotated tag objects to whatever
+  if (type === 'tag') {
+    oid = GitAnnotatedTag.from(object).parse().object;
+    return resolveBlob({ fs, cache, gitdir, oid })
+  }
+  if (type !== 'blob') {
+    throw new ObjectTypeError(oid, type, 'blob')
+  }
+  return { oid, blob: new Uint8Array(object) }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} ReadBlobResult - The object returned has the following schema:
+ * @property {string} oid
+ * @property {Uint8Array} blob
+ *
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ * @param {string} [args.filepath]
+ *
+ * @returns {Promise<ReadBlobResult>} Resolves successfully with a blob object description
+ * @see ReadBlobResult
+ */
+async function _readBlob({
+  fs,
+  cache,
+  gitdir,
+  oid,
+  filepath = undefined,
+}) {
+  if (filepath !== undefined) {
+    oid = await resolveFilepath({ fs, cache, gitdir, oid, filepath });
+  }
+  const blob = await resolveBlob({
+    fs,
+    cache,
+    gitdir,
+    oid,
+  });
+  return blob
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} ReadBlobResult - The object returned has the following schema:
+ * @property {string} oid
+ * @property {Uint8Array} blob
+ *
+ */
+
+/**
+ * Read a blob object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The SHA-1 object id to get. Annotated tags, commits, and trees are peeled.
+ * @param {string} [args.filepath] - Don't return the object with `oid` itself, but resolve `oid` to a tree and then return the blob object at that filepath.
+ *
+ * @returns {Promise<ReadBlobResult>} Resolves successfully with a blob object description
+ * @see ReadBlobResult
+ *
+ * @example
+ * // Get the contents of 'README.md' in the main branch.
+ * let commitOid = await git.resolveRef({ fs, dir: '/tutorial', ref: 'main' })
+ * console.log(commitOid)
+ * let { blob } = await git.readBlob({
+ *   fs,
+ *   dir: '/tutorial',
+ *   oid: commitOid,
+ *   filepath: 'README.md'
+ * })
+ * console.log(Buffer.from(blob).toString('utf8'))
+ *
+ */
+async function readBlob({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oid,
+  filepath,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    return await _readBlob({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+      filepath,
+    })
+  } catch (err) {
+    err.caller = 'git.readBlob';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Read a commit object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The SHA-1 object id to get. Annotated tags are peeled.
+ *
+ * @returns {Promise<ReadCommitResult>} Resolves successfully with a git commit object
+ * @see ReadCommitResult
+ * @see CommitObject
+ *
+ * @example
+ * // Read a commit object
+ * let sha = await git.resolveRef({ fs, dir: '/tutorial', ref: 'main' })
+ * console.log(sha)
+ * let commit = await git.readCommit({ fs, dir: '/tutorial', oid: sha })
+ * console.log(commit)
+ *
+ */
+async function readCommit({ fs, dir, gitdir = join(dir, '.git'), oid }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    return await _readCommit({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+    })
+  } catch (err) {
+    err.caller = 'git.readCommit';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Read the contents of a note
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} [args.ref] - The notes ref to look under
+ * @param {string} args.oid
+ *
+ * @returns {Promise<Uint8Array>} Resolves successfully with note contents as a Buffer.
+ */
+
+async function _readNote({
+  fs,
+  cache,
+  gitdir,
+  ref = 'refs/notes/commits',
+  oid,
+}) {
+  const parent = await GitRefManager.resolve({ gitdir, fs, ref });
+  const { blob } = await _readBlob({
+    fs,
+    cache,
+    gitdir,
+    oid: parent,
+    filepath: oid,
+  });
+
+  return blob
+}
+
+// @ts-check
+
+/**
+ * Read the contents of a note
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - The notes ref to look under
+ * @param {string} args.oid - The SHA-1 object id of the object to get the note for.
+ *
+ * @returns {Promise<Uint8Array>} Resolves successfully with note contents as a Buffer.
+ */
+
+async function readNote({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'refs/notes/commits',
+  oid,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    assertParameter('oid', oid);
+
+    return await _readNote({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      ref,
+      oid,
+    })
+  } catch (err) {
+    err.caller = 'git.readNote';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} DeflatedObject
+ * @property {string} oid
+ * @property {'deflated'} type
+ * @property {'deflated'} format
+ * @property {Uint8Array} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} WrappedObject
+ * @property {string} oid
+ * @property {'wrapped'} type
+ * @property {'wrapped'} format
+ * @property {Uint8Array} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} RawObject
+ * @property {string} oid
+ * @property {'blob'|'commit'|'tree'|'tag'} type
+ * @property {'content'} format
+ * @property {Uint8Array} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} ParsedBlobObject
+ * @property {string} oid
+ * @property {'blob'} type
+ * @property {'parsed'} format
+ * @property {string} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} ParsedCommitObject
+ * @property {string} oid
+ * @property {'commit'} type
+ * @property {'parsed'} format
+ * @property {CommitObject} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} ParsedTreeObject
+ * @property {string} oid
+ * @property {'tree'} type
+ * @property {'parsed'} format
+ * @property {TreeObject} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {Object} ParsedTagObject
+ * @property {string} oid
+ * @property {'tag'} type
+ * @property {'parsed'} format
+ * @property {TagObject} object
+ * @property {string} [source]
+ *
+ */
+
+/**
+ *
+ * @typedef {ParsedBlobObject | ParsedCommitObject | ParsedTreeObject | ParsedTagObject} ParsedObject
+ */
+
+/**
+ *
+ * @typedef {DeflatedObject | WrappedObject | RawObject | ParsedObject } ReadObjectResult
+ */
+
+/**
+ * Read a git object directly by its SHA-1 object id
+ *
+ * Regarding `ReadObjectResult`:
+ *
+ * - `oid` will be the same as the `oid` argument unless the `filepath` argument is provided, in which case it will be the oid of the tree or blob being returned.
+ * - `type` of deflated objects is `'deflated'`, and `type` of wrapped objects is `'wrapped'`
+ * - `format` is usually, but not always, the format you requested. Packfiles do not store each object individually compressed so if you end up reading the object from a packfile it will be returned in format 'content' even if you requested 'deflated' or 'wrapped'.
+ * - `object` will be an actual Object if format is 'parsed' and the object is a commit, tree, or annotated tag. Blobs are still formatted as Buffers unless an encoding is provided in which case they'll be strings. If format is anything other than 'parsed', object will be a Buffer.
+ * - `source` is the name of the packfile or loose object file where the object was found.
+ *
+ * The `format` parameter can have the following values:
+ *
+ * | param      | description                                                                                                                                                                                               |
+ * | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ * | 'deflated' | Return the raw deflate-compressed buffer for an object if possible. Useful for efficiently shuffling around loose objects when you don't care about the contents and can save time by not inflating them. |
+ * | 'wrapped'  | Return the inflated object buffer wrapped in the git object header if possible. This is the raw data used when calculating the SHA-1 object id of a git object.                                           |
+ * | 'content'  | Return the object buffer without the git header.                                                                                                                                                          |
+ * | 'parsed'   | Returns a parsed representation of the object.                                                                                                                                                            |
+ *
+ * The result will be in one of the following schemas:
+ *
+ * ## `'deflated'` format
+ *
+ * {@link DeflatedObject typedef}
+ *
+ * ## `'wrapped'` format
+ *
+ * {@link WrappedObject typedef}
+ *
+ * ## `'content'` format
+ *
+ * {@link RawObject typedef}
+ *
+ * ## `'parsed'` format
+ *
+ * ### parsed `'blob'` type
+ *
+ * {@link ParsedBlobObject typedef}
+ *
+ * ### parsed `'commit'` type
+ *
+ * {@link ParsedCommitObject typedef}
+ * {@link CommitObject typedef}
+ *
+ * ### parsed `'tree'` type
+ *
+ * {@link ParsedTreeObject typedef}
+ * {@link TreeObject typedef}
+ * {@link TreeEntry typedef}
+ *
+ * ### parsed `'tag'` type
+ *
+ * {@link ParsedTagObject typedef}
+ * {@link TagObject typedef}
+ *
+ * @deprecated
+ * > This command is overly complicated.
+ * >
+ * > If you know the type of object you are reading, use [`readBlob`](./readBlob.md), [`readCommit`](./readCommit.md), [`readTag`](./readTag.md), or [`readTree`](./readTree.md).
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The SHA-1 object id to get
+ * @param {'deflated' | 'wrapped' | 'content' | 'parsed'} [args.format = 'parsed'] - What format to return the object in. The choices are described in more detail below.
+ * @param {string} [args.filepath] - Don't return the object with `oid` itself, but resolve `oid` to a tree and then return the object at that filepath. To return the root directory of a tree set filepath to `''`
+ * @param {string} [args.encoding] - A convenience argument that only affects blobs. Instead of returning `object` as a buffer, it returns a string parsed using the given encoding.
+ *
+ * @returns {Promise<ReadObjectResult>} Resolves successfully with a git object description
+ * @see ReadObjectResult
+ *
+ * @example
+ * // Given a ransom SHA-1 object id, figure out what it is
+ * let { type, object } = await git.readObject({
+ *   fs,
+ *   dir: '/tutorial',
+ *   oid: '0698a781a02264a6f37ba3ff41d78067eaf0f075'
+ * })
+ * switch (type) {
+ *   case 'commit': {
+ *     console.log(object)
+ *     break
+ *   }
+ *   case 'tree': {
+ *     console.log(object)
+ *     break
+ *   }
+ *   case 'blob': {
+ *     console.log(object)
+ *     break
+ *   }
+ *   case 'tag': {
+ *     console.log(object)
+ *     break
+ *   }
+ * }
+ *
+ */
+async function readObject({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oid,
+  format = 'parsed',
+  filepath = undefined,
+  encoding = undefined,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    const cache = {};
+    const fs = new FileSystem(_fs);
+    if (filepath !== undefined) {
+      oid = await resolveFilepath({
+        fs,
+        cache,
+        gitdir,
+        oid,
+        filepath,
+      });
+    }
+    // GitObjectManager does not know how to parse content, so we tweak that parameter before passing it.
+    const _format = format === 'parsed' ? 'content' : format;
+    const result = await _readObject({
+      fs,
+      cache,
+      gitdir,
+      oid,
+      format: _format,
+    });
+    result.oid = oid;
+    if (format === 'parsed') {
+      result.format = 'parsed';
+      switch (result.type) {
+        case 'commit':
+          result.object = GitCommit.from(result.object).parse();
+          break
+        case 'tree':
+          result.object = GitTree.from(result.object).entries();
+          break
+        case 'blob':
+          // Here we consider returning a raw Buffer as the 'content' format
+          // and returning a string as the 'parsed' format
+          if (encoding) {
+            result.object = result.object.toString(encoding);
+          } else {
+            result.object = new Uint8Array(result.object);
+            result.format = 'content';
+          }
+          break
+        case 'tag':
+          result.object = GitAnnotatedTag.from(result.object).parse();
+          break
+        default:
+          throw new ObjectTypeError(
+            result.oid,
+            result.type,
+            'blob|commit|tag|tree'
+          )
+      }
+    } else if (result.format === 'deflated' || result.format === 'wrapped') {
+      result.type = result.format;
+    }
+    return result
+  } catch (err) {
+    err.caller = 'git.readObject';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} ReadTagResult - The object returned has the following schema:
+ * @property {string} oid - SHA-1 object id of this tag
+ * @property {TagObject} tag - the parsed tag object
+ * @property {string} payload - PGP signing payload
+ */
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {any} args.cache
+ * @param {string} args.gitdir
+ * @param {string} args.oid
+ *
+ * @returns {Promise<ReadTagResult>}
+ */
+async function _readTag({ fs, cache, gitdir, oid }) {
+  const { type, object } = await _readObject({
+    fs,
+    cache,
+    gitdir,
+    oid,
+    format: 'content',
+  });
+  if (type !== 'tag') {
+    throw new ObjectTypeError(oid, type, 'tag')
+  }
+  const tag = GitAnnotatedTag.from(object);
+  const result = {
+    oid,
+    tag: tag.parse(),
+    payload: tag.payload(),
+  };
+  // @ts-ignore
+  return result
+}
+
+/**
+ *
+ * @typedef {Object} ReadTagResult - The object returned has the following schema:
+ * @property {string} oid - SHA-1 object id of this tag
+ * @property {TagObject} tag - the parsed tag object
+ * @property {string} payload - PGP signing payload
+ */
+
+/**
+ * Read an annotated tag object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The SHA-1 object id to get
+ *
+ * @returns {Promise<ReadTagResult>} Resolves successfully with a git object description
+ * @see ReadTagResult
+ * @see TagObject
+ *
+ */
+async function readTag({ fs, dir, gitdir = join(dir, '.git'), oid }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    return await _readTag({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+    })
+  } catch (err) {
+    err.caller = 'git.readTag';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ *
+ * @typedef {Object} ReadTreeResult - The object returned has the following schema:
+ * @property {string} oid - SHA-1 object id of this tree
+ * @property {TreeObject} tree - the parsed tree object
+ */
+
+/**
+ * Read a tree object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.oid - The SHA-1 object id to get. Annotated tags and commits are peeled.
+ * @param {string} [args.filepath] - Don't return the object with `oid` itself, but resolve `oid` to a tree and then return the tree object at that filepath.
+ *
+ * @returns {Promise<ReadTreeResult>} Resolves successfully with a git tree object
+ * @see ReadTreeResult
+ * @see TreeObject
+ * @see TreeEntry
+ *
+ */
+async function readTree({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  oid,
+  filepath = undefined,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    return await _readTree({
+      fs: new FileSystem(fs),
+      cache: {},
+      gitdir,
+      oid,
+      filepath,
+    })
+  } catch (err) {
+    err.caller = 'git.readTree';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Remove a file from the git index (aka staging area)
+ *
+ * Note that this does NOT delete the file in the working directory.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.filepath - The path to the file to remove from the index
+ *
+ * @returns {Promise<void>} Resolves successfully once the git index has been updated
+ *
+ * @example
+ * await git.remove({ fs, dir: '/tutorial', filepath: 'README.md' })
+ * console.log('done')
+ *
+ */
+async function remove({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  filepath,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('filepath', filepath);
+
+    const cache = {};
+    await GitIndexManager.acquire(
+      { fs: new FileSystem(_fs), gitdir, cache },
+      async function(index) {
+        index.delete({ filepath });
+      }
+    );
+  } catch (err) {
+    err.caller = 'git.remove';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {object} args.cache
+ * @param {SignCallback} [args.onSign]
+ * @param {string} [args.dir]
+ * @param {string} [args.gitdir=join(dir,'.git')]
+ * @param {string} [args.ref]
+ * @param {string} args.oid
+ * @param {Object} args.author
+ * @param {string} args.author.name
+ * @param {string} args.author.email
+ * @param {number} args.author.timestamp
+ * @param {number} args.author.timezoneOffset
+ * @param {Object} args.committer
+ * @param {string} args.committer.name
+ * @param {string} args.committer.email
+ * @param {number} args.committer.timestamp
+ * @param {number} args.committer.timezoneOffset
+ * @param {string} [args.signingKey]
+ *
+ * @returns {Promise<string>}
+ */
+
+async function _removeNote({
+  fs,
+  cache,
+  onSign,
+  gitdir,
+  ref = 'refs/notes/commits',
+  oid,
+  author,
+  committer,
+  signingKey,
+}) {
+  // Get the current note commit
+  let parent;
+  try {
+    parent = await GitRefManager.resolve({ gitdir, fs, ref });
+  } catch (err) {
+    if (!(err instanceof NotFoundError)) {
+      throw err
+    }
+  }
+
+  // I'm using the "empty tree" magic number here for brevity
+  const result = await _readTree({
+    fs,
+    gitdir,
+    oid: parent || '4b825dc642cb6eb9a060e54bf8d69288fbee4904',
+  });
+  let tree = result.tree;
+
+  // Remove the note blob entry from the tree
+  tree = tree.filter(entry => entry.path !== oid);
+
+  // Create the new note tree
+  const treeOid = await _writeTree({
+    fs,
+    gitdir,
+    tree,
+  });
+
+  // Create the new note commit
+  const commitOid = await _commit({
+    fs,
+    cache,
+    onSign,
+    gitdir,
+    ref,
+    tree: treeOid,
+    parent: parent && [parent],
+    message: `Note removed by 'isomorphic-git removeNote'\n`,
+    author,
+    committer,
+    signingKey,
+  });
+
+  return commitOid
+}
+
+// @ts-check
+
+/**
+ * Remove an object note
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {SignCallback} [args.onSign] - a PGP signing implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref] - The notes ref to look under
+ * @param {string} args.oid - The SHA-1 object id of the object to remove the note from.
+ * @param {Object} [args.author] - The details about the author.
+ * @param {string} [args.author.name] - Default is `user.name` config.
+ * @param {string} [args.author.email] - Default is `user.email` config.
+ * @param {number} [args.author.timestamp=Math.floor(Date.now()/1000)] - Set the author timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.author.timezoneOffset] - Set the author timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {Object} [args.committer = author] - The details about the note committer, in the same format as the author parameter. If not specified, the author details are used.
+ * @param {string} [args.committer.name] - Default is `user.name` config.
+ * @param {string} [args.committer.email] - Default is `user.email` config.
+ * @param {number} [args.committer.timestamp=Math.floor(Date.now()/1000)] - Set the committer timestamp field. This is the integer number of seconds since the Unix epoch (1970-01-01 00:00:00).
+ * @param {number} [args.committer.timezoneOffset] - Set the committer timezone offset field. This is the difference, in minutes, from the current timezone to UTC. Default is `(new Date()).getTimezoneOffset()`.
+ * @param {string} [args.signingKey] - Sign the tag object using this private PGP key.
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the commit object for the note removal.
+ */
+
+async function removeNote({
+  fs: _fs,
+  onSign,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'refs/notes/commits',
+  oid,
+  author: _author,
+  committer: _committer,
+  signingKey,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('oid', oid);
+
+    const fs = new FileSystem(_fs);
+    const cache = {};
+
+    const author = await normalizeAuthorObject({ fs, gitdir, author: _author });
+    if (!author) throw new MissingNameError('author')
+
+    const committer = await normalizeCommitterObject({
+      fs,
+      gitdir,
+      author,
+      committer: _committer,
+    });
+    if (!committer) throw new MissingNameError('committer')
+
+    return await _removeNote({
+      fs,
+      cache,
+      onSign,
+      gitdir,
+      ref,
+      oid,
+      author,
+      committer,
+      signingKey,
+    })
+  } catch (err) {
+    err.caller = 'git.removeNote';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Rename a branch
+ *
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {string} args.ref - The name of the new branch
+ * @param {string} args.oldref - The name of the old branch
+ * @param {boolean} [args.checkout = false]
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ */
+async function _renameBranch({
+  fs,
+  gitdir,
+  oldref,
+  ref,
+  checkout = false,
+}) {
+  if (ref !== cleanGitRef.clean(ref)) {
+    throw new InvalidRefNameError(ref, cleanGitRef.clean(ref))
+  }
+
+  if (oldref !== cleanGitRef.clean(oldref)) {
+    throw new InvalidRefNameError(oldref, cleanGitRef.clean(oldref))
+  }
+
+  const fulloldref = `refs/heads/${oldref}`;
+  const fullnewref = `refs/heads/${ref}`;
+
+  const newexist = await GitRefManager.exists({ fs, gitdir, ref: fullnewref });
+
+  if (newexist) {
+    throw new AlreadyExistsError('branch', ref, false)
+  }
+
+  const value = await GitRefManager.resolve({
+    fs,
+    gitdir,
+    ref: fulloldref,
+    depth: 1,
+  });
+
+  await GitRefManager.writeRef({ fs, gitdir, ref: fullnewref, value });
+  await GitRefManager.deleteRef({ fs, gitdir, ref: fulloldref });
+
+  if (checkout) {
+    // Update HEAD
+    await GitRefManager.writeSymbolicRef({
+      fs,
+      gitdir,
+      ref: 'HEAD',
+      value: fullnewref,
+    });
+  }
+}
+
+// @ts-check
+
+/**
+ * Rename a branch
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - What to name the branch
+ * @param {string} args.oldref - What the name of the branch was
+ * @param {boolean} [args.checkout = false] - Update `HEAD` to point at the newly created branch
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.renameBranch({ fs, dir: '/tutorial', ref: 'main', oldref: 'master' })
+ * console.log('done')
+ *
+ */
+async function renameBranch({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  oldref,
+  checkout = false,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    assertParameter('oldref', oldref);
+    return await _renameBranch({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+      oldref,
+      checkout,
+    })
+  } catch (err) {
+    err.caller = 'git.renameBranch';
+    throw err
+  }
+}
+
+async function hashObject$1({ gitdir, type, object }) {
+  return shasum(GitObject.wrap({ type, object }))
+}
+
+// @ts-check
+
+/**
+ * Reset a file in the git index (aka staging area)
+ *
+ * Note that this does NOT modify the file in the working directory.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.filepath - The path to the file to reset in the index
+ * @param {string} [args.ref = 'HEAD'] - A ref to the commit to use
+ *
+ * @returns {Promise<void>} Resolves successfully once the git index has been updated
+ *
+ * @example
+ * await git.resetIndex({ fs, dir: '/tutorial', filepath: 'README.md' })
+ * console.log('done')
+ *
+ */
+async function resetIndex({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  filepath,
+  ref = 'HEAD',
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('filepath', filepath);
+    assertParameter('ref', ref);
+
+    const fs = new FileSystem(_fs);
+    const cache = {};
+    // Resolve commit
+    let oid = await GitRefManager.resolve({ fs, gitdir, ref });
+    let workdirOid;
+    try {
+      // Resolve blob
+      oid = await resolveFilepath({
+        fs,
+        cache,
+        gitdir,
+        oid,
+        filepath,
+      });
+    } catch (e) {
+      // This means we're resetting the file to a "deleted" state
+      oid = null;
+    }
+    // For files that aren't in the workdir use zeros
+    let stats = {
+      ctime: new Date(0),
+      mtime: new Date(0),
+      dev: 0,
+      ino: 0,
+      mode: 0,
+      uid: 0,
+      gid: 0,
+      size: 0,
+    };
+    // If the file exists in the workdir...
+    const object = dir && (await fs.read(join(dir, filepath)));
+    if (object) {
+      // ... and has the same hash as the desired state...
+      workdirOid = await hashObject$1({
+        gitdir,
+        type: 'blob',
+        object,
+      });
+      if (oid === workdirOid) {
+        // ... use the workdir Stats object
+        stats = await fs.lstat(join(dir, filepath));
+      }
+    }
+    await GitIndexManager.acquire({ fs, gitdir, cache }, async function(index) {
+      index.delete({ filepath });
+      if (oid) {
+        index.insert({ filepath, stats, oid });
+      }
+    });
+  } catch (err) {
+    err.caller = 'git.reset';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Get the value of a symbolic ref or resolve a ref to its SHA-1 object id
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The ref to resolve
+ * @param {number} [args.depth = undefined] - How many symbolic references to follow before returning
+ *
+ * @returns {Promise<string>} Resolves successfully with a SHA-1 object id or the value of a symbolic ref
+ *
+ * @example
+ * let currentCommit = await git.resolveRef({ fs, dir: '/tutorial', ref: 'HEAD' })
+ * console.log(currentCommit)
+ * let currentBranch = await git.resolveRef({ fs, dir: '/tutorial', ref: 'HEAD', depth: 2 })
+ * console.log(currentBranch)
+ *
+ */
+async function resolveRef({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  depth,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+
+    const oid = await GitRefManager.resolve({
+      fs: new FileSystem(fs),
+      gitdir,
+      ref,
+      depth,
+    });
+    return oid
+  } catch (err) {
+    err.caller = 'git.resolveRef';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Write an entry to the git config files.
+ *
+ * *Caveats:*
+ * - Currently only the local `$GIT_DIR/config` file can be read or written. However support for the global `~/.gitconfig` and system `$(prefix)/etc/gitconfig` will be added in the future.
+ * - The current parser does not support the more exotic features of the git-config file format such as `[include]` and `[includeIf]`.
+ *
+ * @param {Object} args
+ * @param {FsClient} args.fs - a file system implementation
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.path - The key of the git config entry
+ * @param {string | boolean | number | void} args.value - A value to store at that path. (Use `undefined` as the value to delete a config entry.)
+ * @param {boolean} [args.append = false] - If true, will append rather than replace when setting (use with multi-valued config options).
+ *
+ * @returns {Promise<void>} Resolves successfully when operation completed
+ *
+ * @example
+ * // Write config value
+ * await git.setConfig({
+ *   fs,
+ *   dir: '/tutorial',
+ *   path: 'user.name',
+ *   value: 'Mr. Test'
+ * })
+ *
+ * // Print out config file
+ * let file = await fs.promises.readFile('/tutorial/.git/config', 'utf8')
+ * console.log(file)
+ *
+ * // Delete a config entry
+ * await git.setConfig({
+ *   fs,
+ *   dir: '/tutorial',
+ *   path: 'user.name',
+ *   value: undefined
+ * })
+ *
+ * // Print out config file
+ * file = await fs.promises.readFile('/tutorial/.git/config', 'utf8')
+ * console.log(file)
+ */
+async function setConfig({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  path,
+  value,
+  append = false,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('path', path);
+    // assertParameter('value', value) // We actually allow 'undefined' as a value to unset/delete
+
+    const fs = new FileSystem(_fs);
+    const config = await GitConfigManager.get({ fs, gitdir });
+    if (append) {
+      await config.append(path, value);
+    } else {
+      await config.set(path, value);
+    }
+    await GitConfigManager.save({ fs, gitdir, config });
+  } catch (err) {
+    err.caller = 'git.setConfig';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Tell whether a file has been changed
+ *
+ * The possible resolve values are:
+ *
+ * | status                | description                                                                           |
+ * | --------------------- | ------------------------------------------------------------------------------------- |
+ * | `"ignored"`           | file ignored by a .gitignore rule                                                     |
+ * | `"unmodified"`        | file unchanged from HEAD commit                                                       |
+ * | `"*modified"`         | file has modifications, not yet staged                                                |
+ * | `"*deleted"`          | file has been removed, but the removal is not yet staged                              |
+ * | `"*added"`            | file is untracked, not yet staged                                                     |
+ * | `"absent"`            | file not present in HEAD commit, staging area, or working dir                         |
+ * | `"modified"`          | file has modifications, staged                                                        |
+ * | `"deleted"`           | file has been removed, staged                                                         |
+ * | `"added"`             | previously untracked file, staged                                                     |
+ * | `"*unmodified"`       | working dir and HEAD commit match, but index differs                                  |
+ * | `"*absent"`           | file not present in working dir or HEAD commit, but present in the index              |
+ * | `"*undeleted"`        | file was deleted from the index, but is still in the working dir                      |
+ * | `"*undeletemodified"` | file was deleted from the index, but is present with modifications in the working dir |
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.filepath - The path to the file to query
+ *
+ * @returns {Promise<'ignored'|'unmodified'|'*modified'|'*deleted'|'*added'|'absent'|'modified'|'deleted'|'added'|'*unmodified'|'*absent'|'*undeleted'|'*undeletemodified'>} Resolves successfully with the file's git status
+ *
+ * @example
+ * let status = await git.status({ fs, dir: '/tutorial', filepath: 'README.md' })
+ * console.log(status)
+ *
+ */
+async function status({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  filepath,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('filepath', filepath);
+
+    const fs = new FileSystem(_fs);
+    const cache = {};
+    const ignored = await GitIgnoreManager.isIgnored({
+      fs,
+      gitdir,
+      dir,
+      filepath,
+    });
+    if (ignored) {
+      return 'ignored'
+    }
+    const headTree = await getHeadTree({ fs, cache, gitdir });
+    const treeOid = await getOidAtPath({
+      fs,
+      cache,
+      gitdir,
+      tree: headTree,
+      path: filepath,
+    });
+    const indexEntry = await GitIndexManager.acquire(
+      { fs, gitdir, cache },
+      async function(index) {
+        for (const entry of index) {
+          if (entry.path === filepath) return entry
+        }
+        return null
+      }
+    );
+    const stats = await fs.lstat(join(dir, filepath));
+
+    const H = treeOid !== null; // head
+    const I = indexEntry !== null; // index
+    const W = stats !== null; // working dir
+
+    const getWorkdirOid = async () => {
+      if (I && !compareStats(indexEntry, stats)) {
+        return indexEntry.oid
+      } else {
+        const object = await fs.read(join(dir, filepath));
+        const workdirOid = await hashObject$1({
+          gitdir,
+          type: 'blob',
+          object,
+        });
+        // If the oid in the index === working dir oid but stats differed update cache
+        if (I && indexEntry.oid === workdirOid) {
+          // and as long as our fs.stats aren't bad.
+          // size of -1 happens over a BrowserFS HTTP Backend that doesn't serve Content-Length headers
+          // (like the Karma webserver) because BrowserFS HTTP Backend uses HTTP HEAD requests to do fs.stat
+          if (stats.size !== -1) {
+            // We don't await this so we can return faster for one-off cases.
+            GitIndexManager.acquire({ fs, gitdir, cache }, async function(
+              index
+            ) {
+              index.insert({ filepath, stats, oid: workdirOid });
+            });
+          }
+        }
+        return workdirOid
+      }
+    };
+
+    if (!H && !W && !I) return 'absent' // ---
+    if (!H && !W && I) return '*absent' // -A-
+    if (!H && W && !I) return '*added' // --A
+    if (!H && W && I) {
+      const workdirOid = await getWorkdirOid();
+      // @ts-ignore
+      return workdirOid === indexEntry.oid ? 'added' : '*added' // -AA : -AB
+    }
+    if (H && !W && !I) return 'deleted' // A--
+    if (H && !W && I) {
+      // @ts-ignore
+      return treeOid === indexEntry.oid ? '*deleted' : '*deleted' // AA- : AB-
+    }
+    if (H && W && !I) {
+      const workdirOid = await getWorkdirOid();
+      return workdirOid === treeOid ? '*undeleted' : '*undeletemodified' // A-A : A-B
+    }
+    if (H && W && I) {
+      const workdirOid = await getWorkdirOid();
+      if (workdirOid === treeOid) {
+        // @ts-ignore
+        return workdirOid === indexEntry.oid ? 'unmodified' : '*unmodified' // AAA : ABA
+      } else {
+        // @ts-ignore
+        return workdirOid === indexEntry.oid ? 'modified' : '*modified' // ABB : AAB
+      }
+    }
+    /*
+    ---
+    -A-
+    --A
+    -AA
+    -AB
+    A--
+    AA-
+    AB-
+    A-A
+    A-B
+    AAA
+    ABA
+    ABB
+    AAB
+    */
+  } catch (err) {
+    err.caller = 'git.status';
+    throw err
+  }
+}
+
+async function getOidAtPath({ fs, cache, gitdir, tree, path }) {
+  if (typeof path === 'string') path = path.split('/');
+  const dirname = path.shift();
+  for (const entry of tree) {
+    if (entry.path === dirname) {
+      if (path.length === 0) {
+        return entry.oid
+      }
+      const { type, object } = await _readObject({
+        fs,
+        cache,
+        gitdir,
+        oid: entry.oid,
+      });
+      if (type === 'tree') {
+        const tree = GitTree.from(object);
+        return getOidAtPath({ fs, cache, gitdir, tree, path })
+      }
+      if (type === 'blob') {
+        throw new ObjectTypeError(entry.oid, type, 'blob', path.join('/'))
+      }
+    }
+  }
+  return null
+}
+
+async function getHeadTree({ fs, cache, gitdir }) {
+  // Get the tree from the HEAD commit.
+  let oid;
+  try {
+    oid = await GitRefManager.resolve({ fs, gitdir, ref: 'HEAD' });
+  } catch (e) {
+    // Handle fresh branches with no commits
+    if (e instanceof NotFoundError) {
+      return []
+    }
+  }
+  const { tree } = await _readTree({ fs, cache, gitdir, oid });
+  return tree
+}
+
+// @ts-check
+
+/**
+ * Efficiently get the status of multiple files at once.
+ *
+ * The returned `StatusMatrix` is admittedly not the easiest format to read.
+ * However it conveys a large amount of information in dense format that should make it easy to create reports about the current state of the repository;
+ * without having to do multiple, time-consuming isomorphic-git calls.
+ * My hope is that the speed and flexibility of the function will make up for the learning curve of interpreting the return value.
+ *
+ * ```js live
+ * // get the status of all the files in 'src'
+ * let status = await git.statusMatrix({
+ *   fs,
+ *   dir: '/tutorial',
+ *   filter: f => f.startsWith('src/')
+ * })
+ * console.log(status)
+ * ```
+ *
+ * ```js live
+ * // get the status of all the JSON and Markdown files
+ * let status = await git.statusMatrix({
+ *   fs,
+ *   dir: '/tutorial',
+ *   filter: f => f.endsWith('.json') || f.endsWith('.md')
+ * })
+ * console.log(status)
+ * ```
+ *
+ * The result is returned as a 2D array.
+ * The outer array represents the files and/or blobs in the repo, in alphabetical order.
+ * The inner arrays describe the status of the file:
+ * the first value is the filepath, and the next three are integers
+ * representing the HEAD status, WORKDIR status, and STAGE status of the entry.
+ *
+ * ```js
+ * // example StatusMatrix
+ * [
+ *   ["a.txt", 0, 2, 0], // new, untracked
+ *   ["b.txt", 0, 2, 2], // added, staged
+ *   ["c.txt", 0, 2, 3], // added, staged, with unstaged changes
+ *   ["d.txt", 1, 1, 1], // unmodified
+ *   ["e.txt", 1, 2, 1], // modified, unstaged
+ *   ["f.txt", 1, 2, 2], // modified, staged
+ *   ["g.txt", 1, 2, 3], // modified, staged, with unstaged changes
+ *   ["h.txt", 1, 0, 1], // deleted, unstaged
+ *   ["i.txt", 1, 0, 0], // deleted, staged
+ * ]
+ * ```
+ *
+ * - The HEAD status is either absent (0) or present (1).
+ * - The WORKDIR status is either absent (0), identical to HEAD (1), or different from HEAD (2).
+ * - The STAGE status is either absent (0), identical to HEAD (1), identical to WORKDIR (2), or different from WORKDIR (3).
+ *
+ * ```ts
+ * type Filename      = string
+ * type HeadStatus    = 0 | 1
+ * type WorkdirStatus = 0 | 1 | 2
+ * type StageStatus   = 0 | 1 | 2 | 3
+ *
+ * type StatusRow     = [Filename, HeadStatus, WorkdirStatus, StageStatus]
+ *
+ * type StatusMatrix  = StatusRow[]
+ * ```
+ *
+ * > Think of the natural progression of file modifications as being from HEAD (previous) -> WORKDIR (current) -> STAGE (next).
+ * > Then HEAD is "version 1", WORKDIR is "version 2", and STAGE is "version 3".
+ * > Then, imagine a "version 0" which is before the file was created.
+ * > Then the status value in each column corresponds to the oldest version of the file it is identical to.
+ * > (For a file to be identical to "version 0" means the file is deleted.)
+ *
+ * Here are some examples of queries you can answer using the result:
+ *
+ * #### Q: What files have been deleted?
+ * ```js
+ * const FILE = 0, WORKDIR = 2
+ *
+ * const filenames = (await statusMatrix({ dir }))
+ *   .filter(row => row[WORKDIR] === 0)
+ *   .map(row => row[FILE])
+ * ```
+ *
+ * #### Q: What files have unstaged changes?
+ * ```js
+ * const FILE = 0, WORKDIR = 2, STAGE = 3
+ *
+ * const filenames = (await statusMatrix({ dir }))
+ *   .filter(row => row[WORKDIR] !== row[STAGE])
+ *   .map(row => row[FILE])
+ * ```
+ *
+ * #### Q: What files have been modified since the last commit?
+ * ```js
+ * const FILE = 0, HEAD = 1, WORKDIR = 2
+ *
+ * const filenames = (await statusMatrix({ dir }))
+ *   .filter(row => row[HEAD] !== row[WORKDIR])
+ *   .map(row => row[FILE])
+ * ```
+ *
+ * #### Q: What files will NOT be changed if I commit right now?
+ * ```js
+ * const FILE = 0, HEAD = 1, STAGE = 3
+ *
+ * const filenames = (await statusMatrix({ dir }))
+ *   .filter(row => row[HEAD] === row[STAGE])
+ *   .map(row => row[FILE])
+ * ```
+ *
+ * For reference, here are all possible combinations:
+ *
+ * | HEAD | WORKDIR | STAGE | `git status --short` equivalent |
+ * | ---- | ------- | ----- | ------------------------------- |
+ * | 0    | 0       | 0     | ``                              |
+ * | 0    | 0       | 3     | `AD`                            |
+ * | 0    | 2       | 0     | `??`                            |
+ * | 0    | 2       | 2     | `A `                            |
+ * | 0    | 2       | 3     | `AM`                            |
+ * | 1    | 0       | 0     | `D `                            |
+ * | 1    | 0       | 1     | ` D`                            |
+ * | 1    | 0       | 3     | `MD`                            |
+ * | 1    | 1       | 0     | `D ` + `??`                     |
+ * | 1    | 1       | 1     | ``                              |
+ * | 1    | 1       | 3     | `MM`                            |
+ * | 1    | 2       | 0     | `D ` + `??`                     |
+ * | 1    | 2       | 1     | ` M`                            |
+ * | 1    | 2       | 2     | `M `                            |
+ * | 1    | 2       | 3     | `MM`                            |
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} args.dir - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir, '.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} [args.ref = 'HEAD'] - Optionally specify a different commit to compare against the workdir and stage instead of the HEAD
+ * @param {string[]} [args.filepaths = ['.']] - Limit the query to the given files and directories
+ * @param {function(string): boolean} [args.filter] - Filter the results to only those whose filepath matches a function.
+ *
+ * @returns {Promise<Array<StatusRow>>} Resolves with a status matrix, described below.
+ * @see StatusRow
+ */
+async function statusMatrix({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref = 'HEAD',
+  filepaths = ['.'],
+  filter,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+
+    const fs = new FileSystem(_fs);
+    const cache = {};
+    return await _walk({
+      fs,
+      cache,
+      dir,
+      gitdir,
+      trees: [TREE({ ref }), WORKDIR(), STAGE()],
+      map: async function(filepath, [head, workdir, stage]) {
+        // Ignore ignored files, but only if they are not already tracked.
+        if (!head && !stage && workdir) {
+          if (
+            await GitIgnoreManager.isIgnored({
+              fs,
+              dir,
+              filepath,
+            })
+          ) {
+            return null
+          }
+        }
+        // match against base paths
+        if (!filepaths.some(base => worthWalking(filepath, base))) {
+          return null
+        }
+        // Late filter against file names
+        if (filter) {
+          if (!filter(filepath)) return
+        }
+
+        // For now, just bail on directories
+        const headType = head && (await head.type());
+        if (headType === 'tree' || headType === 'special') return
+        if (headType === 'commit') return null
+
+        const workdirType = workdir && (await workdir.type());
+        if (workdirType === 'tree' || workdirType === 'special') return
+
+        const stageType = stage && (await stage.type());
+        if (stageType === 'commit') return null
+        if (stageType === 'tree' || stageType === 'special') return
+
+        // Figure out the oids, using the staged oid for the working dir oid if the stats match.
+        const headOid = head ? await head.oid() : undefined;
+        const stageOid = stage ? await stage.oid() : undefined;
+        let workdirOid;
+        if (!head && workdir && !stage) {
+          // We don't actually NEED the sha. Any sha will do
+          // TODO: update this logic to handle N trees instead of just 3.
+          workdirOid = '42';
+        } else if (workdir) {
+          workdirOid = await workdir.oid();
+        }
+        const entry = [undefined, headOid, workdirOid, stageOid];
+        const result = entry.map(value => entry.indexOf(value));
+        result.shift(); // remove leading undefined entry
+        return [filepath, ...result]
+      },
+    })
+  } catch (err) {
+    err.caller = 'git.statusMatrix';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Create a lightweight tag
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - What to name the tag
+ * @param {string} [args.object = 'HEAD'] - What oid the tag refers to. (Will resolve to oid if value is a ref.) By default, the commit object which is referred by the current `HEAD` is used.
+ * @param {boolean} [args.force = false] - Instead of throwing an error if a tag named `ref` already exists, overwrite the existing tag.
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.tag({ fs, dir: '/tutorial', ref: 'test-tag' })
+ * console.log('done')
+ *
+ */
+async function tag({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  object,
+  force = false,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+
+    const fs = new FileSystem(_fs);
+
+    if (ref === undefined) {
+      throw new MissingParameterError('ref')
+    }
+
+    ref = ref.startsWith('refs/tags/') ? ref : `refs/tags/${ref}`;
+
+    // Resolve passed object
+    const value = await GitRefManager.resolve({
+      fs,
+      gitdir,
+      ref: object || 'HEAD',
+    });
+
+    if (!force && (await GitRefManager.exists({ fs, gitdir, ref }))) {
+      throw new AlreadyExistsError('tag', ref)
+    }
+
+    await GitRefManager.writeRef({ fs, gitdir, ref, value });
+  } catch (err) {
+    err.caller = 'git.tag';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Return the version number of isomorphic-git
+ *
+ * I don't know why you might need this. I added it just so I could check that I was getting
+ * the correct version of the library and not a cached version.
+ *
+ * @returns {string} the version string taken from package.json at publication time
+ *
+ * @example
+ * console.log(git.version())
+ *
+ */
+function version() {
+  try {
+    return pkg.version
+  } catch (err) {
+    err.caller = 'git.version';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @callback WalkerMap
+ * @param {string} filename
+ * @param {?WalkerEntry[]} entries
+ * @returns {Promise<any>}
+ */
+
+/**
+ * @callback WalkerReduce
+ * @param {any} parent
+ * @param {any[]} children
+ * @returns {Promise<any>}
+ */
+
+/**
+ * @callback WalkerIterateCallback
+ * @param {WalkerEntry[]} entries
+ * @returns {Promise<any[]>}
+ */
+
+/**
+ * @callback WalkerIterate
+ * @param {WalkerIterateCallback} walk
+ * @param {IterableIterator<WalkerEntry[]>} children
+ * @returns {Promise<any[]>}
+ */
+
+/**
+ * A powerful recursive tree-walking utility.
+ *
+ * The `walk` API simplifies gathering detailed information about a tree or comparing all the filepaths in two or more trees.
+ * Trees can be git commits, the working directory, or the or git index (staging area).
+ * As long as a file or directory is present in at least one of the trees, it will be traversed.
+ * Entries are traversed in alphabetical order.
+ *
+ * The arguments to `walk` are the `trees` you want to traverse, and 3 optional transform functions:
+ *  `map`, `reduce`, and `iterate`.
+ *
+ * ## `TREE`, `WORKDIR`, and `STAGE`
+ *
+ * Tree walkers are represented by three separate functions that can be imported:
+ *
+ * ```js
+ * import { TREE, WORKDIR, STAGE } from 'isomorphic-git'
+ * ```
+ *
+ * These functions return opaque handles called `Walker`s.
+ * The only thing that `Walker` objects are good for is passing into `walk`.
+ * Here are the three `Walker`s passed into `walk` by the `statusMatrix` command for example:
+ *
+ * ```js
+ * let ref = 'HEAD'
+ *
+ * let trees = [TREE({ ref }), WORKDIR(), STAGE()]
+ * ```
+ *
+ * For the arguments, see the doc pages for [TREE](./TREE.md), [WORKDIR](./WORKDIR.md), and [STAGE](./STAGE.md).
+ *
+ * `map`, `reduce`, and `iterate` allow you control the recursive walk by pruning and transforming `WalkerEntry`s into the desired result.
+ *
+ * ## WalkerEntry
+ *
+ * {@link WalkerEntry typedef}
+ *
+ * `map` receives an array of `WalkerEntry[]` as its main argument, one `WalkerEntry` for each `Walker` in the `trees` argument.
+ * The methods are memoized per `WalkerEntry` so calling them multiple times in a `map` function does not adversely impact performance.
+ * By only computing these values if needed, you build can build lean, mean, efficient walking machines.
+ *
+ * ### WalkerEntry#type()
+ *
+ * Returns the kind as a string. This is normally either `tree` or `blob`.
+ *
+ * `TREE`, `STAGE`, and `WORKDIR` walkers all return a string.
+ *
+ * Possible values:
+ *
+ * - `'tree'` directory
+ * - `'blob'` file
+ * - `'special'` used by `WORKDIR` to represent irregular files like sockets and FIFOs
+ * - `'commit'` used by `TREE` to represent submodules
+ *
+ * ```js
+ * await entry.type()
+ * ```
+ *
+ * ### WalkerEntry#mode()
+ *
+ * Returns the file mode as a number. Use this to distinguish between regular files, symlinks, and executable files.
+ *
+ * `TREE`, `STAGE`, and `WORKDIR` walkers all return a number for all `type`s of entries.
+ *
+ * It has been normalized to one of the 4 values that are allowed in git commits:
+ *
+ * - `0o40000` directory
+ * - `0o100644` file
+ * - `0o100755` file (executable)
+ * - `0o120000` symlink
+ *
+ * Tip: to make modes more readable, you can print them to octal using `.toString(8)`.
+ *
+ * ```js
+ * await entry.mode()
+ * ```
+ *
+ * ### WalkerEntry#oid()
+ *
+ * Returns the SHA-1 object id for blobs and trees.
+ *
+ * `TREE` walkers return a string for `blob` and `tree` entries.
+ *
+ * `STAGE` and `WORKDIR` walkers return a string for `blob` entries and `undefined` for `tree` entries.
+ *
+ * ```js
+ * await entry.oid()
+ * ```
+ *
+ * ### WalkerEntry#content()
+ *
+ * Returns the file contents as a Buffer.
+ *
+ * `TREE` and `WORKDIR` walkers return a Buffer for `blob` entries and `undefined` for `tree` entries.
+ *
+ * `STAGE` walkers always return `undefined` since the file contents are never stored in the stage.
+ *
+ * ```js
+ * await entry.content()
+ * ```
+ *
+ * ### WalkerEntry#stat()
+ *
+ * Returns a normalized subset of filesystem Stat data.
+ *
+ * `WORKDIR` walkers return a `Stat` for `blob` and `tree` entries.
+ *
+ * `STAGE` walkers return a `Stat` for `blob` entries and `undefined` for `tree` entries.
+ *
+ * `TREE` walkers return `undefined` for all entry types.
+ *
+ * ```js
+ * await entry.stat()
+ * ```
+ *
+ * {@link Stat typedef}
+ *
+ * ## map(string, Array<WalkerEntry|null>) => Promise<any>
+ *
+ * {@link WalkerMap typedef}
+ *
+ * This is the function that is called once per entry BEFORE visiting the children of that node.
+ *
+ * If you return `null` for a `tree` entry, then none of the children of that `tree` entry will be walked.
+ *
+ * This is a good place for query logic, such as examining the contents of a file.
+ * Ultimately, compare all the entries and return any values you are interested in.
+ * If you do not return a value (or return undefined) that entry will be filtered from the results.
+ *
+ * Example 1: Find all the files containing the word 'foo'.
+ * ```js
+ * async function map(filepath, [head, workdir]) {
+ *   let content = (await workdir.content()).toString('utf8')
+ *   if (content.contains('foo')) {
+ *     return {
+ *       filepath,
+ *       content
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * Example 2: Return the difference between the working directory and the HEAD commit
+ * ```js
+ * const diff = require('diff-lines')
+ * async function map(filepath, [head, workdir]) {
+ *   return {
+ *     filepath,
+ *     oid: await head.oid(),
+ *     diff: diff((await head.content()).toString('utf8'), (await workdir.content()).toString('utf8'))
+ *   }
+ * }
+ * ```
+ *
+ * Example 3:
+ * ```js
+ * let path = require('path')
+ * // Only examine files in the directory `cwd`
+ * let cwd = 'src/app'
+ * async function map (filepath, [head, workdir, stage]) {
+ *   if (
+ *     // don't skip the root directory
+ *     head.fullpath !== '.' &&
+ *     // return true for 'src' and 'src/app'
+ *     !cwd.startsWith(filepath) &&
+ *     // return true for 'src/app/*'
+ *     path.dirname(filepath) !== cwd
+ *   ) {
+ *     return null
+ *   } else {
+ *     return filepath
+ *   }
+ * }
+ * ```
+ *
+ * ## reduce(parent, children)
+ *
+ * {@link WalkerReduce typedef}
+ *
+ * This is the function that is called once per entry AFTER visiting the children of that node.
+ *
+ * Default: `async (parent, children) => parent === undefined ? children.flat() : [parent, children].flat()`
+ *
+ * The default implementation of this function returns all directories and children in a giant flat array.
+ * You can define a different accumulation method though.
+ *
+ * Example: Return a hierarchical structure
+ * ```js
+ * async function reduce (parent, children) {
+ *   return Object.assign(parent, { children })
+ * }
+ * ```
+ *
+ * ## iterate(walk, children)
+ *
+ * {@link WalkerIterate typedef}
+ *
+ * {@link WalkerIterateCallback typedef}
+ *
+ * Default: `(walk, children) => Promise.all([...children].map(walk))`
+ *
+ * The default implementation recurses all children concurrently using Promise.all.
+ * However you could use a custom function to traverse children serially or use a global queue to throttle recursion.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {Walker[]} args.trees - The trees you want to traverse
+ * @param {WalkerMap} [args.map] - Transform `WalkerEntry`s into a result form
+ * @param {WalkerReduce} [args.reduce] - Control how mapped entries are combined with their parent result
+ * @param {WalkerIterate} [args.iterate] - Fine-tune how entries within a tree are iterated over
+ *
+ * @returns {Promise<any>} The finished tree-walking result
+ */
+async function walk({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  trees,
+  map,
+  reduce,
+  iterate,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('trees', trees);
+
+    return await _walk({
+      fs: new FileSystem(fs),
+      cache: {},
+      dir,
+      gitdir,
+      trees,
+      map,
+      reduce,
+      iterate,
+    })
+  } catch (err) {
+    err.caller = 'git.walk';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Write a blob object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {Uint8Array} args.blob - The blob object to write
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly written object
+ *
+ * @example
+ * // Manually create a blob.
+ * let oid = await git.writeBlob({
+ *   fs,
+ *   dir: '/tutorial',
+ *   blob: new Uint8Array([])
+ * })
+ *
+ * console.log('oid', oid) // should be 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
+ *
+ */
+async function writeBlob({ fs, dir, gitdir = join(dir, '.git'), blob }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('blob', blob);
+
+    return await _writeObject({
+      fs: new FileSystem(fs),
+      gitdir,
+      type: 'blob',
+      object: blob,
+      format: 'content',
+    })
+  } catch (err) {
+    err.caller = 'git.writeBlob';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {CommitObject} args.commit
+ *
+ * @returns {Promise<string>}
+ * @see CommitObject
+ *
+ */
+async function _writeCommit({ fs, gitdir, commit }) {
+  // Convert object to buffer
+  const object = GitCommit.from(commit).toObject();
+  const oid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'commit',
+    object,
+    format: 'content',
+  });
+  return oid
+}
+
+// @ts-check
+
+/**
+ * Write a commit object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {CommitObject} args.commit - The object to write
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly written object
+ * @see CommitObject
+ *
+ */
+async function writeCommit({
+  fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  commit,
+}) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('commit', commit);
+
+    return await _writeCommit({
+      fs: new FileSystem(fs),
+      gitdir,
+      commit,
+    })
+  } catch (err) {
+    err.caller = 'git.writeCommit';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Write a git object directly
+ *
+ * `format` can have the following values:
+ *
+ * | param      | description                                                                                                                                                      |
+ * | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+ * | 'deflated' | Treat `object` as the raw deflate-compressed buffer for an object, meaning can be written to `.git/objects/**` as-is.                                           |
+ * | 'wrapped'  | Treat `object` as the inflated object buffer wrapped in the git object header. This is the raw buffer used when calculating the SHA-1 object id of a git object. |
+ * | 'content'  | Treat `object` as the object buffer without the git header.                                                                                                      |
+ * | 'parsed'   | Treat `object` as a parsed representation of the object.                                                                                                         |
+ *
+ * If `format` is `'parsed'`, then `object` must match one of the schemas for `CommitObject`, `TreeObject`, `TagObject`, or a `string` (for blobs).
+ *
+ * {@link CommitObject typedef}
+ *
+ * {@link TreeObject typedef}
+ *
+ * {@link TagObject typedef}
+ *
+ * If `format` is `'content'`, `'wrapped'`, or `'deflated'`, `object` should be a `Uint8Array`.
+ *
+ * @deprecated
+ * > This command is overly complicated.
+ * >
+ * > If you know the type of object you are writing, use [`writeBlob`](./writeBlob.md), [`writeCommit`](./writeCommit.md), [`writeTag`](./writeTag.md), or [`writeTree`](./writeTree.md).
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string | Uint8Array | CommitObject | TreeObject | TagObject} args.object - The object to write.
+ * @param {'blob'|'tree'|'commit'|'tag'} [args.type] - The kind of object to write.
+ * @param {'deflated' | 'wrapped' | 'content' | 'parsed'} [args.format = 'parsed'] - What format the object is in. The possible choices are listed below.
+ * @param {string} [args.oid] - If `format` is `'deflated'` then this param is required. Otherwise it is calculated.
+ * @param {string} [args.encoding] - If `type` is `'blob'` then `object` will be converted to a Uint8Array using `encoding`.
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly written object.
+ *
+ * @example
+ * // Manually create an annotated tag.
+ * let sha = await git.resolveRef({ fs, dir: '/tutorial', ref: 'HEAD' })
+ * console.log('commit', sha)
+ *
+ * let oid = await git.writeObject({
+ *   fs,
+ *   dir: '/tutorial',
+ *   type: 'tag',
+ *   object: {
+ *     object: sha,
+ *     type: 'commit',
+ *     tag: 'my-tag',
+ *     tagger: {
+ *       name: 'your name',
+ *       email: 'email@example.com',
+ *       timestamp: Math.floor(Date.now()/1000),
+ *       timezoneOffset: new Date().getTimezoneOffset()
+ *     },
+ *     message: 'Optional message'
+ *   }
+ * })
+ *
+ * console.log('tag', oid)
+ *
+ */
+async function writeObject({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  type,
+  object,
+  format = 'parsed',
+  oid,
+  encoding = undefined,
+}) {
+  try {
+    const fs = new FileSystem(_fs);
+    // Convert object to buffer
+    if (format === 'parsed') {
+      switch (type) {
+        case 'commit':
+          object = GitCommit.from(object).toObject();
+          break
+        case 'tree':
+          object = GitTree.from(object).toObject();
+          break
+        case 'blob':
+          object = Buffer.from(object, encoding);
+          break
+        case 'tag':
+          object = GitAnnotatedTag.from(object).toObject();
+          break
+        default:
+          throw new ObjectTypeError(oid || '', type, 'blob|commit|tag|tree')
+      }
+      // GitObjectManager does not know how to serialize content, so we tweak that parameter before passing it.
+      format = 'content';
+    }
+    oid = await _writeObject({
+      fs,
+      gitdir,
+      type,
+      object,
+      oid,
+      format,
+    });
+    return oid
+  } catch (err) {
+    err.caller = 'git.writeObject';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Write a ref which refers to the specified SHA-1 object id, or a symbolic ref which refers to the specified ref.
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {string} args.ref - The name of the ref to write
+ * @param {string} args.value - When `symbolic` is false, a ref or an SHA-1 object id. When true, a ref starting with `refs/`.
+ * @param {boolean} [args.force = false] - Instead of throwing an error if a ref named `ref` already exists, overwrite the existing ref.
+ * @param {boolean} [args.symbolic = false] - Whether the ref is symbolic or not.
+ *
+ * @returns {Promise<void>} Resolves successfully when filesystem operations are complete
+ *
+ * @example
+ * await git.writeRef({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ref: 'refs/heads/another-branch',
+ *   value: 'HEAD'
+ * })
+ * await git.writeRef({
+ *   fs,
+ *   dir: '/tutorial',
+ *   ref: 'HEAD',
+ *   value: 'refs/heads/another-branch',
+ *   force: true,
+ *   symbolic: true
+ * })
+ * console.log('done')
+ *
+ */
+async function writeRef({
+  fs: _fs,
+  dir,
+  gitdir = join(dir, '.git'),
+  ref,
+  value,
+  force = false,
+  symbolic = false,
+}) {
+  try {
+    assertParameter('fs', _fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('ref', ref);
+    assertParameter('value', value);
+
+    const fs = new FileSystem(_fs);
+
+    if (ref !== cleanGitRef.clean(ref)) {
+      throw new InvalidRefNameError(ref, cleanGitRef.clean(ref))
+    }
+
+    if (!force && (await GitRefManager.exists({ fs, gitdir, ref }))) {
+      throw new AlreadyExistsError('ref', ref)
+    }
+
+    if (symbolic) {
+      await GitRefManager.writeSymbolicRef({
+        fs,
+        gitdir,
+        ref,
+        value,
+      });
+    } else {
+      value = await GitRefManager.resolve({
+        fs,
+        gitdir,
+        ref: value,
+      });
+      await GitRefManager.writeRef({
+        fs,
+        gitdir,
+        ref,
+        value,
+      });
+    }
+  } catch (err) {
+    err.caller = 'git.writeRef';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * @param {object} args
+ * @param {import('../models/FileSystem.js').FileSystem} args.fs
+ * @param {string} args.gitdir
+ * @param {TagObject} args.tag
+ *
+ * @returns {Promise<string>}
+ */
+async function _writeTag({ fs, gitdir, tag }) {
+  // Convert object to buffer
+  const object = GitAnnotatedTag.from(tag).toObject();
+  const oid = await _writeObject({
+    fs,
+    gitdir,
+    type: 'tag',
+    object,
+    format: 'content',
+  });
+  return oid
+}
+
+// @ts-check
+
+/**
+ * Write an annotated tag object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {TagObject} args.tag - The object to write
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly written object
+ * @see TagObject
+ *
+ * @example
+ * // Manually create an annotated tag.
+ * let sha = await git.resolveRef({ fs, dir: '/tutorial', ref: 'HEAD' })
+ * console.log('commit', sha)
+ *
+ * let oid = await git.writeTag({
+ *   fs,
+ *   dir: '/tutorial',
+ *   tag: {
+ *     object: sha,
+ *     type: 'commit',
+ *     tag: 'my-tag',
+ *     tagger: {
+ *       name: 'your name',
+ *       email: 'email@example.com',
+ *       timestamp: Math.floor(Date.now()/1000),
+ *       timezoneOffset: new Date().getTimezoneOffset()
+ *     },
+ *     message: 'Optional message'
+ *   }
+ * })
+ *
+ * console.log('tag', oid)
+ *
+ */
+async function writeTag({ fs, dir, gitdir = join(dir, '.git'), tag }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('tag', tag);
+
+    return await _writeTag({
+      fs: new FileSystem(fs),
+      gitdir,
+      tag,
+    })
+  } catch (err) {
+    err.caller = 'git.writeTag';
+    throw err
+  }
+}
+
+// @ts-check
+
+/**
+ * Write a tree object directly
+ *
+ * @param {object} args
+ * @param {FsClient} args.fs - a file system client
+ * @param {string} [args.dir] - The [working tree](dir-vs-gitdir.md) directory path
+ * @param {string} [args.gitdir=join(dir,'.git')] - [required] The [git directory](dir-vs-gitdir.md) path
+ * @param {TreeObject} args.tree - The object to write
+ *
+ * @returns {Promise<string>} Resolves successfully with the SHA-1 object id of the newly written object.
+ * @see TreeObject
+ * @see TreeEntry
+ *
+ */
+async function writeTree({ fs, dir, gitdir = join(dir, '.git'), tree }) {
+  try {
+    assertParameter('fs', fs);
+    assertParameter('gitdir', gitdir);
+    assertParameter('tree', tree);
+
+    return await _writeTree({
+      fs: new FileSystem(fs),
+      gitdir,
+      tree,
+    })
+  } catch (err) {
+    err.caller = 'git.writeTree';
+    throw err
+  }
+}
+
+// default export
+var index = {
+  Errors,
+  STAGE,
+  TREE,
+  WORKDIR,
+  add,
+  addNote,
+  addRemote,
+  annotatedTag,
+  branch,
+  checkout,
+  clone,
+  commit,
+  getConfig,
+  getConfigAll,
+  setConfig,
+  currentBranch,
+  deleteBranch,
+  deleteRef,
+  deleteRemote,
+  deleteTag,
+  expandOid,
+  expandRef,
+  fastForward,
+  fetch,
+  findMergeBase,
+  findRoot,
+  getRemoteInfo,
+  getRemoteInfo2,
+  hashBlob,
+  indexPack,
+  init,
+  isDescendent,
+  listBranches,
+  listFiles,
+  listNotes,
+  listRemotes,
+  listServerRefs,
+  listTags,
+  log,
+  merge,
+  packObjects,
+  pull,
+  push,
+  readBlob,
+  readCommit,
+  readNote,
+  readObject,
+  readTag,
+  readTree,
+  remove,
+  removeNote,
+  renameBranch,
+  resetIndex,
+  resolveRef,
+  status,
+  statusMatrix,
+  tag,
+  version,
+  walk,
+  writeBlob,
+  writeCommit,
+  writeObject,
+  writeRef,
+  writeTag,
+  writeTree,
+};
+
+exports.Errors = Errors;
+exports.STAGE = STAGE;
+exports.TREE = TREE;
+exports.WORKDIR = WORKDIR;
+exports.add = add;
+exports.addNote = addNote;
+exports.addRemote = addRemote;
+exports.annotatedTag = annotatedTag;
+exports.branch = branch;
+exports.checkout = checkout;
+exports.clone = clone;
+exports.commit = commit;
+exports.currentBranch = currentBranch;
+exports.default = index;
+exports.deleteBranch = deleteBranch;
+exports.deleteRef = deleteRef;
+exports.deleteRemote = deleteRemote;
+exports.deleteTag = deleteTag;
+exports.expandOid = expandOid;
+exports.expandRef = expandRef;
+exports.fastForward = fastForward;
+exports.fetch = fetch;
+exports.findMergeBase = findMergeBase;
+exports.findRoot = findRoot;
+exports.getConfig = getConfig;
+exports.getConfigAll = getConfigAll;
+exports.getRemoteInfo = getRemoteInfo;
+exports.getRemoteInfo2 = getRemoteInfo2;
+exports.hashBlob = hashBlob;
+exports.indexPack = indexPack;
+exports.init = init;
+exports.isDescendent = isDescendent;
+exports.listBranches = listBranches;
+exports.listFiles = listFiles;
+exports.listNotes = listNotes;
+exports.listRemotes = listRemotes;
+exports.listServerRefs = listServerRefs;
+exports.listTags = listTags;
+exports.log = log;
+exports.merge = merge;
+exports.packObjects = packObjects;
+exports.pull = pull;
+exports.push = push;
+exports.readBlob = readBlob;
+exports.readCommit = readCommit;
+exports.readNote = readNote;
+exports.readObject = readObject;
+exports.readTag = readTag;
+exports.readTree = readTree;
+exports.remove = remove;
+exports.removeNote = removeNote;
+exports.renameBranch = renameBranch;
+exports.resetIndex = resetIndex;
+exports.resolveRef = resolveRef;
+exports.setConfig = setConfig;
+exports.status = status;
+exports.statusMatrix = statusMatrix;
+exports.tag = tag;
+exports.version = version;
+exports.walk = walk;
+exports.writeBlob = writeBlob;
+exports.writeCommit = writeCommit;
+exports.writeObject = writeObject;
+exports.writeRef = writeRef;
+exports.writeTag = writeTag;
+exports.writeTree = writeTree;
+
+}).call(this,require('buffer').Buffer)
+},{"async-lock":45,"buffer":65,"clean-git-ref":75,"crc-32":78,"diff3":83,"ignore":149,"pako":183,"pify":201,"sha.js/sha1.js":238}],149:[function(require,module,exports){
+(function (process){
+// A simple implementation of make-array
+function makeArray (subject) {
+  return Array.isArray(subject)
+    ? subject
+    : [subject]
+}
+
+const EMPTY = ''
+const SPACE = ' '
+const ESCAPE = '\\'
+const REGEX_TEST_BLANK_LINE = /^\s+$/
+const REGEX_REPLACE_LEADING_EXCAPED_EXCLAMATION = /^\\!/
+const REGEX_REPLACE_LEADING_EXCAPED_HASH = /^\\#/
+const REGEX_SPLITALL_CRLF = /\r?\n/g
+// /foo,
+// ./foo,
+// ../foo,
+// .
+// ..
+const REGEX_TEST_INVALID_PATH = /^\.*\/|^\.+$/
+
+const SLASH = '/'
+const KEY_IGNORE = typeof Symbol !== 'undefined'
+  ? Symbol.for('node-ignore')
+  /* istanbul ignore next */
+  : 'node-ignore'
+
+const define = (object, key, value) =>
+  Object.defineProperty(object, key, {value})
+
+const REGEX_REGEXP_RANGE = /([0-z])-([0-z])/g
+
+// Sanitize the range of a regular expression
+// The cases are complicated, see test cases for details
+const sanitizeRange = range => range.replace(
+  REGEX_REGEXP_RANGE,
+  (match, from, to) => from.charCodeAt(0) <= to.charCodeAt(0)
+    ? match
+    // Invalid range (out of order) which is ok for gitignore rules but
+    //   fatal for JavaScript regular expression, so eliminate it.
+    : EMPTY
+)
+
+// See fixtures #59
+const cleanRangeBackSlash = slashes => {
+  const {length} = slashes
+  return slashes.slice(0, length - length % 2)
+}
+
+// > If the pattern ends with a slash,
+// > it is removed for the purpose of the following description,
+// > but it would only find a match with a directory.
+// > In other words, foo/ will match a directory foo and paths underneath it,
+// > but will not match a regular file or a symbolic link foo
+// >  (this is consistent with the way how pathspec works in general in Git).
+// '`foo/`' will not match regular file '`foo`' or symbolic link '`foo`'
+// -> ignore-rules will not deal with it, because it costs extra `fs.stat` call
+//      you could use option `mark: true` with `glob`
+
+// '`foo/`' should not continue with the '`..`'
+const REPLACERS = [
+
+  // > Trailing spaces are ignored unless they are quoted with backslash ("\")
+  [
+    // (a\ ) -> (a )
+    // (a  ) -> (a)
+    // (a \ ) -> (a  )
+    /\\?\s+$/,
+    match => match.indexOf('\\') === 0
+      ? SPACE
+      : EMPTY
+  ],
+
+  // replace (\ ) with ' '
+  [
+    /\\\s/g,
+    () => SPACE
+  ],
+
+  // Escape metacharacters
+  // which is written down by users but means special for regular expressions.
+
+  // > There are 12 characters with special meanings:
+  // > - the backslash \,
+  // > - the caret ^,
+  // > - the dollar sign $,
+  // > - the period or dot .,
+  // > - the vertical bar or pipe symbol |,
+  // > - the question mark ?,
+  // > - the asterisk or star *,
+  // > - the plus sign +,
+  // > - the opening parenthesis (,
+  // > - the closing parenthesis ),
+  // > - and the opening square bracket [,
+  // > - the opening curly brace {,
+  // > These special characters are often called "metacharacters".
+  [
+    /[\\$.|*+(){^]/g,
+    match => `\\${match}`
+  ],
+
+  [
+    // > a question mark (?) matches a single character
+    /(?!\\)\?/g,
+    () => '[^/]'
+  ],
+
+  // leading slash
+  [
+
+    // > A leading slash matches the beginning of the pathname.
+    // > For example, "/*.c" matches "cat-file.c" but not "mozilla-sha1/sha1.c".
+    // A leading slash matches the beginning of the pathname
+    /^\//,
+    () => '^'
+  ],
+
+  // replace special metacharacter slash after the leading slash
+  [
+    /\//g,
+    () => '\\/'
+  ],
+
+  [
+    // > A leading "**" followed by a slash means match in all directories.
+    // > For example, "**/foo" matches file or directory "foo" anywhere,
+    // > the same as pattern "foo".
+    // > "**/foo/bar" matches file or directory "bar" anywhere that is directly
+    // >   under directory "foo".
+    // Notice that the '*'s have been replaced as '\\*'
+    /^\^*\\\*\\\*\\\//,
+
+    // '**/foo' <-> 'foo'
+    () => '^(?:.*\\/)?'
+  ],
+
+  // starting
+  [
+    // there will be no leading '/'
+    //   (which has been replaced by section "leading slash")
+    // If starts with '**', adding a '^' to the regular expression also works
+    /^(?=[^^])/,
+    function startingReplacer () {
+      // If has a slash `/` at the beginning or middle
+      return !/\/(?!$)/.test(this)
+        // > Prior to 2.22.1
+        // > If the pattern does not contain a slash /,
+        // >   Git treats it as a shell glob pattern
+        // Actually, if there is only a trailing slash,
+        //   git also treats it as a shell glob pattern
+
+        // After 2.22.1 (compatible but clearer)
+        // > If there is a separator at the beginning or middle (or both)
+        // > of the pattern, then the pattern is relative to the directory
+        // > level of the particular .gitignore file itself.
+        // > Otherwise the pattern may also match at any level below
+        // > the .gitignore level.
+        ? '(?:^|\\/)'
+
+        // > Otherwise, Git treats the pattern as a shell glob suitable for
+        // >   consumption by fnmatch(3)
+        : '^'
+    }
+  ],
+
+  // two globstars
+  [
+    // Use lookahead assertions so that we could match more than one `'/**'`
+    /\\\/\\\*\\\*(?=\\\/|$)/g,
+
+    // Zero, one or several directories
+    // should not use '*', or it will be replaced by the next replacer
+
+    // Check if it is not the last `'/**'`
+    (_, index, str) => index + 6 < str.length
+
+      // case: /**/
+      // > A slash followed by two consecutive asterisks then a slash matches
+      // >   zero or more directories.
+      // > For example, "a/**/b" matches "a/b", "a/x/b", "a/x/y/b" and so on.
+      // '/**/'
+      ? '(?:\\/[^\\/]+)*'
+
+      // case: /**
+      // > A trailing `"/**"` matches everything inside.
+
+      // #21: everything inside but it should not include the current folder
+      : '\\/.+'
+  ],
+
+  // intermediate wildcards
+  [
+    // Never replace escaped '*'
+    // ignore rule '\*' will match the path '*'
+
+    // 'abc.*/' -> go
+    // 'abc.*'  -> skip this rule
+    /(^|[^\\]+)\\\*(?=.+)/g,
+
+    // '*.js' matches '.js'
+    // '*.js' doesn't match 'abc'
+    (_, p1) => `${p1}[^\\/]*`
+  ],
+
+  [
+    // unescape, revert step 3 except for back slash
+    // For example, if a user escape a '\\*',
+    // after step 3, the result will be '\\\\\\*'
+    /\\\\\\(?=[$.|*+(){^])/g,
+    () => ESCAPE
+  ],
+
+  [
+    // '\\\\' -> '\\'
+    /\\\\/g,
+    () => ESCAPE
+  ],
+
+  [
+    // > The range notation, e.g. [a-zA-Z],
+    // > can be used to match one of the characters in a range.
+
+    // `\` is escaped by step 3
+    /(\\)?\[([^\]/]*?)(\\*)($|\])/g,
+    (match, leadEscape, range, endEscape, close) => leadEscape === ESCAPE
+      // '\\[bar]' -> '\\\\[bar\\]'
+      ? `\\[${range}${cleanRangeBackSlash(endEscape)}${close}`
+      : close === ']'
+        ? endEscape.length % 2 === 0
+          // A normal case, and it is a range notation
+          // '[bar]'
+          // '[bar\\\\]'
+          ? `[${sanitizeRange(range)}${endEscape}]`
+          // Invalid range notaton
+          // '[bar\\]' -> '[bar\\\\]'
+          : '[]'
+        : '[]'
+  ],
+
+  // ending
+  [
+    // 'js' will not match 'js.'
+    // 'ab' will not match 'abc'
+    /(?:[^*])$/,
+
+    // WTF!
+    // https://git-scm.com/docs/gitignore
+    // changes in [2.22.1](https://git-scm.com/docs/gitignore/2.22.1)
+    // which re-fixes #24, #38
+
+    // > If there is a separator at the end of the pattern then the pattern
+    // > will only match directories, otherwise the pattern can match both
+    // > files and directories.
+
+    // 'js*' will not match 'a.js'
+    // 'js/' will not match 'a.js'
+    // 'js' will match 'a.js' and 'a.js/'
+    match => /\/$/.test(match)
+      // foo/ will not match 'foo'
+      ? `${match}$`
+      // foo matches 'foo' and 'foo/'
+      : `${match}(?=$|\\/$)`
+  ],
+
+  // trailing wildcard
+  [
+    /(\^|\\\/)?\\\*$/,
+    (_, p1) => {
+      const prefix = p1
+        // '\^':
+        // '/*' does not match EMPTY
+        // '/*' does not match everything
+
+        // '\\\/':
+        // 'abc/*' does not match 'abc/'
+        ? `${p1}[^/]+`
+
+        // 'a*' matches 'a'
+        // 'a*' matches 'aa'
+        : '[^/]*'
+
+      return `${prefix}(?=$|\\/$)`
+    }
+  ],
+]
+
+// A simple cache, because an ignore rule only has only one certain meaning
+const regexCache = Object.create(null)
+
+// @param {pattern}
+const makeRegex = (pattern, negative, ignorecase) => {
+  const r = regexCache[pattern]
+  if (r) {
+    return r
+  }
+
+  // const replacers = negative
+  //   ? NEGATIVE_REPLACERS
+  //   : POSITIVE_REPLACERS
+
+  const source = REPLACERS.reduce(
+    (prev, current) => prev.replace(current[0], current[1].bind(pattern)),
+    pattern
+  )
+
+  return regexCache[pattern] = ignorecase
+    ? new RegExp(source, 'i')
+    : new RegExp(source)
+}
+
+const isString = subject => typeof subject === 'string'
+
+// > A blank line matches no files, so it can serve as a separator for readability.
+const checkPattern = pattern => pattern
+  && isString(pattern)
+  && !REGEX_TEST_BLANK_LINE.test(pattern)
+
+  // > A line starting with # serves as a comment.
+  && pattern.indexOf('#') !== 0
+
+const splitPattern = pattern => pattern.split(REGEX_SPLITALL_CRLF)
+
+class IgnoreRule {
+  constructor (
+    origin,
+    pattern,
+    negative,
+    regex
+  ) {
+    this.origin = origin
+    this.pattern = pattern
+    this.negative = negative
+    this.regex = regex
+  }
+}
+
+const createRule = (pattern, ignorecase) => {
+  const origin = pattern
+  let negative = false
+
+  // > An optional prefix "!" which negates the pattern;
+  if (pattern.indexOf('!') === 0) {
+    negative = true
+    pattern = pattern.substr(1)
+  }
+
+  pattern = pattern
+  // > Put a backslash ("\") in front of the first "!" for patterns that
+  // >   begin with a literal "!", for example, `"\!important!.txt"`.
+  .replace(REGEX_REPLACE_LEADING_EXCAPED_EXCLAMATION, '!')
+  // > Put a backslash ("\") in front of the first hash for patterns that
+  // >   begin with a hash.
+  .replace(REGEX_REPLACE_LEADING_EXCAPED_HASH, '#')
+
+  const regex = makeRegex(pattern, negative, ignorecase)
+
+  return new IgnoreRule(
+    origin,
+    pattern,
+    negative,
+    regex
+  )
+}
+
+const throwError = (message, Ctor) => {
+  throw new Ctor(message)
+}
+
+const checkPath = (path, originalPath, doThrow) => {
+  if (!isString(path)) {
+    return doThrow(
+      `path must be a string, but got \`${originalPath}\``,
+      TypeError
+    )
+  }
+
+  // We don't know if we should ignore EMPTY, so throw
+  if (!path) {
+    return doThrow(`path must not be empty`, TypeError)
+  }
+
+  // Check if it is a relative path
+  if (checkPath.isNotRelative(path)) {
+    const r = '`path.relative()`d'
+    return doThrow(
+      `path should be a ${r} string, but got "${originalPath}"`,
+      RangeError
+    )
+  }
+
+  return true
+}
+
+const isNotRelative = path => REGEX_TEST_INVALID_PATH.test(path)
+
+checkPath.isNotRelative = isNotRelative
+checkPath.convert = p => p
+
+class Ignore {
+  constructor ({
+    ignorecase = true
+  } = {}) {
+    this._rules = []
+    this._ignorecase = ignorecase
+    define(this, KEY_IGNORE, true)
+    this._initCache()
+  }
+
+  _initCache () {
+    this._ignoreCache = Object.create(null)
+    this._testCache = Object.create(null)
+  }
+
+  _addPattern (pattern) {
+    // #32
+    if (pattern && pattern[KEY_IGNORE]) {
+      this._rules = this._rules.concat(pattern._rules)
+      this._added = true
+      return
+    }
+
+    if (checkPattern(pattern)) {
+      const rule = createRule(pattern, this._ignorecase)
+      this._added = true
+      this._rules.push(rule)
+    }
+  }
+
+  // @param {Array<string> | string | Ignore} pattern
+  add (pattern) {
+    this._added = false
+
+    makeArray(
+      isString(pattern)
+        ? splitPattern(pattern)
+        : pattern
+    ).forEach(this._addPattern, this)
+
+    // Some rules have just added to the ignore,
+    // making the behavior changed.
+    if (this._added) {
+      this._initCache()
+    }
+
+    return this
+  }
+
+  // legacy
+  addPattern (pattern) {
+    return this.add(pattern)
+  }
+
+  //          |           ignored : unignored
+  // negative |   0:0   |   0:1   |   1:0   |   1:1
+  // -------- | ------- | ------- | ------- | --------
+  //     0    |  TEST   |  TEST   |  SKIP   |    X
+  //     1    |  TESTIF |  SKIP   |  TEST   |    X
+
+  // - SKIP: always skip
+  // - TEST: always test
+  // - TESTIF: only test if checkUnignored
+  // - X: that never happen
+
+  // @param {boolean} whether should check if the path is unignored,
+  //   setting `checkUnignored` to `false` could reduce additional
+  //   path matching.
+
+  // @returns {TestResult} true if a file is ignored
+  _testOne (path, checkUnignored) {
+    let ignored = false
+    let unignored = false
+
+    this._rules.forEach(rule => {
+      const {negative} = rule
+      if (
+        unignored === negative && ignored !== unignored
+        || negative && !ignored && !unignored && !checkUnignored
+      ) {
+        return
+      }
+
+      const matched = rule.regex.test(path)
+
+      if (matched) {
+        ignored = !negative
+        unignored = negative
+      }
+    })
+
+    return {
+      ignored,
+      unignored
+    }
+  }
+
+  // @returns {TestResult}
+  _test (originalPath, cache, checkUnignored, slices) {
+    const path = originalPath
+      // Supports nullable path
+      && checkPath.convert(originalPath)
+
+    checkPath(path, originalPath, throwError)
+
+    return this._t(path, cache, checkUnignored, slices)
+  }
+
+  _t (path, cache, checkUnignored, slices) {
+    if (path in cache) {
+      return cache[path]
+    }
+
+    if (!slices) {
+      // path/to/a.js
+      // ['path', 'to', 'a.js']
+      slices = path.split(SLASH)
+    }
+
+    slices.pop()
+
+    // If the path has no parent directory, just test it
+    if (!slices.length) {
+      return cache[path] = this._testOne(path, checkUnignored)
+    }
+
+    const parent = this._t(
+      slices.join(SLASH) + SLASH,
+      cache,
+      checkUnignored,
+      slices
+    )
+
+    // If the path contains a parent directory, check the parent first
+    return cache[path] = parent.ignored
+      // > It is not possible to re-include a file if a parent directory of
+      // >   that file is excluded.
+      ? parent
+      : this._testOne(path, checkUnignored)
+  }
+
+  ignores (path) {
+    return this._test(path, this._ignoreCache, false).ignored
+  }
+
+  createFilter () {
+    return path => !this.ignores(path)
+  }
+
+  filter (paths) {
+    return makeArray(paths).filter(this.createFilter())
+  }
+
+  // @returns {TestResult}
+  test (path) {
+    return this._test(path, this._testCache, true)
+  }
+}
+
+const factory = options => new Ignore(options)
+
+const returnFalse = () => false
+
+const isPathValid = path =>
+  checkPath(path && checkPath.convert(path), path, returnFalse)
+
+factory.isPathValid = isPathValid
+
+// Fixes typescript
+factory.default = factory
+
+module.exports = factory
+
+// Windows
+// --------------------------------------------------------------
+/* istanbul ignore if  */
+if (
+  // Detect `process` so that it can run in browsers.
+  typeof process !== 'undefined'
+  && (
+    process.env && process.env.IGNORE_TEST_WIN32
+    || process.platform === 'win32'
+  )
+) {
+  /* eslint no-control-regex: "off" */
+  const makePosix = str => /^\\\\\?\\/.test(str)
+  || /["<>|\u0000-\u001F]+/u.test(str)
+    ? str
+    : str.replace(/\\/g, '/')
+
+  checkPath.convert = makePosix
+
+  // 'C:\\foo'     <- 'C:\\foo' has been converted to 'C:/'
+  // 'd:\\foo'
+  const REGIX_IS_WINDOWS_PATH_ABSOLUTE = /^[a-z]:\//i
+  checkPath.isNotRelative = path =>
+    REGIX_IS_WINDOWS_PATH_ABSOLUTE.test(path)
+    || isNotRelative(path)
+}
+
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"browserfs/dist/shims/process.js":68}],150:[function(require,module,exports){
+'use strict';
+
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
+
+var codes = {};
+
+function createErrorType(code, message, Base) {
+  if (!Base) {
+    Base = Error;
+  }
+
+  function getMessage(arg1, arg2, arg3) {
+    if (typeof message === 'string') {
+      return message;
+    } else {
+      return message(arg1, arg2, arg3);
+    }
+  }
+
+  var NodeError =
+  /*#__PURE__*/
+  function (_Base) {
+    _inheritsLoose(NodeError, _Base);
+
+    function NodeError(arg1, arg2, arg3) {
+      return _Base.call(this, getMessage(arg1, arg2, arg3)) || this;
+    }
+
+    return NodeError;
+  }(Base);
+
+  NodeError.prototype.name = Base.name;
+  NodeError.prototype.code = code;
+  codes[code] = NodeError;
+} // https://github.com/nodejs/node/blob/v10.8.0/lib/internal/errors.js
+
+
+function oneOf(expected, thing) {
+  if (Array.isArray(expected)) {
+    var len = expected.length;
+    expected = expected.map(function (i) {
+      return String(i);
+    });
+
+    if (len > 2) {
+      return "one of ".concat(thing, " ").concat(expected.slice(0, len - 1).join(', '), ", or ") + expected[len - 1];
+    } else if (len === 2) {
+      return "one of ".concat(thing, " ").concat(expected[0], " or ").concat(expected[1]);
+    } else {
+      return "of ".concat(thing, " ").concat(expected[0]);
+    }
+  } else {
+    return "of ".concat(thing, " ").concat(String(expected));
+  }
+} // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+
+
+function startsWith(str, search, pos) {
+  return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+} // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
+
+
+function endsWith(str, search, this_len) {
+  if (this_len === undefined || this_len > str.length) {
+    this_len = str.length;
+  }
+
+  return str.substring(this_len - search.length, this_len) === search;
+} // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+
+
+function includes(str, search, start) {
+  if (typeof start !== 'number') {
+    start = 0;
+  }
+
+  if (start + search.length > str.length) {
+    return false;
+  } else {
+    return str.indexOf(search, start) !== -1;
+  }
+}
+
+createErrorType('ERR_INVALID_OPT_VALUE', function (name, value) {
+  return 'The value "' + value + '" is invalid for option "' + name + '"';
+}, TypeError);
+createErrorType('ERR_INVALID_ARG_TYPE', function (name, expected, actual) {
+  // determiner: 'must be' or 'must not be'
+  var determiner;
+
+  if (typeof expected === 'string' && startsWith(expected, 'not ')) {
+    determiner = 'must not be';
+    expected = expected.replace(/^not /, '');
+  } else {
+    determiner = 'must be';
+  }
+
+  var msg;
+
+  if (endsWith(name, ' argument')) {
+    // For cases like 'first argument'
+    msg = "The ".concat(name, " ").concat(determiner, " ").concat(oneOf(expected, 'type'));
+  } else {
+    var type = includes(name, '.') ? 'property' : 'argument';
+    msg = "The \"".concat(name, "\" ").concat(type, " ").concat(determiner, " ").concat(oneOf(expected, 'type'));
+  }
+
+  msg += ". Received type ".concat(typeof actual);
+  return msg;
+}, TypeError);
+createErrorType('ERR_STREAM_PUSH_AFTER_EOF', 'stream.push() after EOF');
+createErrorType('ERR_METHOD_NOT_IMPLEMENTED', function (name) {
+  return 'The ' + name + ' method is not implemented';
+});
+createErrorType('ERR_STREAM_PREMATURE_CLOSE', 'Premature close');
+createErrorType('ERR_STREAM_DESTROYED', function (name) {
+  return 'Cannot call ' + name + ' after a stream was destroyed';
+});
+createErrorType('ERR_MULTIPLE_CALLBACK', 'Callback called multiple times');
+createErrorType('ERR_STREAM_CANNOT_PIPE', 'Cannot pipe, not readable');
+createErrorType('ERR_STREAM_WRITE_AFTER_END', 'write after end');
+createErrorType('ERR_STREAM_NULL_VALUES', 'May not write null values to stream', TypeError);
+createErrorType('ERR_UNKNOWN_ENCODING', function (arg) {
+  return 'Unknown encoding: ' + arg;
+}, TypeError);
+createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT', 'stream.unshift() after end event');
+module.exports.codes = codes;
+
+},{}],151:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a duplex stream is just a stream that is both readable and writable.
+// Since JS doesn't have multiple prototypal inheritance, this class
+// prototypally inherits from Readable, and then parasitically from
+// Writable.
+'use strict';
+/*<replacement>*/
+
+var objectKeys = Object.keys || function (obj) {
+  var keys = [];
+
+  for (var key in obj) {
+    keys.push(key);
+  }
+
+  return keys;
+};
+/*</replacement>*/
+
+
+module.exports = Duplex;
+
+var Readable = require('./_stream_readable');
+
+var Writable = require('./_stream_writable');
+
+require('inherits')(Duplex, Readable);
+
+{
+  // Allow the keys array to be GC'ed.
+  var keys = objectKeys(Writable.prototype);
+
+  for (var v = 0; v < keys.length; v++) {
+    var method = keys[v];
+    if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
+  }
+}
+
+function Duplex(options) {
+  if (!(this instanceof Duplex)) return new Duplex(options);
+  Readable.call(this, options);
+  Writable.call(this, options);
+  this.allowHalfOpen = true;
+
+  if (options) {
+    if (options.readable === false) this.readable = false;
+    if (options.writable === false) this.writable = false;
+
+    if (options.allowHalfOpen === false) {
+      this.allowHalfOpen = false;
+      this.once('end', onend);
+    }
+  }
+}
+
+Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.highWaterMark;
+  }
+});
+Object.defineProperty(Duplex.prototype, 'writableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState && this._writableState.getBuffer();
+  }
+});
+Object.defineProperty(Duplex.prototype, 'writableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.length;
+  }
+}); // the no-half-open enforcer
+
+function onend() {
+  // If the writable side ended, then we're ok.
+  if (this._writableState.ended) return; // no more data can be written.
+  // But allow more writes to happen in this tick.
+
+  process.nextTick(onEndNT, this);
+}
+
+function onEndNT(self) {
+  self.end();
+}
+
+Object.defineProperty(Duplex.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return false;
+    }
+
+    return this._readableState.destroyed && this._writableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._readableState.destroyed = value;
+    this._writableState.destroyed = value;
+  }
+});
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"./_stream_readable":153,"./_stream_writable":155,"browserfs/dist/shims/process.js":68,"inherits":142}],152:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a passthrough stream.
+// basically just the most minimal sort of Transform stream.
+// Every written chunk gets output as-is.
+'use strict';
+
+module.exports = PassThrough;
+
+var Transform = require('./_stream_transform');
+
+require('inherits')(PassThrough, Transform);
+
+function PassThrough(options) {
+  if (!(this instanceof PassThrough)) return new PassThrough(options);
+  Transform.call(this, options);
+}
+
+PassThrough.prototype._transform = function (chunk, encoding, cb) {
+  cb(null, chunk);
+};
+},{"./_stream_transform":154,"inherits":142}],153:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+'use strict';
+
+module.exports = Readable;
+/*<replacement>*/
+
+var Duplex;
+/*</replacement>*/
+
+Readable.ReadableState = ReadableState;
+/*<replacement>*/
+
+var EE = require('events').EventEmitter;
+
+var EElistenerCount = function EElistenerCount(emitter, type) {
+  return emitter.listeners(type).length;
+};
+/*</replacement>*/
+
+/*<replacement>*/
+
+
+var Stream = require('./internal/streams/stream');
+/*</replacement>*/
+
+
+var Buffer = require('buffer').Buffer;
+
+var OurUint8Array = global.Uint8Array || function () {};
+
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+/*<replacement>*/
+
+
+var debugUtil = require('util');
+
+var debug;
+
+if (debugUtil && debugUtil.debuglog) {
+  debug = debugUtil.debuglog('stream');
+} else {
+  debug = function debug() {};
+}
+/*</replacement>*/
+
+
+var BufferList = require('./internal/streams/buffer_list');
+
+var destroyImpl = require('./internal/streams/destroy');
+
+var _require = require('./internal/streams/state'),
+    getHighWaterMark = _require.getHighWaterMark;
+
+var _require$codes = require('../errors').codes,
+    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+    ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT; // Lazy loaded to improve the startup performance.
+
+
+var StringDecoder;
+var createReadableStreamAsyncIterator;
+var from;
+
+require('inherits')(Readable, Stream);
+
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+
+function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
+  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn); // This is a hack to make sure that our error handler is attached before any
+  // userland ones.  NEVER DO THIS. This is here only because this code needs
+  // to continue to work with older versions of Node.js that do not include
+  // the prependListener() method. The goal is to eventually remove this hack.
+
+  if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (Array.isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
+}
+
+function ReadableState(options, stream, isDuplex) {
+  Duplex = Duplex || require('./_stream_duplex');
+  options = options || {}; // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream.
+  // These options can be provided separately as readableXXX and writableXXX.
+
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag. Used to make read(n) ignore n and to
+  // make all the buffer merging and length checks go away
+
+  this.objectMode = !!options.objectMode;
+  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode; // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+
+  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex); // A linked list is used to store data chunks instead of an array because the
+  // linked list can remove elements from the beginning faster than
+  // array.shift()
+
+  this.buffer = new BufferList();
+  this.length = 0;
+  this.pipes = null;
+  this.pipesCount = 0;
+  this.flowing = null;
+  this.ended = false;
+  this.endEmitted = false;
+  this.reading = false; // a flag to be able to tell if the event 'readable'/'data' is emitted
+  // immediately, or on a later tick.  We set this to true at first, because
+  // any actions that shouldn't happen until "later" should generally also
+  // not happen before the first read call.
+
+  this.sync = true; // whenever we return null, then we set a flag to say
+  // that we're awaiting a 'readable' event emission.
+
+  this.needReadable = false;
+  this.emittedReadable = false;
+  this.readableListening = false;
+  this.resumeScheduled = false;
+  this.paused = true; // Should close be emitted on destroy. Defaults to true.
+
+  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'end' (and potentially 'finish')
+
+  this.autoDestroy = !!options.autoDestroy; // has it been destroyed
+
+  this.destroyed = false; // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+
+  this.defaultEncoding = options.defaultEncoding || 'utf8'; // the number of writers that are awaiting a drain event in .pipe()s
+
+  this.awaitDrain = 0; // if true, a maybeReadMore has been scheduled
+
+  this.readingMore = false;
+  this.decoder = null;
+  this.encoding = null;
+
+  if (options.encoding) {
+    if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+    this.decoder = new StringDecoder(options.encoding);
+    this.encoding = options.encoding;
+  }
+}
+
+function Readable(options) {
+  Duplex = Duplex || require('./_stream_duplex');
+  if (!(this instanceof Readable)) return new Readable(options); // Checking for a Stream.Duplex instance is faster here instead of inside
+  // the ReadableState constructor, at least with V8 6.5
+
+  var isDuplex = this instanceof Duplex;
+  this._readableState = new ReadableState(options, this, isDuplex); // legacy
+
+  this.readable = true;
+
+  if (options) {
+    if (typeof options.read === 'function') this._read = options.read;
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+  }
+
+  Stream.call(this);
+}
+
+Object.defineProperty(Readable.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._readableState === undefined) {
+      return false;
+    }
+
+    return this._readableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._readableState) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._readableState.destroyed = value;
+  }
+});
+Readable.prototype.destroy = destroyImpl.destroy;
+Readable.prototype._undestroy = destroyImpl.undestroy;
+
+Readable.prototype._destroy = function (err, cb) {
+  cb(err);
+}; // Manually shove something into the read() buffer.
+// This returns true if the highWaterMark has not been hit yet,
+// similar to how Writable.write() returns true if you should
+// write() some more.
+
+
+Readable.prototype.push = function (chunk, encoding) {
+  var state = this._readableState;
+  var skipChunkCheck;
+
+  if (!state.objectMode) {
+    if (typeof chunk === 'string') {
+      encoding = encoding || state.defaultEncoding;
+
+      if (encoding !== state.encoding) {
+        chunk = Buffer.from(chunk, encoding);
+        encoding = '';
+      }
+
+      skipChunkCheck = true;
+    }
+  } else {
+    skipChunkCheck = true;
+  }
+
+  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
+}; // Unshift should *always* be something directly out of read()
+
+
+Readable.prototype.unshift = function (chunk) {
+  return readableAddChunk(this, chunk, null, true, false);
+};
+
+function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
+  debug('readableAddChunk', chunk);
+  var state = stream._readableState;
+
+  if (chunk === null) {
+    state.reading = false;
+    onEofChunk(stream, state);
+  } else {
+    var er;
+    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
+
+    if (er) {
+      errorOrDestroy(stream, er);
+    } else if (state.objectMode || chunk && chunk.length > 0) {
+      if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
+        chunk = _uint8ArrayToBuffer(chunk);
+      }
+
+      if (addToFront) {
+        if (state.endEmitted) errorOrDestroy(stream, new ERR_STREAM_UNSHIFT_AFTER_END_EVENT());else addChunk(stream, state, chunk, true);
+      } else if (state.ended) {
+        errorOrDestroy(stream, new ERR_STREAM_PUSH_AFTER_EOF());
+      } else if (state.destroyed) {
+        return false;
+      } else {
+        state.reading = false;
+
+        if (state.decoder && !encoding) {
+          chunk = state.decoder.write(chunk);
+          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
+        } else {
+          addChunk(stream, state, chunk, false);
+        }
+      }
+    } else if (!addToFront) {
+      state.reading = false;
+      maybeReadMore(stream, state);
+    }
+  } // We can push more data if we are below the highWaterMark.
+  // Also, if we have no data yet, we can stand some more bytes.
+  // This is to work around cases where hwm=0, such as the repl.
+
+
+  return !state.ended && (state.length < state.highWaterMark || state.length === 0);
+}
+
+function addChunk(stream, state, chunk, addToFront) {
+  if (state.flowing && state.length === 0 && !state.sync) {
+    state.awaitDrain = 0;
+    stream.emit('data', chunk);
+  } else {
+    // update the buffer info.
+    state.length += state.objectMode ? 1 : chunk.length;
+    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+    if (state.needReadable) emitReadable(stream);
+  }
+
+  maybeReadMore(stream, state);
+}
+
+function chunkInvalid(state, chunk) {
+  var er;
+
+  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer', 'Uint8Array'], chunk);
+  }
+
+  return er;
+}
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+}; // backwards compatibility.
+
+
+Readable.prototype.setEncoding = function (enc) {
+  if (!StringDecoder) StringDecoder = require('string_decoder/').StringDecoder;
+  var decoder = new StringDecoder(enc);
+  this._readableState.decoder = decoder; // If setEncoding(null), decoder.encoding equals utf8
+
+  this._readableState.encoding = this._readableState.decoder.encoding; // Iterate over current buffer to convert already stored Buffers:
+
+  var p = this._readableState.buffer.head;
+  var content = '';
+
+  while (p !== null) {
+    content += decoder.write(p.data);
+    p = p.next;
+  }
+
+  this._readableState.buffer.clear();
+
+  if (content !== '') this._readableState.buffer.push(content);
+  this._readableState.length = content.length;
+  return this;
+}; // Don't raise the hwm > 1GB
+
+
+var MAX_HWM = 0x40000000;
+
+function computeNewHighWaterMark(n) {
+  if (n >= MAX_HWM) {
+    // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
+    n = MAX_HWM;
+  } else {
+    // Get the next highest power of 2 to prevent increasing hwm excessively in
+    // tiny amounts
+    n--;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    n++;
+  }
+
+  return n;
+} // This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+
+
+function howMuchToRead(n, state) {
+  if (n <= 0 || state.length === 0 && state.ended) return 0;
+  if (state.objectMode) return 1;
+
+  if (n !== n) {
+    // Only flow one buffer at a time
+    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+  } // If we're asking for more than the current hwm, then raise the hwm.
+
+
+  if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
+  if (n <= state.length) return n; // Don't have enough
+
+  if (!state.ended) {
+    state.needReadable = true;
+    return 0;
+  }
+
+  return state.length;
+} // you can override either this method, or the async _read(n) below.
+
+
+Readable.prototype.read = function (n) {
+  debug('read', n);
+  n = parseInt(n, 10);
+  var state = this._readableState;
+  var nOrig = n;
+  if (n !== 0) state.emittedReadable = false; // if we're doing read(0) to trigger a readable event, but we
+  // already have a bunch of data in the buffer, then just trigger
+  // the 'readable' event and move on.
+
+  if (n === 0 && state.needReadable && ((state.highWaterMark !== 0 ? state.length >= state.highWaterMark : state.length > 0) || state.ended)) {
+    debug('read: emitReadable', state.length, state.ended);
+    if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
+    return null;
+  }
+
+  n = howMuchToRead(n, state); // if we've ended, and we're now clear, then finish it up.
+
+  if (n === 0 && state.ended) {
+    if (state.length === 0) endReadable(this);
+    return null;
+  } // All the actual chunk generation logic needs to be
+  // *below* the call to _read.  The reason is that in certain
+  // synthetic stream cases, such as passthrough streams, _read
+  // may be a completely synchronous operation which may change
+  // the state of the read buffer, providing enough data when
+  // before there was *not* enough.
+  //
+  // So, the steps are:
+  // 1. Figure out what the state of things will be after we do
+  // a read from the buffer.
+  //
+  // 2. If that resulting state will trigger a _read, then call _read.
+  // Note that this may be asynchronous, or synchronous.  Yes, it is
+  // deeply ugly to write APIs this way, but that still doesn't mean
+  // that the Readable class should behave improperly, as streams are
+  // designed to be sync/async agnostic.
+  // Take note if the _read call is sync or async (ie, if the read call
+  // has returned yet), so that we know whether or not it's safe to emit
+  // 'readable' etc.
+  //
+  // 3. Actually pull the requested chunks out of the buffer and return.
+  // if we need a readable event, then we need to do some reading.
+
+
+  var doRead = state.needReadable;
+  debug('need readable', doRead); // if we currently have less than the highWaterMark, then also read some
+
+  if (state.length === 0 || state.length - n < state.highWaterMark) {
+    doRead = true;
+    debug('length less than watermark', doRead);
+  } // however, if we've ended, then there's no point, and if we're already
+  // reading, then it's unnecessary.
+
+
+  if (state.ended || state.reading) {
+    doRead = false;
+    debug('reading or ended', doRead);
+  } else if (doRead) {
+    debug('do read');
+    state.reading = true;
+    state.sync = true; // if the length is currently zero, then we *need* a readable event.
+
+    if (state.length === 0) state.needReadable = true; // call internal read method
+
+    this._read(state.highWaterMark);
+
+    state.sync = false; // If _read pushed data synchronously, then `reading` will be false,
+    // and we need to re-evaluate how much data we can return to the user.
+
+    if (!state.reading) n = howMuchToRead(nOrig, state);
+  }
+
+  var ret;
+  if (n > 0) ret = fromList(n, state);else ret = null;
+
+  if (ret === null) {
+    state.needReadable = state.length <= state.highWaterMark;
+    n = 0;
+  } else {
+    state.length -= n;
+    state.awaitDrain = 0;
+  }
+
+  if (state.length === 0) {
+    // If we have nothing in the buffer, then we want to know
+    // as soon as we *do* get something into the buffer.
+    if (!state.ended) state.needReadable = true; // If we tried to read() past the EOF, then emit end on the next tick.
+
+    if (nOrig !== n && state.ended) endReadable(this);
+  }
+
+  if (ret !== null) this.emit('data', ret);
+  return ret;
+};
+
+function onEofChunk(stream, state) {
+  debug('onEofChunk');
+  if (state.ended) return;
+
+  if (state.decoder) {
+    var chunk = state.decoder.end();
+
+    if (chunk && chunk.length) {
+      state.buffer.push(chunk);
+      state.length += state.objectMode ? 1 : chunk.length;
+    }
+  }
+
+  state.ended = true;
+
+  if (state.sync) {
+    // if we are sync, wait until next tick to emit the data.
+    // Otherwise we risk emitting data in the flow()
+    // the readable code triggers during a read() call
+    emitReadable(stream);
+  } else {
+    // emit 'readable' now to make sure it gets picked up.
+    state.needReadable = false;
+
+    if (!state.emittedReadable) {
+      state.emittedReadable = true;
+      emitReadable_(stream);
+    }
+  }
+} // Don't emit readable right away in sync mode, because this can trigger
+// another read() call => stack overflow.  This way, it might trigger
+// a nextTick recursion warning, but that's not so bad.
+
+
+function emitReadable(stream) {
+  var state = stream._readableState;
+  debug('emitReadable', state.needReadable, state.emittedReadable);
+  state.needReadable = false;
+
+  if (!state.emittedReadable) {
+    debug('emitReadable', state.flowing);
+    state.emittedReadable = true;
+    process.nextTick(emitReadable_, stream);
+  }
+}
+
+function emitReadable_(stream) {
+  var state = stream._readableState;
+  debug('emitReadable_', state.destroyed, state.length, state.ended);
+
+  if (!state.destroyed && (state.length || state.ended)) {
+    stream.emit('readable');
+    state.emittedReadable = false;
+  } // The stream needs another readable event if
+  // 1. It is not flowing, as the flow mechanism will take
+  //    care of it.
+  // 2. It is not ended.
+  // 3. It is below the highWaterMark, so we can schedule
+  //    another readable later.
+
+
+  state.needReadable = !state.flowing && !state.ended && state.length <= state.highWaterMark;
+  flow(stream);
+} // at this point, the user has presumably seen the 'readable' event,
+// and called read() to consume some data.  that may have triggered
+// in turn another _read(n) call, in which case reading = true if
+// it's in progress.
+// However, if we're not ended, or reading, and the length < hwm,
+// then go ahead and try to read some more preemptively.
+
+
+function maybeReadMore(stream, state) {
+  if (!state.readingMore) {
+    state.readingMore = true;
+    process.nextTick(maybeReadMore_, stream, state);
+  }
+}
+
+function maybeReadMore_(stream, state) {
+  // Attempt to read more data if we should.
+  //
+  // The conditions for reading more data are (one of):
+  // - Not enough data buffered (state.length < state.highWaterMark). The loop
+  //   is responsible for filling the buffer with enough data if such data
+  //   is available. If highWaterMark is 0 and we are not in the flowing mode
+  //   we should _not_ attempt to buffer any extra data. We'll get more data
+  //   when the stream consumer calls read() instead.
+  // - No data in the buffer, and the stream is in flowing mode. In this mode
+  //   the loop below is responsible for ensuring read() is called. Failing to
+  //   call read here would abort the flow and there's no other mechanism for
+  //   continuing the flow if the stream consumer has just subscribed to the
+  //   'data' event.
+  //
+  // In addition to the above conditions to keep reading data, the following
+  // conditions prevent the data from being read:
+  // - The stream has ended (state.ended).
+  // - There is already a pending 'read' operation (state.reading). This is a
+  //   case where the the stream has called the implementation defined _read()
+  //   method, but they are processing the call asynchronously and have _not_
+  //   called push() with new data. In this case we skip performing more
+  //   read()s. The execution ends in this method again after the _read() ends
+  //   up calling push() with more data.
+  while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
+    var len = state.length;
+    debug('maybeReadMore read 0');
+    stream.read(0);
+    if (len === state.length) // didn't get any data, stop spinning.
+      break;
+  }
+
+  state.readingMore = false;
+} // abstract method.  to be overridden in specific implementation classes.
+// call cb(er, data) where data is <= n in length.
+// for virtual (non-string, non-buffer) streams, "length" is somewhat
+// arbitrary, and perhaps not very meaningful.
+
+
+Readable.prototype._read = function (n) {
+  errorOrDestroy(this, new ERR_METHOD_NOT_IMPLEMENTED('_read()'));
+};
+
+Readable.prototype.pipe = function (dest, pipeOpts) {
+  var src = this;
+  var state = this._readableState;
+
+  switch (state.pipesCount) {
+    case 0:
+      state.pipes = dest;
+      break;
+
+    case 1:
+      state.pipes = [state.pipes, dest];
+      break;
+
+    default:
+      state.pipes.push(dest);
+      break;
+  }
+
+  state.pipesCount += 1;
+  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
+  var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
+  var endFn = doEnd ? onend : unpipe;
+  if (state.endEmitted) process.nextTick(endFn);else src.once('end', endFn);
+  dest.on('unpipe', onunpipe);
+
+  function onunpipe(readable, unpipeInfo) {
+    debug('onunpipe');
+
+    if (readable === src) {
+      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
+        unpipeInfo.hasUnpiped = true;
+        cleanup();
+      }
+    }
+  }
+
+  function onend() {
+    debug('onend');
+    dest.end();
+  } // when the dest drains, it reduces the awaitDrain counter
+  // on the source.  This would be more elegant with a .once()
+  // handler in flow(), but adding and removing repeatedly is
+  // too slow.
+
+
+  var ondrain = pipeOnDrain(src);
+  dest.on('drain', ondrain);
+  var cleanedUp = false;
+
+  function cleanup() {
+    debug('cleanup'); // cleanup event handlers once the pipe is broken
+
+    dest.removeListener('close', onclose);
+    dest.removeListener('finish', onfinish);
+    dest.removeListener('drain', ondrain);
+    dest.removeListener('error', onerror);
+    dest.removeListener('unpipe', onunpipe);
+    src.removeListener('end', onend);
+    src.removeListener('end', unpipe);
+    src.removeListener('data', ondata);
+    cleanedUp = true; // if the reader is waiting for a drain event from this
+    // specific writer, then it would cause it to never start
+    // flowing again.
+    // So, if this is awaiting a drain, then we just call it now.
+    // If we don't know, then assume that we are waiting for one.
+
+    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
+  }
+
+  src.on('data', ondata);
+
+  function ondata(chunk) {
+    debug('ondata');
+    var ret = dest.write(chunk);
+    debug('dest.write', ret);
+
+    if (ret === false) {
+      // If the user unpiped during `dest.write()`, it is possible
+      // to get stuck in a permanently paused state if that write
+      // also returned false.
+      // => Check whether `dest` is still a piping destination.
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+        debug('false write response, pause', state.awaitDrain);
+        state.awaitDrain++;
+      }
+
+      src.pause();
+    }
+  } // if the dest has an error, then stop piping into it.
+  // however, don't suppress the throwing behavior for this.
+
+
+  function onerror(er) {
+    debug('onerror', er);
+    unpipe();
+    dest.removeListener('error', onerror);
+    if (EElistenerCount(dest, 'error') === 0) errorOrDestroy(dest, er);
+  } // Make sure our error handler is attached before userland ones.
+
+
+  prependListener(dest, 'error', onerror); // Both close and finish should trigger unpipe, but only once.
+
+  function onclose() {
+    dest.removeListener('finish', onfinish);
+    unpipe();
+  }
+
+  dest.once('close', onclose);
+
+  function onfinish() {
+    debug('onfinish');
+    dest.removeListener('close', onclose);
+    unpipe();
+  }
+
+  dest.once('finish', onfinish);
+
+  function unpipe() {
+    debug('unpipe');
+    src.unpipe(dest);
+  } // tell the dest that it's being piped to
+
+
+  dest.emit('pipe', src); // start the flow if it hasn't been started already.
+
+  if (!state.flowing) {
+    debug('pipe resume');
+    src.resume();
+  }
+
+  return dest;
+};
+
+function pipeOnDrain(src) {
+  return function pipeOnDrainFunctionResult() {
+    var state = src._readableState;
+    debug('pipeOnDrain', state.awaitDrain);
+    if (state.awaitDrain) state.awaitDrain--;
+
+    if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
+      state.flowing = true;
+      flow(src);
+    }
+  };
+}
+
+Readable.prototype.unpipe = function (dest) {
+  var state = this._readableState;
+  var unpipeInfo = {
+    hasUnpiped: false
+  }; // if we're not piping anywhere, then do nothing.
+
+  if (state.pipesCount === 0) return this; // just one destination.  most common case.
+
+  if (state.pipesCount === 1) {
+    // passed in one, but it's not the right one.
+    if (dest && dest !== state.pipes) return this;
+    if (!dest) dest = state.pipes; // got a match.
+
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+    if (dest) dest.emit('unpipe', this, unpipeInfo);
+    return this;
+  } // slow case. multiple pipe destinations.
+
+
+  if (!dest) {
+    // remove all.
+    var dests = state.pipes;
+    var len = state.pipesCount;
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+
+    for (var i = 0; i < len; i++) {
+      dests[i].emit('unpipe', this, {
+        hasUnpiped: false
+      });
+    }
+
+    return this;
+  } // try to find the right one.
+
+
+  var index = indexOf(state.pipes, dest);
+  if (index === -1) return this;
+  state.pipes.splice(index, 1);
+  state.pipesCount -= 1;
+  if (state.pipesCount === 1) state.pipes = state.pipes[0];
+  dest.emit('unpipe', this, unpipeInfo);
+  return this;
+}; // set up data events if they are asked for
+// Ensure readable listeners eventually get something
+
+
+Readable.prototype.on = function (ev, fn) {
+  var res = Stream.prototype.on.call(this, ev, fn);
+  var state = this._readableState;
+
+  if (ev === 'data') {
+    // update readableListening so that resume() may be a no-op
+    // a few lines down. This is needed to support once('readable').
+    state.readableListening = this.listenerCount('readable') > 0; // Try start flowing on next tick if stream isn't explicitly paused
+
+    if (state.flowing !== false) this.resume();
+  } else if (ev === 'readable') {
+    if (!state.endEmitted && !state.readableListening) {
+      state.readableListening = state.needReadable = true;
+      state.flowing = false;
+      state.emittedReadable = false;
+      debug('on readable', state.length, state.reading);
+
+      if (state.length) {
+        emitReadable(this);
+      } else if (!state.reading) {
+        process.nextTick(nReadingNextTick, this);
+      }
+    }
+  }
+
+  return res;
+};
+
+Readable.prototype.addListener = Readable.prototype.on;
+
+Readable.prototype.removeListener = function (ev, fn) {
+  var res = Stream.prototype.removeListener.call(this, ev, fn);
+
+  if (ev === 'readable') {
+    // We need to check if there is someone still listening to
+    // readable and reset the state. However this needs to happen
+    // after readable has been emitted but before I/O (nextTick) to
+    // support once('readable', fn) cycles. This means that calling
+    // resume within the same tick will have no
+    // effect.
+    process.nextTick(updateReadableListening, this);
+  }
+
+  return res;
+};
+
+Readable.prototype.removeAllListeners = function (ev) {
+  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
+
+  if (ev === 'readable' || ev === undefined) {
+    // We need to check if there is someone still listening to
+    // readable and reset the state. However this needs to happen
+    // after readable has been emitted but before I/O (nextTick) to
+    // support once('readable', fn) cycles. This means that calling
+    // resume within the same tick will have no
+    // effect.
+    process.nextTick(updateReadableListening, this);
+  }
+
+  return res;
+};
+
+function updateReadableListening(self) {
+  var state = self._readableState;
+  state.readableListening = self.listenerCount('readable') > 0;
+
+  if (state.resumeScheduled && !state.paused) {
+    // flowing needs to be set to true now, otherwise
+    // the upcoming resume will not flow.
+    state.flowing = true; // crude way to check if we should resume
+  } else if (self.listenerCount('data') > 0) {
+    self.resume();
+  }
+}
+
+function nReadingNextTick(self) {
+  debug('readable nexttick read 0');
+  self.read(0);
+} // pause() and resume() are remnants of the legacy readable stream API
+// If the user uses them, then switch into old mode.
+
+
+Readable.prototype.resume = function () {
+  var state = this._readableState;
+
+  if (!state.flowing) {
+    debug('resume'); // we flow only if there is no one listening
+    // for readable, but we still have to call
+    // resume()
+
+    state.flowing = !state.readableListening;
+    resume(this, state);
+  }
+
+  state.paused = false;
+  return this;
+};
+
+function resume(stream, state) {
+  if (!state.resumeScheduled) {
+    state.resumeScheduled = true;
+    process.nextTick(resume_, stream, state);
+  }
+}
+
+function resume_(stream, state) {
+  debug('resume', state.reading);
+
+  if (!state.reading) {
+    stream.read(0);
+  }
+
+  state.resumeScheduled = false;
+  stream.emit('resume');
+  flow(stream);
+  if (state.flowing && !state.reading) stream.read(0);
+}
+
+Readable.prototype.pause = function () {
+  debug('call pause flowing=%j', this._readableState.flowing);
+
+  if (this._readableState.flowing !== false) {
+    debug('pause');
+    this._readableState.flowing = false;
+    this.emit('pause');
+  }
+
+  this._readableState.paused = true;
+  return this;
+};
+
+function flow(stream) {
+  var state = stream._readableState;
+  debug('flow', state.flowing);
+
+  while (state.flowing && stream.read() !== null) {
+    ;
+  }
+} // wrap an old-style stream as the async data source.
+// This is *not* part of the readable stream interface.
+// It is an ugly unfortunate mess of history.
+
+
+Readable.prototype.wrap = function (stream) {
+  var _this = this;
+
+  var state = this._readableState;
+  var paused = false;
+  stream.on('end', function () {
+    debug('wrapped end');
+
+    if (state.decoder && !state.ended) {
+      var chunk = state.decoder.end();
+      if (chunk && chunk.length) _this.push(chunk);
+    }
+
+    _this.push(null);
+  });
+  stream.on('data', function (chunk) {
+    debug('wrapped data');
+    if (state.decoder) chunk = state.decoder.write(chunk); // don't skip over falsy values in objectMode
+
+    if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
+
+    var ret = _this.push(chunk);
+
+    if (!ret) {
+      paused = true;
+      stream.pause();
+    }
+  }); // proxy all the other methods.
+  // important when wrapping filters and duplexes.
+
+  for (var i in stream) {
+    if (this[i] === undefined && typeof stream[i] === 'function') {
+      this[i] = function methodWrap(method) {
+        return function methodWrapReturnFunction() {
+          return stream[method].apply(stream, arguments);
+        };
+      }(i);
+    }
+  } // proxy certain important events.
+
+
+  for (var n = 0; n < kProxyEvents.length; n++) {
+    stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
+  } // when we try to consume some more bytes, simply unpause the
+  // underlying stream.
+
+
+  this._read = function (n) {
+    debug('wrapped _read', n);
+
+    if (paused) {
+      paused = false;
+      stream.resume();
+    }
+  };
+
+  return this;
+};
+
+if (typeof Symbol === 'function') {
+  Readable.prototype[Symbol.asyncIterator] = function () {
+    if (createReadableStreamAsyncIterator === undefined) {
+      createReadableStreamAsyncIterator = require('./internal/streams/async_iterator');
+    }
+
+    return createReadableStreamAsyncIterator(this);
+  };
+}
+
+Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.highWaterMark;
+  }
+});
+Object.defineProperty(Readable.prototype, 'readableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState && this._readableState.buffer;
+  }
+});
+Object.defineProperty(Readable.prototype, 'readableFlowing', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.flowing;
+  },
+  set: function set(state) {
+    if (this._readableState) {
+      this._readableState.flowing = state;
+    }
+  }
+}); // exposed for testing purposes only.
+
+Readable._fromList = fromList;
+Object.defineProperty(Readable.prototype, 'readableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.length;
+  }
+}); // Pluck off n bytes from an array of buffers.
+// Length is the combined lengths of all the buffers in the list.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+
+function fromList(n, state) {
+  // nothing buffered
+  if (state.length === 0) return null;
+  var ret;
+  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+    // read it all, truncate the list
+    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.first();else ret = state.buffer.concat(state.length);
+    state.buffer.clear();
+  } else {
+    // read part of list
+    ret = state.buffer.consume(n, state.decoder);
+  }
+  return ret;
+}
+
+function endReadable(stream) {
+  var state = stream._readableState;
+  debug('endReadable', state.endEmitted);
+
+  if (!state.endEmitted) {
+    state.ended = true;
+    process.nextTick(endReadableNT, state, stream);
+  }
+}
+
+function endReadableNT(state, stream) {
+  debug('endReadableNT', state.endEmitted, state.length); // Check that we didn't get one last unshift.
+
+  if (!state.endEmitted && state.length === 0) {
+    state.endEmitted = true;
+    stream.readable = false;
+    stream.emit('end');
+
+    if (state.autoDestroy) {
+      // In case of duplex streams we need a way to detect
+      // if the writable side is ready for autoDestroy as well
+      var wState = stream._writableState;
+
+      if (!wState || wState.autoDestroy && wState.finished) {
+        stream.destroy();
+      }
+    }
+  }
+}
+
+if (typeof Symbol === 'function') {
+  Readable.from = function (iterable, opts) {
+    if (from === undefined) {
+      from = require('./internal/streams/from');
+    }
+
+    return from(Readable, iterable, opts);
+  };
+}
+
+function indexOf(xs, x) {
+  for (var i = 0, l = xs.length; i < l; i++) {
+    if (xs[i] === x) return i;
+  }
+
+  return -1;
+}
+}).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../errors":150,"./_stream_duplex":151,"./internal/streams/async_iterator":156,"./internal/streams/buffer_list":157,"./internal/streams/destroy":158,"./internal/streams/from":160,"./internal/streams/state":162,"./internal/streams/stream":163,"browserfs/dist/shims/process.js":68,"buffer":65,"events":114,"inherits":142,"string_decoder/":264,"util":63}],154:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a transform stream is a readable/writable stream where you do
+// something with the data.  Sometimes it's called a "filter",
+// but that's not a great name for it, since that implies a thing where
+// some bits pass through, and others are simply ignored.  (That would
+// be a valid example of a transform, of course.)
+//
+// While the output is causally related to the input, it's not a
+// necessarily symmetric or synchronous transformation.  For example,
+// a zlib stream might take multiple plain-text writes(), and then
+// emit a single compressed chunk some time in the future.
+//
+// Here's how this works:
+//
+// The Transform stream has all the aspects of the readable and writable
+// stream classes.  When you write(chunk), that calls _write(chunk,cb)
+// internally, and returns false if there's a lot of pending writes
+// buffered up.  When you call read(), that calls _read(n) until
+// there's enough pending readable data buffered up.
+//
+// In a transform stream, the written data is placed in a buffer.  When
+// _read(n) is called, it transforms the queued up data, calling the
+// buffered _write cb's as it consumes chunks.  If consuming a single
+// written chunk would result in multiple output chunks, then the first
+// outputted bit calls the readcb, and subsequent chunks just go into
+// the read buffer, and will cause it to emit 'readable' if necessary.
+//
+// This way, back-pressure is actually determined by the reading side,
+// since _read has to be called to start processing a new chunk.  However,
+// a pathological inflate type of transform can cause excessive buffering
+// here.  For example, imagine a stream where every byte of input is
+// interpreted as an integer from 0-255, and then results in that many
+// bytes of output.  Writing the 4 bytes {ff,ff,ff,ff} would result in
+// 1kb of data being output.  In this case, you could write a very small
+// amount of input, and end up with a very large amount of output.  In
+// such a pathological inflating mechanism, there'd be no way to tell
+// the system to stop doing the transform.  A single 4MB write could
+// cause the system to run out of memory.
+//
+// However, even in such a pathological case, only a single written chunk
+// would be consumed, and then the rest would wait (un-transformed) until
+// the results of the previous transformed chunk were consumed.
+'use strict';
+
+module.exports = Transform;
+
+var _require$codes = require('../errors').codes,
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+    ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
+    ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
+
+var Duplex = require('./_stream_duplex');
+
+require('inherits')(Transform, Duplex);
+
+function afterTransform(er, data) {
+  var ts = this._transformState;
+  ts.transforming = false;
+  var cb = ts.writecb;
+
+  if (cb === null) {
+    return this.emit('error', new ERR_MULTIPLE_CALLBACK());
+  }
+
+  ts.writechunk = null;
+  ts.writecb = null;
+  if (data != null) // single equals check for both `null` and `undefined`
+    this.push(data);
+  cb(er);
+  var rs = this._readableState;
+  rs.reading = false;
+
+  if (rs.needReadable || rs.length < rs.highWaterMark) {
+    this._read(rs.highWaterMark);
+  }
+}
+
+function Transform(options) {
+  if (!(this instanceof Transform)) return new Transform(options);
+  Duplex.call(this, options);
+  this._transformState = {
+    afterTransform: afterTransform.bind(this),
+    needTransform: false,
+    transforming: false,
+    writecb: null,
+    writechunk: null,
+    writeencoding: null
+  }; // start out asking for a readable event once data is transformed.
+
+  this._readableState.needReadable = true; // we have implemented the _read method, and done the other things
+  // that Readable wants before the first _read call, so unset the
+  // sync guard flag.
+
+  this._readableState.sync = false;
+
+  if (options) {
+    if (typeof options.transform === 'function') this._transform = options.transform;
+    if (typeof options.flush === 'function') this._flush = options.flush;
+  } // When the writable side finishes, then flush out anything remaining.
+
+
+  this.on('prefinish', prefinish);
+}
+
+function prefinish() {
+  var _this = this;
+
+  if (typeof this._flush === 'function' && !this._readableState.destroyed) {
+    this._flush(function (er, data) {
+      done(_this, er, data);
+    });
+  } else {
+    done(this, null, null);
+  }
+}
+
+Transform.prototype.push = function (chunk, encoding) {
+  this._transformState.needTransform = false;
+  return Duplex.prototype.push.call(this, chunk, encoding);
+}; // This is the part where you do stuff!
+// override this function in implementation classes.
+// 'chunk' is an input chunk.
+//
+// Call `push(newChunk)` to pass along transformed output
+// to the readable side.  You may call 'push' zero or more times.
+//
+// Call `cb(err)` when you are done with this chunk.  If you pass
+// an error, then that'll put the hurt on the whole operation.  If you
+// never call cb(), then you'll never get another chunk.
+
+
+Transform.prototype._transform = function (chunk, encoding, cb) {
+  cb(new ERR_METHOD_NOT_IMPLEMENTED('_transform()'));
+};
+
+Transform.prototype._write = function (chunk, encoding, cb) {
+  var ts = this._transformState;
+  ts.writecb = cb;
+  ts.writechunk = chunk;
+  ts.writeencoding = encoding;
+
+  if (!ts.transforming) {
+    var rs = this._readableState;
+    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
+  }
+}; // Doesn't matter what the args are here.
+// _transform does all the work.
+// That we got here means that the readable side wants more data.
+
+
+Transform.prototype._read = function (n) {
+  var ts = this._transformState;
+
+  if (ts.writechunk !== null && !ts.transforming) {
+    ts.transforming = true;
+
+    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
+  } else {
+    // mark that we need a transform, so that any data that comes in
+    // will get processed, now that we've asked for it.
+    ts.needTransform = true;
+  }
+};
+
+Transform.prototype._destroy = function (err, cb) {
+  Duplex.prototype._destroy.call(this, err, function (err2) {
+    cb(err2);
+  });
+};
+
+function done(stream, er, data) {
+  if (er) return stream.emit('error', er);
+  if (data != null) // single equals check for both `null` and `undefined`
+    stream.push(data); // TODO(BridgeAR): Write a test for these two error cases
+  // if there's nothing in the write buffer, then that means
+  // that nothing more will ever be provided
+
+  if (stream._writableState.length) throw new ERR_TRANSFORM_WITH_LENGTH_0();
+  if (stream._transformState.transforming) throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();
+  return stream.push(null);
+}
+},{"../errors":150,"./_stream_duplex":151,"inherits":142}],155:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// A bit simpler than readable streams.
+// Implement an async ._write(chunk, encoding, cb), and it'll handle all
+// the drain event emission and buffering.
+'use strict';
+
+module.exports = Writable;
+/* <replacement> */
+
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+} // It seems a linked list but it is not
+// there will be only 2 of these for each stream
+
+
+function CorkedRequest(state) {
+  var _this = this;
+
+  this.next = null;
+  this.entry = null;
+
+  this.finish = function () {
+    onCorkedFinish(_this, state);
+  };
+}
+/* </replacement> */
+
+/*<replacement>*/
+
+
+var Duplex;
+/*</replacement>*/
+
+Writable.WritableState = WritableState;
+/*<replacement>*/
+
+var internalUtil = {
+  deprecate: require('util-deprecate')
+};
+/*</replacement>*/
+
+/*<replacement>*/
+
+var Stream = require('./internal/streams/stream');
+/*</replacement>*/
+
+
+var Buffer = require('buffer').Buffer;
+
+var OurUint8Array = global.Uint8Array || function () {};
+
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+
+var destroyImpl = require('./internal/streams/destroy');
+
+var _require = require('./internal/streams/state'),
+    getHighWaterMark = _require.getHighWaterMark;
+
+var _require$codes = require('../errors').codes,
+    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+    ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
+    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
+    ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
+    ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
+    ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
+
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+
+require('inherits')(Writable, Stream);
+
+function nop() {}
+
+function WritableState(options, stream, isDuplex) {
+  Duplex = Duplex || require('./_stream_duplex');
+  options = options || {}; // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream,
+  // e.g. options.readableObjectMode vs. options.writableObjectMode, etc.
+
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag to indicate whether or not this stream
+  // contains buffers or objects.
+
+  this.objectMode = !!options.objectMode;
+  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode; // the point at which write() starts returning false
+  // Note: 0 is a valid value, means that we always return false if
+  // the entire buffer is not flushed immediately on write()
+
+  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex); // if _final has been called
+
+  this.finalCalled = false; // drain event flag.
+
+  this.needDrain = false; // at the start of calling end()
+
+  this.ending = false; // when end() has been called, and returned
+
+  this.ended = false; // when 'finish' is emitted
+
+  this.finished = false; // has it been destroyed
+
+  this.destroyed = false; // should we decode strings into buffers before passing to _write?
+  // this is here so that some node-core streams can optimize string
+  // handling at a lower level.
+
+  var noDecode = options.decodeStrings === false;
+  this.decodeStrings = !noDecode; // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+
+  this.defaultEncoding = options.defaultEncoding || 'utf8'; // not an actual buffer we keep track of, but a measurement
+  // of how much we're waiting to get pushed to some underlying
+  // socket or file.
+
+  this.length = 0; // a flag to see when we're in the middle of a write.
+
+  this.writing = false; // when true all writes will be buffered until .uncork() call
+
+  this.corked = 0; // a flag to be able to tell if the onwrite cb is called immediately,
+  // or on a later tick.  We set this to true at first, because any
+  // actions that shouldn't happen until "later" should generally also
+  // not happen before the first write call.
+
+  this.sync = true; // a flag to know if we're processing previously buffered items, which
+  // may call the _write() callback in the same tick, so that we don't
+  // end up in an overlapped onwrite situation.
+
+  this.bufferProcessing = false; // the callback that's passed to _write(chunk,cb)
+
+  this.onwrite = function (er) {
+    onwrite(stream, er);
+  }; // the callback that the user supplies to write(chunk,encoding,cb)
+
+
+  this.writecb = null; // the amount that is being written when _write is called.
+
+  this.writelen = 0;
+  this.bufferedRequest = null;
+  this.lastBufferedRequest = null; // number of pending user-supplied write callbacks
+  // this must be 0 before 'finish' can be emitted
+
+  this.pendingcb = 0; // emit prefinish if the only thing we're waiting for is _write cbs
+  // This is relevant for synchronous Transform streams
+
+  this.prefinished = false; // True if the error was already emitted and should not be thrown again
+
+  this.errorEmitted = false; // Should close be emitted on destroy. Defaults to true.
+
+  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'finish' (and potentially 'end')
+
+  this.autoDestroy = !!options.autoDestroy; // count buffered requests
+
+  this.bufferedRequestCount = 0; // allocate the first CorkedRequest, there is always
+  // one allocated and free to use, and we maintain at most two
+
+  this.corkedRequestsFree = new CorkedRequest(this);
+}
+
+WritableState.prototype.getBuffer = function getBuffer() {
+  var current = this.bufferedRequest;
+  var out = [];
+
+  while (current) {
+    out.push(current);
+    current = current.next;
+  }
+
+  return out;
+};
+
+(function () {
+  try {
+    Object.defineProperty(WritableState.prototype, 'buffer', {
+      get: internalUtil.deprecate(function writableStateBufferGetter() {
+        return this.getBuffer();
+      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
+    });
+  } catch (_) {}
+})(); // Test _writableState for inheritance to account for Duplex streams,
+// whose prototype chain only points to Readable.
+
+
+var realHasInstance;
+
+if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
+  realHasInstance = Function.prototype[Symbol.hasInstance];
+  Object.defineProperty(Writable, Symbol.hasInstance, {
+    value: function value(object) {
+      if (realHasInstance.call(this, object)) return true;
+      if (this !== Writable) return false;
+      return object && object._writableState instanceof WritableState;
+    }
+  });
+} else {
+  realHasInstance = function realHasInstance(object) {
+    return object instanceof this;
+  };
+}
+
+function Writable(options) {
+  Duplex = Duplex || require('./_stream_duplex'); // Writable ctor is applied to Duplexes, too.
+  // `realHasInstance` is necessary because using plain `instanceof`
+  // would return false, as no `_writableState` property is attached.
+  // Trying to use the custom `instanceof` for Writable here will also break the
+  // Node.js LazyTransform implementation, which has a non-trivial getter for
+  // `_writableState` that would lead to infinite recursion.
+  // Checking for a Stream.Duplex instance is faster here instead of inside
+  // the WritableState constructor, at least with V8 6.5
+
+  var isDuplex = this instanceof Duplex;
+  if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
+  this._writableState = new WritableState(options, this, isDuplex); // legacy.
+
+  this.writable = true;
+
+  if (options) {
+    if (typeof options.write === 'function') this._write = options.write;
+    if (typeof options.writev === 'function') this._writev = options.writev;
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+    if (typeof options.final === 'function') this._final = options.final;
+  }
+
+  Stream.call(this);
+} // Otherwise people can pipe Writable streams, which is just wrong.
+
+
+Writable.prototype.pipe = function () {
+  errorOrDestroy(this, new ERR_STREAM_CANNOT_PIPE());
+};
+
+function writeAfterEnd(stream, cb) {
+  var er = new ERR_STREAM_WRITE_AFTER_END(); // TODO: defer error events consistently everywhere, not just the cb
+
+  errorOrDestroy(stream, er);
+  process.nextTick(cb, er);
+} // Checks that a user-supplied chunk is valid, especially for the particular
+// mode the stream is in. Currently this means that `null` is never accepted
+// and undefined/non-string values are only allowed in object mode.
+
+
+function validChunk(stream, state, chunk, cb) {
+  var er;
+
+  if (chunk === null) {
+    er = new ERR_STREAM_NULL_VALUES();
+  } else if (typeof chunk !== 'string' && !state.objectMode) {
+    er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer'], chunk);
+  }
+
+  if (er) {
+    errorOrDestroy(stream, er);
+    process.nextTick(cb, er);
+    return false;
+  }
+
+  return true;
+}
+
+Writable.prototype.write = function (chunk, encoding, cb) {
+  var state = this._writableState;
+  var ret = false;
+
+  var isBuf = !state.objectMode && _isUint8Array(chunk);
+
+  if (isBuf && !Buffer.isBuffer(chunk)) {
+    chunk = _uint8ArrayToBuffer(chunk);
+  }
+
+  if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
+  if (typeof cb !== 'function') cb = nop;
+  if (state.ending) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
+    state.pendingcb++;
+    ret = writeOrBuffer(this, state, isBuf, chunk, encoding, cb);
+  }
+  return ret;
+};
+
+Writable.prototype.cork = function () {
+  this._writableState.corked++;
+};
+
+Writable.prototype.uncork = function () {
+  var state = this._writableState;
+
+  if (state.corked) {
+    state.corked--;
+    if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+  }
+};
+
+Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
+  // node::ParseEncoding() requires lower case.
+  if (typeof encoding === 'string') encoding = encoding.toLowerCase();
+  if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new ERR_UNKNOWN_ENCODING(encoding);
+  this._writableState.defaultEncoding = encoding;
+  return this;
+};
+
+Object.defineProperty(Writable.prototype, 'writableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState && this._writableState.getBuffer();
+  }
+});
+
+function decodeChunk(state, chunk, encoding) {
+  if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
+    chunk = Buffer.from(chunk, encoding);
+  }
+
+  return chunk;
+}
+
+Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.highWaterMark;
+  }
+}); // if we're already writing something, then just put this
+// in the queue, and wait our turn.  Otherwise, call _write
+// If we return false, then we need a drain event, so set that flag.
+
+function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
+  if (!isBuf) {
+    var newChunk = decodeChunk(state, chunk, encoding);
+
+    if (chunk !== newChunk) {
+      isBuf = true;
+      encoding = 'buffer';
+      chunk = newChunk;
+    }
+  }
+
+  var len = state.objectMode ? 1 : chunk.length;
+  state.length += len;
+  var ret = state.length < state.highWaterMark; // we must ensure that previous needDrain will not be reset to false.
+
+  if (!ret) state.needDrain = true;
+
+  if (state.writing || state.corked) {
+    var last = state.lastBufferedRequest;
+    state.lastBufferedRequest = {
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
+      callback: cb,
+      next: null
+    };
+
+    if (last) {
+      last.next = state.lastBufferedRequest;
+    } else {
+      state.bufferedRequest = state.lastBufferedRequest;
+    }
+
+    state.bufferedRequestCount += 1;
+  } else {
+    doWrite(stream, state, false, len, chunk, encoding, cb);
+  }
+
+  return ret;
+}
+
+function doWrite(stream, state, writev, len, chunk, encoding, cb) {
+  state.writelen = len;
+  state.writecb = cb;
+  state.writing = true;
+  state.sync = true;
+  if (state.destroyed) state.onwrite(new ERR_STREAM_DESTROYED('write'));else if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
+  state.sync = false;
+}
+
+function onwriteError(stream, state, sync, er, cb) {
+  --state.pendingcb;
+
+  if (sync) {
+    // defer the callback if we are being called synchronously
+    // to avoid piling up things on the stack
+    process.nextTick(cb, er); // this can emit finish, and it will always happen
+    // after error
+
+    process.nextTick(finishMaybe, stream, state);
+    stream._writableState.errorEmitted = true;
+    errorOrDestroy(stream, er);
+  } else {
+    // the caller expect this to happen before if
+    // it is async
+    cb(er);
+    stream._writableState.errorEmitted = true;
+    errorOrDestroy(stream, er); // this can emit finish, but finish must
+    // always follow error
+
+    finishMaybe(stream, state);
+  }
+}
+
+function onwriteStateUpdate(state) {
+  state.writing = false;
+  state.writecb = null;
+  state.length -= state.writelen;
+  state.writelen = 0;
+}
+
+function onwrite(stream, er) {
+  var state = stream._writableState;
+  var sync = state.sync;
+  var cb = state.writecb;
+  if (typeof cb !== 'function') throw new ERR_MULTIPLE_CALLBACK();
+  onwriteStateUpdate(state);
+  if (er) onwriteError(stream, state, sync, er, cb);else {
+    // Check if we're actually ready to finish, but don't emit yet
+    var finished = needFinish(state) || stream.destroyed;
+
+    if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
+      clearBuffer(stream, state);
+    }
+
+    if (sync) {
+      process.nextTick(afterWrite, stream, state, finished, cb);
+    } else {
+      afterWrite(stream, state, finished, cb);
+    }
+  }
+}
+
+function afterWrite(stream, state, finished, cb) {
+  if (!finished) onwriteDrain(stream, state);
+  state.pendingcb--;
+  cb();
+  finishMaybe(stream, state);
+} // Must force callback to be called on nextTick, so that we don't
+// emit 'drain' before the write() consumer gets the 'false' return
+// value, and has a chance to attach a 'drain' listener.
+
+
+function onwriteDrain(stream, state) {
+  if (state.length === 0 && state.needDrain) {
+    state.needDrain = false;
+    stream.emit('drain');
+  }
+} // if there's something in the buffer waiting, then process it
+
+
+function clearBuffer(stream, state) {
+  state.bufferProcessing = true;
+  var entry = state.bufferedRequest;
+
+  if (stream._writev && entry && entry.next) {
+    // Fast case, write everything using _writev()
+    var l = state.bufferedRequestCount;
+    var buffer = new Array(l);
+    var holder = state.corkedRequestsFree;
+    holder.entry = entry;
+    var count = 0;
+    var allBuffers = true;
+
+    while (entry) {
+      buffer[count] = entry;
+      if (!entry.isBuf) allBuffers = false;
+      entry = entry.next;
+      count += 1;
+    }
+
+    buffer.allBuffers = allBuffers;
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish); // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
+
+    state.pendingcb++;
+    state.lastBufferedRequest = null;
+
+    if (holder.next) {
+      state.corkedRequestsFree = holder.next;
+      holder.next = null;
+    } else {
+      state.corkedRequestsFree = new CorkedRequest(state);
+    }
+
+    state.bufferedRequestCount = 0;
+  } else {
+    // Slow case, write chunks one-by-one
+    while (entry) {
+      var chunk = entry.chunk;
+      var encoding = entry.encoding;
+      var cb = entry.callback;
+      var len = state.objectMode ? 1 : chunk.length;
+      doWrite(stream, state, false, len, chunk, encoding, cb);
+      entry = entry.next;
+      state.bufferedRequestCount--; // if we didn't call the onwrite immediately, then
+      // it means that we need to wait until it does.
+      // also, that means that the chunk and cb are currently
+      // being processed, so move the buffer counter past them.
+
+      if (state.writing) {
+        break;
+      }
+    }
+
+    if (entry === null) state.lastBufferedRequest = null;
+  }
+
+  state.bufferedRequest = entry;
+  state.bufferProcessing = false;
+}
+
+Writable.prototype._write = function (chunk, encoding, cb) {
+  cb(new ERR_METHOD_NOT_IMPLEMENTED('_write()'));
+};
+
+Writable.prototype._writev = null;
+
+Writable.prototype.end = function (chunk, encoding, cb) {
+  var state = this._writableState;
+
+  if (typeof chunk === 'function') {
+    cb = chunk;
+    chunk = null;
+    encoding = null;
+  } else if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding); // .end() fully uncorks
+
+  if (state.corked) {
+    state.corked = 1;
+    this.uncork();
+  } // ignore unnecessary end() calls.
+
+
+  if (!state.ending) endWritable(this, state, cb);
+  return this;
+};
+
+Object.defineProperty(Writable.prototype, 'writableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.length;
+  }
+});
+
+function needFinish(state) {
+  return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
+}
+
+function callFinal(stream, state) {
+  stream._final(function (err) {
+    state.pendingcb--;
+
+    if (err) {
+      errorOrDestroy(stream, err);
+    }
+
+    state.prefinished = true;
+    stream.emit('prefinish');
+    finishMaybe(stream, state);
+  });
+}
+
+function prefinish(stream, state) {
+  if (!state.prefinished && !state.finalCalled) {
+    if (typeof stream._final === 'function' && !state.destroyed) {
+      state.pendingcb++;
+      state.finalCalled = true;
+      process.nextTick(callFinal, stream, state);
+    } else {
+      state.prefinished = true;
+      stream.emit('prefinish');
+    }
+  }
+}
+
+function finishMaybe(stream, state) {
+  var need = needFinish(state);
+
+  if (need) {
+    prefinish(stream, state);
+
+    if (state.pendingcb === 0) {
+      state.finished = true;
+      stream.emit('finish');
+
+      if (state.autoDestroy) {
+        // In case of duplex streams we need a way to detect
+        // if the readable side is ready for autoDestroy as well
+        var rState = stream._readableState;
+
+        if (!rState || rState.autoDestroy && rState.endEmitted) {
+          stream.destroy();
+        }
+      }
+    }
+  }
+
+  return need;
+}
+
+function endWritable(stream, state, cb) {
+  state.ending = true;
+  finishMaybe(stream, state);
+
+  if (cb) {
+    if (state.finished) process.nextTick(cb);else stream.once('finish', cb);
+  }
+
+  state.ended = true;
+  stream.writable = false;
+}
+
+function onCorkedFinish(corkReq, state, err) {
+  var entry = corkReq.entry;
+  corkReq.entry = null;
+
+  while (entry) {
+    var cb = entry.callback;
+    state.pendingcb--;
+    cb(err);
+    entry = entry.next;
+  } // reuse the free corkReq.
+
+
+  state.corkedRequestsFree.next = corkReq;
+}
+
+Object.defineProperty(Writable.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._writableState === undefined) {
+      return false;
+    }
+
+    return this._writableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._writableState) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._writableState.destroyed = value;
+  }
+});
+Writable.prototype.destroy = destroyImpl.destroy;
+Writable.prototype._undestroy = destroyImpl.undestroy;
+
+Writable.prototype._destroy = function (err, cb) {
+  cb(err);
+};
+}).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../errors":150,"./_stream_duplex":151,"./internal/streams/destroy":158,"./internal/streams/state":162,"./internal/streams/stream":163,"browserfs/dist/shims/process.js":68,"buffer":65,"inherits":142,"util-deprecate":272}],156:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _Object$setPrototypeO;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var finished = require('./end-of-stream');
+
+var kLastResolve = Symbol('lastResolve');
+var kLastReject = Symbol('lastReject');
+var kError = Symbol('error');
+var kEnded = Symbol('ended');
+var kLastPromise = Symbol('lastPromise');
+var kHandlePromise = Symbol('handlePromise');
+var kStream = Symbol('stream');
+
+function createIterResult(value, done) {
+  return {
+    value: value,
+    done: done
+  };
+}
+
+function readAndResolve(iter) {
+  var resolve = iter[kLastResolve];
+
+  if (resolve !== null) {
+    var data = iter[kStream].read(); // we defer if data is null
+    // we can be expecting either 'end' or
+    // 'error'
+
+    if (data !== null) {
+      iter[kLastPromise] = null;
+      iter[kLastResolve] = null;
+      iter[kLastReject] = null;
+      resolve(createIterResult(data, false));
+    }
+  }
+}
+
+function onReadable(iter) {
+  // we wait for the next tick, because it might
+  // emit an error with process.nextTick
+  process.nextTick(readAndResolve, iter);
+}
+
+function wrapForNext(lastPromise, iter) {
+  return function (resolve, reject) {
+    lastPromise.then(function () {
+      if (iter[kEnded]) {
+        resolve(createIterResult(undefined, true));
+        return;
+      }
+
+      iter[kHandlePromise](resolve, reject);
+    }, reject);
+  };
+}
+
+var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
+  get stream() {
+    return this[kStream];
+  },
+
+  next: function next() {
+    var _this = this;
+
+    // if we have detected an error in the meanwhile
+    // reject straight away
+    var error = this[kError];
+
+    if (error !== null) {
+      return Promise.reject(error);
+    }
+
+    if (this[kEnded]) {
+      return Promise.resolve(createIterResult(undefined, true));
+    }
+
+    if (this[kStream].destroyed) {
+      // We need to defer via nextTick because if .destroy(err) is
+      // called, the error will be emitted via nextTick, and
+      // we cannot guarantee that there is no error lingering around
+      // waiting to be emitted.
+      return new Promise(function (resolve, reject) {
+        process.nextTick(function () {
+          if (_this[kError]) {
+            reject(_this[kError]);
+          } else {
+            resolve(createIterResult(undefined, true));
+          }
+        });
+      });
+    } // if we have multiple next() calls
+    // we will wait for the previous Promise to finish
+    // this logic is optimized to support for await loops,
+    // where next() is only called once at a time
+
+
+    var lastPromise = this[kLastPromise];
+    var promise;
+
+    if (lastPromise) {
+      promise = new Promise(wrapForNext(lastPromise, this));
+    } else {
+      // fast path needed to support multiple this.push()
+      // without triggering the next() queue
+      var data = this[kStream].read();
+
+      if (data !== null) {
+        return Promise.resolve(createIterResult(data, false));
+      }
+
+      promise = new Promise(this[kHandlePromise]);
+    }
+
+    this[kLastPromise] = promise;
+    return promise;
+  }
+}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
+  return this;
+}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
+  var _this2 = this;
+
+  // destroy(err, cb) is a private API
+  // we can guarantee we have that here, because we control the
+  // Readable class this is attached to
+  return new Promise(function (resolve, reject) {
+    _this2[kStream].destroy(null, function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(createIterResult(undefined, true));
+    });
+  });
+}), _Object$setPrototypeO), AsyncIteratorPrototype);
+
+var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var _Object$create;
+
+  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
+    value: stream,
+    writable: true
+  }), _defineProperty(_Object$create, kLastResolve, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kLastReject, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kError, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kEnded, {
+    value: stream._readableState.endEmitted,
+    writable: true
+  }), _defineProperty(_Object$create, kHandlePromise, {
+    value: function value(resolve, reject) {
+      var data = iterator[kStream].read();
+
+      if (data) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        resolve(createIterResult(data, false));
+      } else {
+        iterator[kLastResolve] = resolve;
+        iterator[kLastReject] = reject;
+      }
+    },
+    writable: true
+  }), _Object$create));
+  iterator[kLastPromise] = null;
+  finished(stream, function (err) {
+    if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
+      var reject = iterator[kLastReject]; // reject if we are waiting for data in the Promise
+      // returned by next() and store the error
+
+      if (reject !== null) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        reject(err);
+      }
+
+      iterator[kError] = err;
+      return;
+    }
+
+    var resolve = iterator[kLastResolve];
+
+    if (resolve !== null) {
+      iterator[kLastPromise] = null;
+      iterator[kLastResolve] = null;
+      iterator[kLastReject] = null;
+      resolve(createIterResult(undefined, true));
+    }
+
+    iterator[kEnded] = true;
+  });
+  stream.on('readable', onReadable.bind(null, iterator));
+  return iterator;
+};
+
+module.exports = createReadableStreamAsyncIterator;
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"./end-of-stream":159,"browserfs/dist/shims/process.js":68}],157:[function(require,module,exports){
+'use strict';
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = require('buffer'),
+    Buffer = _require.Buffer;
+
+var _require2 = require('util'),
+    inspect = _require2.inspect;
+
+var custom = inspect && inspect.custom || 'inspect';
+
+function copyBuffer(src, target, offset) {
+  Buffer.prototype.copy.call(src, target, offset);
+}
+
+module.exports =
+/*#__PURE__*/
+function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
+
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+
+  _createClass(BufferList, [{
+    key: "push",
+    value: function push(v) {
+      var entry = {
+        data: v,
+        next: null
+      };
+      if (this.length > 0) this.tail.next = entry;else this.head = entry;
+      this.tail = entry;
+      ++this.length;
+    }
+  }, {
+    key: "unshift",
+    value: function unshift(v) {
+      var entry = {
+        data: v,
+        next: this.head
+      };
+      if (this.length === 0) this.tail = entry;
+      this.head = entry;
+      ++this.length;
+    }
+  }, {
+    key: "shift",
+    value: function shift() {
+      if (this.length === 0) return;
+      var ret = this.head.data;
+      if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+      --this.length;
+      return ret;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.head = this.tail = null;
+      this.length = 0;
+    }
+  }, {
+    key: "join",
+    value: function join(s) {
+      if (this.length === 0) return '';
+      var p = this.head;
+      var ret = '' + p.data;
+
+      while (p = p.next) {
+        ret += s + p.data;
+      }
+
+      return ret;
+    }
+  }, {
+    key: "concat",
+    value: function concat(n) {
+      if (this.length === 0) return Buffer.alloc(0);
+      var ret = Buffer.allocUnsafe(n >>> 0);
+      var p = this.head;
+      var i = 0;
+
+      while (p) {
+        copyBuffer(p.data, ret, i);
+        i += p.data.length;
+        p = p.next;
+      }
+
+      return ret;
+    } // Consumes a specified amount of bytes or characters from the buffered data.
+
+  }, {
+    key: "consume",
+    value: function consume(n, hasStrings) {
+      var ret;
+
+      if (n < this.head.data.length) {
+        // `slice` is the same for buffers and strings.
+        ret = this.head.data.slice(0, n);
+        this.head.data = this.head.data.slice(n);
+      } else if (n === this.head.data.length) {
+        // First chunk is a perfect match.
+        ret = this.shift();
+      } else {
+        // Result spans more than one buffer.
+        ret = hasStrings ? this._getString(n) : this._getBuffer(n);
+      }
+
+      return ret;
+    }
+  }, {
+    key: "first",
+    value: function first() {
+      return this.head.data;
+    } // Consumes a specified amount of characters from the buffered data.
+
+  }, {
+    key: "_getString",
+    value: function _getString(n) {
+      var p = this.head;
+      var c = 1;
+      var ret = p.data;
+      n -= ret.length;
+
+      while (p = p.next) {
+        var str = p.data;
+        var nb = n > str.length ? str.length : n;
+        if (nb === str.length) ret += str;else ret += str.slice(0, n);
+        n -= nb;
+
+        if (n === 0) {
+          if (nb === str.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = str.slice(nb);
+          }
+
+          break;
+        }
+
+        ++c;
+      }
+
+      this.length -= c;
+      return ret;
+    } // Consumes a specified amount of bytes from the buffered data.
+
+  }, {
+    key: "_getBuffer",
+    value: function _getBuffer(n) {
+      var ret = Buffer.allocUnsafe(n);
+      var p = this.head;
+      var c = 1;
+      p.data.copy(ret);
+      n -= p.data.length;
+
+      while (p = p.next) {
+        var buf = p.data;
+        var nb = n > buf.length ? buf.length : n;
+        buf.copy(ret, ret.length - n, 0, nb);
+        n -= nb;
+
+        if (n === 0) {
+          if (nb === buf.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = buf.slice(nb);
+          }
+
+          break;
+        }
+
+        ++c;
+      }
+
+      this.length -= c;
+      return ret;
+    } // Make sure the linked list only shows the minimal necessary information.
+
+  }, {
+    key: custom,
+    value: function value(_, options) {
+      return inspect(this, _objectSpread({}, options, {
+        // Only inspect one level.
+        depth: 0,
+        // It should not recurse.
+        customInspect: false
+      }));
+    }
+  }]);
+
+  return BufferList;
+}();
+},{"buffer":65,"util":63}],158:[function(require,module,exports){
+(function (process){
+'use strict'; // undocumented cb() API, needed for core, not for public API
+
+function destroy(err, cb) {
+  var _this = this;
+
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err) {
+      if (!this._writableState) {
+        process.nextTick(emitErrorNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorNT, this, err);
+      }
+    }
+
+    return this;
+  } // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
+  } // if this is a duplex stream mark the writable part as destroyed as well
+
+
+  if (this._writableState) {
+    this._writableState.destroyed = true;
+  }
+
+  this._destroy(err || null, function (err) {
+    if (!cb && err) {
+      if (!_this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
+        _this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else {
+        process.nextTick(emitCloseNT, _this);
+      }
+    } else if (cb) {
+      process.nextTick(emitCloseNT, _this);
+      cb(err);
+    } else {
+      process.nextTick(emitCloseNT, _this);
+    }
+  });
+
+  return this;
+}
+
+function emitErrorAndCloseNT(self, err) {
+  emitErrorNT(self, err);
+  emitCloseNT(self);
+}
+
+function emitCloseNT(self) {
+  if (self._writableState && !self._writableState.emitClose) return;
+  if (self._readableState && !self._readableState.emitClose) return;
+  self.emit('close');
+}
+
+function undestroy() {
+  if (this._readableState) {
+    this._readableState.destroyed = false;
+    this._readableState.reading = false;
+    this._readableState.ended = false;
+    this._readableState.endEmitted = false;
+  }
+
+  if (this._writableState) {
+    this._writableState.destroyed = false;
+    this._writableState.ended = false;
+    this._writableState.ending = false;
+    this._writableState.finalCalled = false;
+    this._writableState.prefinished = false;
+    this._writableState.finished = false;
+    this._writableState.errorEmitted = false;
+  }
+}
+
+function emitErrorNT(self, err) {
+  self.emit('error', err);
+}
+
+function errorOrDestroy(stream, err) {
+  // We have tests that rely on errors being emitted
+  // in the same tick, so changing this is semver major.
+  // For now when you opt-in to autoDestroy we allow
+  // the error to be emitted nextTick. In a future
+  // semver major update we should change the default to this.
+  var rState = stream._readableState;
+  var wState = stream._writableState;
+  if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
+}
+
+module.exports = {
+  destroy: destroy,
+  undestroy: undestroy,
+  errorOrDestroy: errorOrDestroy
+};
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"browserfs/dist/shims/process.js":68}],159:[function(require,module,exports){
+// Ported from https://github.com/mafintosh/end-of-stream with
+// permission from the author, Mathias Buus (@mafintosh).
+'use strict';
+
+var ERR_STREAM_PREMATURE_CLOSE = require('../../../errors').codes.ERR_STREAM_PREMATURE_CLOSE;
+
+function once(callback) {
+  var called = false;
+  return function () {
+    if (called) return;
+    called = true;
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    callback.apply(this, args);
+  };
+}
+
+function noop() {}
+
+function isRequest(stream) {
+  return stream.setHeader && typeof stream.abort === 'function';
+}
+
+function eos(stream, opts, callback) {
+  if (typeof opts === 'function') return eos(stream, null, opts);
+  if (!opts) opts = {};
+  callback = once(callback || noop);
+  var readable = opts.readable || opts.readable !== false && stream.readable;
+  var writable = opts.writable || opts.writable !== false && stream.writable;
+
+  var onlegacyfinish = function onlegacyfinish() {
+    if (!stream.writable) onfinish();
+  };
+
+  var writableEnded = stream._writableState && stream._writableState.finished;
+
+  var onfinish = function onfinish() {
+    writable = false;
+    writableEnded = true;
+    if (!readable) callback.call(stream);
+  };
+
+  var readableEnded = stream._readableState && stream._readableState.endEmitted;
+
+  var onend = function onend() {
+    readable = false;
+    readableEnded = true;
+    if (!writable) callback.call(stream);
+  };
+
+  var onerror = function onerror(err) {
+    callback.call(stream, err);
+  };
+
+  var onclose = function onclose() {
+    var err;
+
+    if (readable && !readableEnded) {
+      if (!stream._readableState || !stream._readableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
+    }
+
+    if (writable && !writableEnded) {
+      if (!stream._writableState || !stream._writableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
+    }
+  };
+
+  var onrequest = function onrequest() {
+    stream.req.on('finish', onfinish);
+  };
+
+  if (isRequest(stream)) {
+    stream.on('complete', onfinish);
+    stream.on('abort', onclose);
+    if (stream.req) onrequest();else stream.on('request', onrequest);
+  } else if (writable && !stream._writableState) {
+    // legacy streams
+    stream.on('end', onlegacyfinish);
+    stream.on('close', onlegacyfinish);
+  }
+
+  stream.on('end', onend);
+  stream.on('finish', onfinish);
+  if (opts.error !== false) stream.on('error', onerror);
+  stream.on('close', onclose);
+  return function () {
+    stream.removeListener('complete', onfinish);
+    stream.removeListener('abort', onclose);
+    stream.removeListener('request', onrequest);
+    if (stream.req) stream.req.removeListener('finish', onfinish);
+    stream.removeListener('end', onlegacyfinish);
+    stream.removeListener('close', onlegacyfinish);
+    stream.removeListener('finish', onfinish);
+    stream.removeListener('end', onend);
+    stream.removeListener('error', onerror);
+    stream.removeListener('close', onclose);
+  };
+}
+
+module.exports = eos;
+},{"../../../errors":150}],160:[function(require,module,exports){
+module.exports = function () {
+  throw new Error('Readable.from is not available in the browser')
+};
+
+},{}],161:[function(require,module,exports){
+// Ported from https://github.com/mafintosh/pump with
+// permission from the author, Mathias Buus (@mafintosh).
+'use strict';
+
+var eos;
+
+function once(callback) {
+  var called = false;
+  return function () {
+    if (called) return;
+    called = true;
+    callback.apply(void 0, arguments);
+  };
+}
+
+var _require$codes = require('../../../errors').codes,
+    ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
+    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
+
+function noop(err) {
+  // Rethrow the error if it exists to avoid swallowing it
+  if (err) throw err;
+}
+
+function isRequest(stream) {
+  return stream.setHeader && typeof stream.abort === 'function';
+}
+
+function destroyer(stream, reading, writing, callback) {
+  callback = once(callback);
+  var closed = false;
+  stream.on('close', function () {
+    closed = true;
+  });
+  if (eos === undefined) eos = require('./end-of-stream');
+  eos(stream, {
+    readable: reading,
+    writable: writing
+  }, function (err) {
+    if (err) return callback(err);
+    closed = true;
+    callback();
+  });
+  var destroyed = false;
+  return function (err) {
+    if (closed) return;
+    if (destroyed) return;
+    destroyed = true; // request.destroy just do .end - .abort is what we want
+
+    if (isRequest(stream)) return stream.abort();
+    if (typeof stream.destroy === 'function') return stream.destroy();
+    callback(err || new ERR_STREAM_DESTROYED('pipe'));
+  };
+}
+
+function call(fn) {
+  fn();
+}
+
+function pipe(from, to) {
+  return from.pipe(to);
+}
+
+function popCallback(streams) {
+  if (!streams.length) return noop;
+  if (typeof streams[streams.length - 1] !== 'function') return noop;
+  return streams.pop();
+}
+
+function pipeline() {
+  for (var _len = arguments.length, streams = new Array(_len), _key = 0; _key < _len; _key++) {
+    streams[_key] = arguments[_key];
+  }
+
+  var callback = popCallback(streams);
+  if (Array.isArray(streams[0])) streams = streams[0];
+
+  if (streams.length < 2) {
+    throw new ERR_MISSING_ARGS('streams');
+  }
+
+  var error;
+  var destroys = streams.map(function (stream, i) {
+    var reading = i < streams.length - 1;
+    var writing = i > 0;
+    return destroyer(stream, reading, writing, function (err) {
+      if (!error) error = err;
+      if (err) destroys.forEach(call);
+      if (reading) return;
+      destroys.forEach(call);
+      callback(error);
+    });
+  });
+  return streams.reduce(pipe);
+}
+
+module.exports = pipeline;
+},{"../../../errors":150,"./end-of-stream":159}],162:[function(require,module,exports){
+'use strict';
+
+var ERR_INVALID_OPT_VALUE = require('../../../errors').codes.ERR_INVALID_OPT_VALUE;
+
+function highWaterMarkFrom(options, isDuplex, duplexKey) {
+  return options.highWaterMark != null ? options.highWaterMark : isDuplex ? options[duplexKey] : null;
+}
+
+function getHighWaterMark(state, options, duplexKey, isDuplex) {
+  var hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
+
+  if (hwm != null) {
+    if (!(isFinite(hwm) && Math.floor(hwm) === hwm) || hwm < 0) {
+      var name = isDuplex ? duplexKey : 'highWaterMark';
+      throw new ERR_INVALID_OPT_VALUE(name, hwm);
+    }
+
+    return Math.floor(hwm);
+  } // Default value
+
+
+  return state.objectMode ? 16 : 16 * 1024;
+}
+
+module.exports = {
+  getHighWaterMark: getHighWaterMark
+};
+},{"../../../errors":150}],163:[function(require,module,exports){
+module.exports = require('events').EventEmitter;
+
+},{"events":114}],164:[function(require,module,exports){
+exports = module.exports = require('./lib/_stream_readable.js');
+exports.Stream = exports;
+exports.Readable = exports;
+exports.Writable = require('./lib/_stream_writable.js');
+exports.Duplex = require('./lib/_stream_duplex.js');
+exports.Transform = require('./lib/_stream_transform.js');
+exports.PassThrough = require('./lib/_stream_passthrough.js');
+exports.finished = require('./lib/internal/streams/end-of-stream.js');
+exports.pipeline = require('./lib/internal/streams/pipeline.js');
+
+},{"./lib/_stream_duplex.js":151,"./lib/_stream_passthrough.js":152,"./lib/_stream_readable.js":153,"./lib/_stream_transform.js":154,"./lib/_stream_writable.js":155,"./lib/internal/streams/end-of-stream.js":159,"./lib/internal/streams/pipeline.js":161}],165:[function(require,module,exports){
+(function (process){
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const {promisify} = require('util');
+const semver = require('semver');
+
+const useNativeRecursiveOption = semver.satisfies(process.version, '>=10.12.0');
+
+// https://github.com/nodejs/node/issues/8987
+// https://github.com/libuv/libuv/pull/1088
+const checkPath = pth => {
+	if (process.platform === 'win32') {
+		const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path.parse(pth).root, ''));
+
+		if (pathHasInvalidWinCharacters) {
+			const error = new Error(`Path contains invalid characters: ${pth}`);
+			error.code = 'EINVAL';
+			throw error;
+		}
+	}
+};
+
+const processOptions = options => {
+	// https://github.com/sindresorhus/make-dir/issues/18
+	const defaults = {
+		mode: 0o777,
+		fs
+	};
+
+	return {
+		...defaults,
+		...options
+	};
+};
+
+const permissionError = pth => {
+	// This replicates the exception of `fs.mkdir` with native the
+	// `recusive` option when run on an invalid drive under Windows.
+	const error = new Error(`operation not permitted, mkdir '${pth}'`);
+	error.code = 'EPERM';
+	error.errno = -4048;
+	error.path = pth;
+	error.syscall = 'mkdir';
+	return error;
+};
+
+const makeDir = async (input, options) => {
+	checkPath(input);
+	options = processOptions(options);
+
+	const mkdir = promisify(options.fs.mkdir);
+	const stat = promisify(options.fs.stat);
+
+	if (useNativeRecursiveOption && options.fs.mkdir === fs.mkdir) {
+		const pth = path.resolve(input);
+
+		await mkdir(pth, {
+			mode: options.mode,
+			recursive: true
+		});
+
+		return pth;
+	}
+
+	const make = async pth => {
+		try {
+			await mkdir(pth, options.mode);
+
+			return pth;
+		} catch (error) {
+			if (error.code === 'EPERM') {
+				throw error;
+			}
+
+			if (error.code === 'ENOENT') {
+				if (path.dirname(pth) === pth) {
+					throw permissionError(pth);
+				}
+
+				if (error.message.includes('null bytes')) {
+					throw error;
+				}
+
+				await make(path.dirname(pth));
+
+				return make(pth);
+			}
+
+			try {
+				const stats = await stat(pth);
+				if (!stats.isDirectory()) {
+					throw new Error('The path is not a directory');
+				}
+			} catch (_) {
+				throw error;
+			}
+
+			return pth;
+		}
+	};
+
+	return make(path.resolve(input));
+};
+
+module.exports = makeDir;
+
+module.exports.sync = (input, options) => {
+	checkPath(input);
+	options = processOptions(options);
+
+	if (useNativeRecursiveOption && options.fs.mkdirSync === fs.mkdirSync) {
+		const pth = path.resolve(input);
+
+		fs.mkdirSync(pth, {
+			mode: options.mode,
+			recursive: true
+		});
+
+		return pth;
+	}
+
+	const make = pth => {
+		try {
+			options.fs.mkdirSync(pth, options.mode);
+		} catch (error) {
+			if (error.code === 'EPERM') {
+				throw error;
+			}
+
+			if (error.code === 'ENOENT') {
+				if (path.dirname(pth) === pth) {
+					throw permissionError(pth);
+				}
+
+				if (error.message.includes('null bytes')) {
+					throw error;
+				}
+
+				make(path.dirname(pth));
+				return make(pth);
+			}
+
+			try {
+				if (!options.fs.statSync(pth).isDirectory()) {
+					throw new Error('The path is not a directory');
+				}
+			} catch (_) {
+				throw error;
+			}
+		}
+
+		return pth;
+	};
+
+	return make(path.resolve(input));
+};
+
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"browserfs/dist/shims/process.js":68,"fs":66,"path":67,"semver":235,"util":277}],166:[function(require,module,exports){
 /*!
  * media-typer
  * Copyright(c) 2014 Douglas Christopher Wilson
@@ -37878,7 +57111,7 @@ function splitType(string) {
   return obj
 }
 
-},{}],112:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 /*!
  * methods
  * Copyright(c) 2013-2014 TJ Holowaychuk
@@ -37949,7 +57182,7 @@ function getBasicNodeMethods() {
   ];
 }
 
-},{"http":34}],113:[function(require,module,exports){
+},{"http":63}],168:[function(require,module,exports){
 module.exports={
   "application/1d-interleaved-parityfec": {
     "source": "iana"
@@ -46127,7 +65360,7 @@ module.exports={
   }
 }
 
-},{}],114:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 /*!
  * mime-db
  * Copyright(c) 2014 Jonathan Ong
@@ -46140,7 +65373,7 @@ module.exports={
 
 module.exports = require('./db.json')
 
-},{"./db.json":113}],115:[function(require,module,exports){
+},{"./db.json":168}],170:[function(require,module,exports){
 /*!
  * mime-types
  * Copyright(c) 2014 Jonathan Ong
@@ -46330,250 +65563,7 @@ function populateMaps (extensions, types) {
   })
 }
 
-},{"mime-db":114,"path":38}],116:[function(require,module,exports){
-const optsArg = require('./lib/opts-arg.js')
-const pathArg = require('./lib/path-arg.js')
-
-const {mkdirpNative, mkdirpNativeSync} = require('./lib/mkdirp-native.js')
-const {mkdirpManual, mkdirpManualSync} = require('./lib/mkdirp-manual.js')
-const {useNative, useNativeSync} = require('./lib/use-native.js')
-
-
-const mkdirp = (path, opts) => {
-  path = pathArg(path)
-  opts = optsArg(opts)
-  return useNative(opts)
-    ? mkdirpNative(path, opts)
-    : mkdirpManual(path, opts)
-}
-
-const mkdirpSync = (path, opts) => {
-  path = pathArg(path)
-  opts = optsArg(opts)
-  return useNativeSync(opts)
-    ? mkdirpNativeSync(path, opts)
-    : mkdirpManualSync(path, opts)
-}
-
-mkdirp.sync = mkdirpSync
-mkdirp.native = (path, opts) => mkdirpNative(pathArg(path), optsArg(opts))
-mkdirp.manual = (path, opts) => mkdirpManual(pathArg(path), optsArg(opts))
-mkdirp.nativeSync = (path, opts) => mkdirpNativeSync(pathArg(path), optsArg(opts))
-mkdirp.manualSync = (path, opts) => mkdirpManualSync(pathArg(path), optsArg(opts))
-
-module.exports = mkdirp
-
-},{"./lib/mkdirp-manual.js":118,"./lib/mkdirp-native.js":119,"./lib/opts-arg.js":120,"./lib/path-arg.js":121,"./lib/use-native.js":122}],117:[function(require,module,exports){
-const {dirname} = require('path')
-
-const findMade = (opts, parent, path = undefined) => {
-  // we never want the 'made' return value to be a root directory
-  if (path === parent)
-    return Promise.resolve()
-
-  return opts.statAsync(parent).then(
-    st => st.isDirectory() ? path : undefined, // will fail later
-    er => er.code === 'ENOENT'
-      ? findMade(opts, dirname(parent), parent)
-      : undefined
-  )
-}
-
-const findMadeSync = (opts, parent, path = undefined) => {
-  if (path === parent)
-    return undefined
-
-  try {
-    return opts.statSync(parent).isDirectory() ? path : undefined
-  } catch (er) {
-    return er.code === 'ENOENT'
-      ? findMadeSync(opts, dirname(parent), parent)
-      : undefined
-  }
-}
-
-module.exports = {findMade, findMadeSync}
-
-},{"path":38}],118:[function(require,module,exports){
-const {dirname} = require('path')
-
-const mkdirpManual = (path, opts, made) => {
-  opts.recursive = false
-  const parent = dirname(path)
-  if (parent === path) {
-    return opts.mkdirAsync(path, opts).catch(er => {
-      // swallowed by recursive implementation on posix systems
-      // any other error is a failure
-      if (er.code !== 'EISDIR')
-        throw er
-    })
-  }
-
-  return opts.mkdirAsync(path, opts).then(() => made || path, er => {
-    if (er.code === 'ENOENT')
-      return mkdirpManual(parent, opts)
-        .then(made => mkdirpManual(path, opts, made))
-    if (er.code !== 'EEXIST' && er.code !== 'EROFS')
-      throw er
-    return opts.statAsync(path).then(st => {
-      if (st.isDirectory())
-        return made
-      else
-        throw er
-    }, () => { throw er })
-  })
-}
-
-const mkdirpManualSync = (path, opts, made) => {
-  const parent = dirname(path)
-  opts.recursive = false
-
-  if (parent === path) {
-    try {
-      return opts.mkdirSync(path, opts)
-    } catch (er) {
-      // swallowed by recursive implementation on posix systems
-      // any other error is a failure
-      if (er.code !== 'EISDIR')
-        throw er
-      else
-        return
-    }
-  }
-
-  try {
-    opts.mkdirSync(path, opts)
-    return made || path
-  } catch (er) {
-    if (er.code === 'ENOENT')
-      return mkdirpManualSync(path, opts, mkdirpManualSync(parent, opts, made))
-    if (er.code !== 'EEXIST' && er.code !== 'EROFS')
-      throw er
-    try {
-      if (!opts.statSync(path).isDirectory())
-        throw er
-    } catch (_) {
-      throw er
-    }
-  }
-}
-
-module.exports = {mkdirpManual, mkdirpManualSync}
-
-},{"path":38}],119:[function(require,module,exports){
-const {dirname} = require('path')
-const {findMade, findMadeSync} = require('./find-made.js')
-const {mkdirpManual, mkdirpManualSync} = require('./mkdirp-manual.js')
-
-const mkdirpNative = (path, opts) => {
-  opts.recursive = true
-  const parent = dirname(path)
-  if (parent === path)
-    return opts.mkdirAsync(path, opts)
-
-  return findMade(opts, path).then(made =>
-    opts.mkdirAsync(path, opts).then(() => made)
-    .catch(er => {
-      if (er.code === 'ENOENT')
-        return mkdirpManual(path, opts)
-      else
-        throw er
-    }))
-}
-
-const mkdirpNativeSync = (path, opts) => {
-  opts.recursive = true
-  const parent = dirname(path)
-  if (parent === path)
-    return opts.mkdirSync(path, opts)
-
-  const made = findMadeSync(opts, path)
-  try {
-    opts.mkdirSync(path, opts)
-    return made
-  } catch (er) {
-    if (er.code === 'ENOENT')
-      return mkdirpManualSync(path, opts)
-    else
-      throw er
-  }
-}
-
-module.exports = {mkdirpNative, mkdirpNativeSync}
-
-},{"./find-made.js":117,"./mkdirp-manual.js":118,"path":38}],120:[function(require,module,exports){
-const { promisify } = require('util')
-const fs = require('fs')
-const optsArg = opts => {
-  if (!opts)
-    opts = { mode: 0o777, fs }
-  else if (typeof opts === 'object')
-    opts = { mode: 0o777, fs, ...opts }
-  else if (typeof opts === 'number')
-    opts = { mode: opts, fs }
-  else if (typeof opts === 'string')
-    opts = { mode: parseInt(opts, 8), fs }
-  else
-    throw new TypeError('invalid options argument')
-
-  opts.mkdir = opts.mkdir || opts.fs.mkdir || fs.mkdir
-  opts.mkdirAsync = promisify(opts.mkdir)
-  opts.stat = opts.stat || opts.fs.stat || fs.stat
-  opts.statAsync = promisify(opts.stat)
-  opts.statSync = opts.statSync || opts.fs.statSync || fs.statSync
-  opts.mkdirSync = opts.mkdirSync || opts.fs.mkdirSync || fs.mkdirSync
-  return opts
-}
-module.exports = optsArg
-
-},{"fs":37,"util":197}],121:[function(require,module,exports){
-(function (process){
-const platform = process.env.__TESTING_MKDIRP_PLATFORM__ || process.platform
-const { resolve, parse } = require('path')
-const pathArg = path => {
-  if (/\0/.test(path)) {
-    // simulate same failure that node raises
-    throw Object.assign(
-      new TypeError('path must be a string without null bytes'),
-      {
-        path,
-        code: 'ERR_INVALID_ARG_VALUE',
-      }
-    )
-  }
-
-  path = resolve(path)
-  if (platform === 'win32') {
-    const badWinChars = /[*|"<>?:]/
-    const {root} = parse(path)
-    if (badWinChars.test(path.substr(root.length))) {
-      throw Object.assign(new Error('Illegal characters in path.'), {
-        path,
-        code: 'EINVAL',
-      })
-    }
-  }
-
-  return path
-}
-module.exports = pathArg
-
-}).call(this,require('browserfs/dist/shims/process.js'))
-},{"browserfs/dist/shims/process.js":39,"path":38}],122:[function(require,module,exports){
-(function (process){
-const fs = require('fs')
-
-const version = process.env.__TESTING_MKDIRP_NODE_VERSION__ || process.version
-const versArr = version.replace(/^v/, '').split('.')
-const hasNative = +versArr[0] > 10 || +versArr[0] === 10 && +versArr[1] >= 12
-
-const useNative = !hasNative ? () => false : opts => opts.mkdir === fs.mkdir
-const useNativeSync = !hasNative ? () => false : opts => opts.mkdirSync === fs.mkdirSync
-
-module.exports = {useNative, useNativeSync}
-
-}).call(this,require('browserfs/dist/shims/process.js'))
-},{"browserfs/dist/shims/process.js":39,"fs":37}],123:[function(require,module,exports){
+},{"mime-db":169,"path":67}],171:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -46727,7 +65717,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],124:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -46819,7 +65809,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],125:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -46943,7 +65933,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":127}],126:[function(require,module,exports){
+},{"./isArguments":175}],174:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -46977,7 +65967,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":125,"./isArguments":127}],127:[function(require,module,exports){
+},{"./implementation":173,"./isArguments":175}],175:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -46996,7 +65986,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],128:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 'use strict';
 
 var CreateDataProperty = require('es-abstract/2019/CreateDataProperty');
@@ -47036,7 +66026,7 @@ module.exports = function getOwnPropertyDescriptors(value) {
 	);
 };
 
-},{"es-abstract/2019/CreateDataProperty":54,"es-abstract/2019/IsCallable":57,"es-abstract/2019/RequireObjectCoercible":63,"es-abstract/2019/ToObject":66,"es-abstract/helpers/callBound":75}],129:[function(require,module,exports){
+},{"es-abstract/2019/CreateDataProperty":89,"es-abstract/2019/IsCallable":92,"es-abstract/2019/RequireObjectCoercible":98,"es-abstract/2019/ToObject":101,"es-abstract/helpers/callBound":110}],177:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -47053,7 +66043,7 @@ define(implementation, {
 
 module.exports = implementation;
 
-},{"./implementation":128,"./polyfill":130,"./shim":131,"define-properties":48}],130:[function(require,module,exports){
+},{"./implementation":176,"./polyfill":178,"./shim":179,"define-properties":81}],178:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -47062,7 +66052,7 @@ module.exports = function getPolyfill() {
 	return typeof Object.getOwnPropertyDescriptors === 'function' ? Object.getOwnPropertyDescriptors : implementation;
 };
 
-},{"./implementation":128}],131:[function(require,module,exports){
+},{"./implementation":176}],179:[function(require,module,exports){
 'use strict';
 
 var getPolyfill = require('./polyfill');
@@ -47078,7 +66068,7 @@ module.exports = function shimGetOwnPropertyDescriptors() {
 	return polyfill;
 };
 
-},{"./polyfill":130,"define-properties":48}],132:[function(require,module,exports){
+},{"./polyfill":178,"define-properties":81}],180:[function(require,module,exports){
 (function (process,setImmediate){
 /*!
  * on-finished
@@ -47278,7 +66268,51 @@ function patchAssignSocket(res, callback) {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'),require("timers").setImmediate)
-},{"browserfs/dist/shims/process.js":39,"ee-first":50,"timers":186}],133:[function(require,module,exports){
+},{"browserfs/dist/shims/process.js":68,"ee-first":85,"timers":266}],181:[function(require,module,exports){
+var wrappy = require('wrappy')
+module.exports = wrappy(once)
+module.exports.strict = wrappy(onceStrict)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+
+  Object.defineProperty(Function.prototype, 'onceStrict', {
+    value: function () {
+      return onceStrict(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+function onceStrict (fn) {
+  var f = function () {
+    if (f.called)
+      throw new Error(f.onceError)
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  var name = fn.name || 'Function wrapped with `once`'
+  f.onceError = name + " shouldn't be called more than once"
+  f.called = false
+  return f
+}
+
+},{"wrappy":279}],182:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -47329,7 +66363,850 @@ exports.homedir = function () {
 	return '/'
 };
 
-},{}],134:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
+// Top level file is just a mixin of submodules & constants
+'use strict';
+
+var assign    = require('./lib/utils/common').assign;
+
+var deflate   = require('./lib/deflate');
+var inflate   = require('./lib/inflate');
+var constants = require('./lib/zlib/constants');
+
+var pako = {};
+
+assign(pako, deflate, inflate, constants);
+
+module.exports = pako;
+
+},{"./lib/deflate":184,"./lib/inflate":185,"./lib/utils/common":186,"./lib/zlib/constants":189}],184:[function(require,module,exports){
+'use strict';
+
+
+var zlib_deflate = require('./zlib/deflate');
+var utils        = require('./utils/common');
+var strings      = require('./utils/strings');
+var msg          = require('./zlib/messages');
+var ZStream      = require('./zlib/zstream');
+
+var toString = Object.prototype.toString;
+
+/* Public constants ==========================================================*/
+/* ===========================================================================*/
+
+var Z_NO_FLUSH      = 0;
+var Z_FINISH        = 4;
+
+var Z_OK            = 0;
+var Z_STREAM_END    = 1;
+var Z_SYNC_FLUSH    = 2;
+
+var Z_DEFAULT_COMPRESSION = -1;
+
+var Z_DEFAULT_STRATEGY    = 0;
+
+var Z_DEFLATED  = 8;
+
+/* ===========================================================================*/
+
+
+/**
+ * class Deflate
+ *
+ * Generic JS-style wrapper for zlib calls. If you don't need
+ * streaming behaviour - use more simple functions: [[deflate]],
+ * [[deflateRaw]] and [[gzip]].
+ **/
+
+/* internal
+ * Deflate.chunks -> Array
+ *
+ * Chunks of output data, if [[Deflate#onData]] not overridden.
+ **/
+
+/**
+ * Deflate.result -> Uint8Array|Array
+ *
+ * Compressed result, generated by default [[Deflate#onData]]
+ * and [[Deflate#onEnd]] handlers. Filled after you push last chunk
+ * (call [[Deflate#push]] with `Z_FINISH` / `true` param)  or if you
+ * push a chunk with explicit flush (call [[Deflate#push]] with
+ * `Z_SYNC_FLUSH` param).
+ **/
+
+/**
+ * Deflate.err -> Number
+ *
+ * Error code after deflate finished. 0 (Z_OK) on success.
+ * You will not need it in real life, because deflate errors
+ * are possible only on wrong options or bad `onData` / `onEnd`
+ * custom handlers.
+ **/
+
+/**
+ * Deflate.msg -> String
+ *
+ * Error message, if [[Deflate.err]] != 0
+ **/
+
+
+/**
+ * new Deflate(options)
+ * - options (Object): zlib deflate options.
+ *
+ * Creates new deflator instance with specified params. Throws exception
+ * on bad params. Supported options:
+ *
+ * - `level`
+ * - `windowBits`
+ * - `memLevel`
+ * - `strategy`
+ * - `dictionary`
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Additional options, for internal needs:
+ *
+ * - `chunkSize` - size of generated data chunks (16K by default)
+ * - `raw` (Boolean) - do raw deflate
+ * - `gzip` (Boolean) - create gzip wrapper
+ * - `to` (String) - if equal to 'string', then result will be "binary string"
+ *    (each char code [0..255])
+ * - `header` (Object) - custom header for gzip
+ *   - `text` (Boolean) - true if compressed data believed to be text
+ *   - `time` (Number) - modification time, unix timestamp
+ *   - `os` (Number) - operation system code
+ *   - `extra` (Array) - array of bytes with extra data (max 65536)
+ *   - `name` (String) - file name (binary string)
+ *   - `comment` (String) - comment (binary string)
+ *   - `hcrc` (Boolean) - true if header crc should be added
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , chunk1 = Uint8Array([1,2,3,4,5,6,7,8,9])
+ *   , chunk2 = Uint8Array([10,11,12,13,14,15,16,17,18,19]);
+ *
+ * var deflate = new pako.Deflate({ level: 3});
+ *
+ * deflate.push(chunk1, false);
+ * deflate.push(chunk2, true);  // true -> last chunk
+ *
+ * if (deflate.err) { throw new Error(deflate.err); }
+ *
+ * console.log(deflate.result);
+ * ```
+ **/
+function Deflate(options) {
+  if (!(this instanceof Deflate)) return new Deflate(options);
+
+  this.options = utils.assign({
+    level: Z_DEFAULT_COMPRESSION,
+    method: Z_DEFLATED,
+    chunkSize: 16384,
+    windowBits: 15,
+    memLevel: 8,
+    strategy: Z_DEFAULT_STRATEGY,
+    to: ''
+  }, options || {});
+
+  var opt = this.options;
+
+  if (opt.raw && (opt.windowBits > 0)) {
+    opt.windowBits = -opt.windowBits;
+  }
+
+  else if (opt.gzip && (opt.windowBits > 0) && (opt.windowBits < 16)) {
+    opt.windowBits += 16;
+  }
+
+  this.err    = 0;      // error code, if happens (0 = Z_OK)
+  this.msg    = '';     // error message
+  this.ended  = false;  // used to avoid multiple onEnd() calls
+  this.chunks = [];     // chunks of compressed data
+
+  this.strm = new ZStream();
+  this.strm.avail_out = 0;
+
+  var status = zlib_deflate.deflateInit2(
+    this.strm,
+    opt.level,
+    opt.method,
+    opt.windowBits,
+    opt.memLevel,
+    opt.strategy
+  );
+
+  if (status !== Z_OK) {
+    throw new Error(msg[status]);
+  }
+
+  if (opt.header) {
+    zlib_deflate.deflateSetHeader(this.strm, opt.header);
+  }
+
+  if (opt.dictionary) {
+    var dict;
+    // Convert data if needed
+    if (typeof opt.dictionary === 'string') {
+      // If we need to compress text, change encoding to utf8.
+      dict = strings.string2buf(opt.dictionary);
+    } else if (toString.call(opt.dictionary) === '[object ArrayBuffer]') {
+      dict = new Uint8Array(opt.dictionary);
+    } else {
+      dict = opt.dictionary;
+    }
+
+    status = zlib_deflate.deflateSetDictionary(this.strm, dict);
+
+    if (status !== Z_OK) {
+      throw new Error(msg[status]);
+    }
+
+    this._dict_set = true;
+  }
+}
+
+/**
+ * Deflate#push(data[, mode]) -> Boolean
+ * - data (Uint8Array|Array|ArrayBuffer|String): input data. Strings will be
+ *   converted to utf8 byte sequence.
+ * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
+ *
+ * Sends input data to deflate pipe, generating [[Deflate#onData]] calls with
+ * new compressed chunks. Returns `true` on success. The last data block must have
+ * mode Z_FINISH (or `true`). That will flush internal pending buffers and call
+ * [[Deflate#onEnd]]. For interim explicit flushes (without ending the stream) you
+ * can use mode Z_SYNC_FLUSH, keeping the compression context.
+ *
+ * On fail call [[Deflate#onEnd]] with error code and return false.
+ *
+ * We strongly recommend to use `Uint8Array` on input for best speed (output
+ * array format is detected automatically). Also, don't skip last param and always
+ * use the same type in your code (boolean or number). That will improve JS speed.
+ *
+ * For regular `Array`-s make sure all elements are [0..255].
+ *
+ * ##### Example
+ *
+ * ```javascript
+ * push(chunk, false); // push one of data chunks
+ * ...
+ * push(chunk, true);  // push last chunk
+ * ```
+ **/
+Deflate.prototype.push = function (data, mode) {
+  var strm = this.strm;
+  var chunkSize = this.options.chunkSize;
+  var status, _mode;
+
+  if (this.ended) { return false; }
+
+  _mode = (mode === ~~mode) ? mode : ((mode === true) ? Z_FINISH : Z_NO_FLUSH);
+
+  // Convert data if needed
+  if (typeof data === 'string') {
+    // If we need to compress text, change encoding to utf8.
+    strm.input = strings.string2buf(data);
+  } else if (toString.call(data) === '[object ArrayBuffer]') {
+    strm.input = new Uint8Array(data);
+  } else {
+    strm.input = data;
+  }
+
+  strm.next_in = 0;
+  strm.avail_in = strm.input.length;
+
+  do {
+    if (strm.avail_out === 0) {
+      strm.output = new utils.Buf8(chunkSize);
+      strm.next_out = 0;
+      strm.avail_out = chunkSize;
+    }
+    status = zlib_deflate.deflate(strm, _mode);    /* no bad return value */
+
+    if (status !== Z_STREAM_END && status !== Z_OK) {
+      this.onEnd(status);
+      this.ended = true;
+      return false;
+    }
+    if (strm.avail_out === 0 || (strm.avail_in === 0 && (_mode === Z_FINISH || _mode === Z_SYNC_FLUSH))) {
+      if (this.options.to === 'string') {
+        this.onData(strings.buf2binstring(utils.shrinkBuf(strm.output, strm.next_out)));
+      } else {
+        this.onData(utils.shrinkBuf(strm.output, strm.next_out));
+      }
+    }
+  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== Z_STREAM_END);
+
+  // Finalize on the last chunk.
+  if (_mode === Z_FINISH) {
+    status = zlib_deflate.deflateEnd(this.strm);
+    this.onEnd(status);
+    this.ended = true;
+    return status === Z_OK;
+  }
+
+  // callback interim results if Z_SYNC_FLUSH.
+  if (_mode === Z_SYNC_FLUSH) {
+    this.onEnd(Z_OK);
+    strm.avail_out = 0;
+    return true;
+  }
+
+  return true;
+};
+
+
+/**
+ * Deflate#onData(chunk) -> Void
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
+ *   on js engine support. When string output requested, each chunk
+ *   will be string.
+ *
+ * By default, stores data blocks in `chunks[]` property and glue
+ * those in `onEnd`. Override this handler, if you need another behaviour.
+ **/
+Deflate.prototype.onData = function (chunk) {
+  this.chunks.push(chunk);
+};
+
+
+/**
+ * Deflate#onEnd(status) -> Void
+ * - status (Number): deflate status. 0 (Z_OK) on success,
+ *   other if not.
+ *
+ * Called once after you tell deflate that the input stream is
+ * complete (Z_FINISH) or should be flushed (Z_SYNC_FLUSH)
+ * or if an error happened. By default - join collected chunks,
+ * free memory and fill `results` / `err` properties.
+ **/
+Deflate.prototype.onEnd = function (status) {
+  // On success - join
+  if (status === Z_OK) {
+    if (this.options.to === 'string') {
+      this.result = this.chunks.join('');
+    } else {
+      this.result = utils.flattenChunks(this.chunks);
+    }
+  }
+  this.chunks = [];
+  this.err = status;
+  this.msg = this.strm.msg;
+};
+
+
+/**
+ * deflate(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * Compress `data` with deflate algorithm and `options`.
+ *
+ * Supported options are:
+ *
+ * - level
+ * - windowBits
+ * - memLevel
+ * - strategy
+ * - dictionary
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Sugar (options):
+ *
+ * - `raw` (Boolean) - say that we work with raw stream, if you don't wish to specify
+ *   negative windowBits implicitly.
+ * - `to` (String) - if equal to 'string', then result will be "binary string"
+ *    (each char code [0..255])
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , data = Uint8Array([1,2,3,4,5,6,7,8,9]);
+ *
+ * console.log(pako.deflate(data));
+ * ```
+ **/
+function deflate(input, options) {
+  var deflator = new Deflate(options);
+
+  deflator.push(input, true);
+
+  // That will never happens, if you don't cheat with options :)
+  if (deflator.err) { throw deflator.msg || msg[deflator.err]; }
+
+  return deflator.result;
+}
+
+
+/**
+ * deflateRaw(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * The same as [[deflate]], but creates raw data, without wrapper
+ * (header and adler32 crc).
+ **/
+function deflateRaw(input, options) {
+  options = options || {};
+  options.raw = true;
+  return deflate(input, options);
+}
+
+
+/**
+ * gzip(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * The same as [[deflate]], but create gzip wrapper instead of
+ * deflate one.
+ **/
+function gzip(input, options) {
+  options = options || {};
+  options.gzip = true;
+  return deflate(input, options);
+}
+
+
+exports.Deflate = Deflate;
+exports.deflate = deflate;
+exports.deflateRaw = deflateRaw;
+exports.gzip = gzip;
+
+},{"./utils/common":186,"./utils/strings":187,"./zlib/deflate":191,"./zlib/messages":196,"./zlib/zstream":198}],185:[function(require,module,exports){
+'use strict';
+
+
+var zlib_inflate = require('./zlib/inflate');
+var utils        = require('./utils/common');
+var strings      = require('./utils/strings');
+var c            = require('./zlib/constants');
+var msg          = require('./zlib/messages');
+var ZStream      = require('./zlib/zstream');
+var GZheader     = require('./zlib/gzheader');
+
+var toString = Object.prototype.toString;
+
+/**
+ * class Inflate
+ *
+ * Generic JS-style wrapper for zlib calls. If you don't need
+ * streaming behaviour - use more simple functions: [[inflate]]
+ * and [[inflateRaw]].
+ **/
+
+/* internal
+ * inflate.chunks -> Array
+ *
+ * Chunks of output data, if [[Inflate#onData]] not overridden.
+ **/
+
+/**
+ * Inflate.result -> Uint8Array|Array|String
+ *
+ * Uncompressed result, generated by default [[Inflate#onData]]
+ * and [[Inflate#onEnd]] handlers. Filled after you push last chunk
+ * (call [[Inflate#push]] with `Z_FINISH` / `true` param) or if you
+ * push a chunk with explicit flush (call [[Inflate#push]] with
+ * `Z_SYNC_FLUSH` param).
+ **/
+
+/**
+ * Inflate.err -> Number
+ *
+ * Error code after inflate finished. 0 (Z_OK) on success.
+ * Should be checked if broken data possible.
+ **/
+
+/**
+ * Inflate.msg -> String
+ *
+ * Error message, if [[Inflate.err]] != 0
+ **/
+
+
+/**
+ * new Inflate(options)
+ * - options (Object): zlib inflate options.
+ *
+ * Creates new inflator instance with specified params. Throws exception
+ * on bad params. Supported options:
+ *
+ * - `windowBits`
+ * - `dictionary`
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Additional options, for internal needs:
+ *
+ * - `chunkSize` - size of generated data chunks (16K by default)
+ * - `raw` (Boolean) - do raw inflate
+ * - `to` (String) - if equal to 'string', then result will be converted
+ *   from utf8 to utf16 (javascript) string. When string output requested,
+ *   chunk length can differ from `chunkSize`, depending on content.
+ *
+ * By default, when no options set, autodetect deflate/gzip data format via
+ * wrapper header.
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , chunk1 = Uint8Array([1,2,3,4,5,6,7,8,9])
+ *   , chunk2 = Uint8Array([10,11,12,13,14,15,16,17,18,19]);
+ *
+ * var inflate = new pako.Inflate({ level: 3});
+ *
+ * inflate.push(chunk1, false);
+ * inflate.push(chunk2, true);  // true -> last chunk
+ *
+ * if (inflate.err) { throw new Error(inflate.err); }
+ *
+ * console.log(inflate.result);
+ * ```
+ **/
+function Inflate(options) {
+  if (!(this instanceof Inflate)) return new Inflate(options);
+
+  this.options = utils.assign({
+    chunkSize: 16384,
+    windowBits: 0,
+    to: ''
+  }, options || {});
+
+  var opt = this.options;
+
+  // Force window size for `raw` data, if not set directly,
+  // because we have no header for autodetect.
+  if (opt.raw && (opt.windowBits >= 0) && (opt.windowBits < 16)) {
+    opt.windowBits = -opt.windowBits;
+    if (opt.windowBits === 0) { opt.windowBits = -15; }
+  }
+
+  // If `windowBits` not defined (and mode not raw) - set autodetect flag for gzip/deflate
+  if ((opt.windowBits >= 0) && (opt.windowBits < 16) &&
+      !(options && options.windowBits)) {
+    opt.windowBits += 32;
+  }
+
+  // Gzip header has no info about windows size, we can do autodetect only
+  // for deflate. So, if window size not set, force it to max when gzip possible
+  if ((opt.windowBits > 15) && (opt.windowBits < 48)) {
+    // bit 3 (16) -> gzipped data
+    // bit 4 (32) -> autodetect gzip/deflate
+    if ((opt.windowBits & 15) === 0) {
+      opt.windowBits |= 15;
+    }
+  }
+
+  this.err    = 0;      // error code, if happens (0 = Z_OK)
+  this.msg    = '';     // error message
+  this.ended  = false;  // used to avoid multiple onEnd() calls
+  this.chunks = [];     // chunks of compressed data
+
+  this.strm   = new ZStream();
+  this.strm.avail_out = 0;
+
+  var status  = zlib_inflate.inflateInit2(
+    this.strm,
+    opt.windowBits
+  );
+
+  if (status !== c.Z_OK) {
+    throw new Error(msg[status]);
+  }
+
+  this.header = new GZheader();
+
+  zlib_inflate.inflateGetHeader(this.strm, this.header);
+
+  // Setup dictionary
+  if (opt.dictionary) {
+    // Convert data if needed
+    if (typeof opt.dictionary === 'string') {
+      opt.dictionary = strings.string2buf(opt.dictionary);
+    } else if (toString.call(opt.dictionary) === '[object ArrayBuffer]') {
+      opt.dictionary = new Uint8Array(opt.dictionary);
+    }
+    if (opt.raw) { //In raw mode we need to set the dictionary early
+      status = zlib_inflate.inflateSetDictionary(this.strm, opt.dictionary);
+      if (status !== c.Z_OK) {
+        throw new Error(msg[status]);
+      }
+    }
+  }
+}
+
+/**
+ * Inflate#push(data[, mode]) -> Boolean
+ * - data (Uint8Array|Array|ArrayBuffer|String): input data
+ * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` means Z_FINISH.
+ *
+ * Sends input data to inflate pipe, generating [[Inflate#onData]] calls with
+ * new output chunks. Returns `true` on success. The last data block must have
+ * mode Z_FINISH (or `true`). That will flush internal pending buffers and call
+ * [[Inflate#onEnd]]. For interim explicit flushes (without ending the stream) you
+ * can use mode Z_SYNC_FLUSH, keeping the decompression context.
+ *
+ * On fail call [[Inflate#onEnd]] with error code and return false.
+ *
+ * We strongly recommend to use `Uint8Array` on input for best speed (output
+ * format is detected automatically). Also, don't skip last param and always
+ * use the same type in your code (boolean or number). That will improve JS speed.
+ *
+ * For regular `Array`-s make sure all elements are [0..255].
+ *
+ * ##### Example
+ *
+ * ```javascript
+ * push(chunk, false); // push one of data chunks
+ * ...
+ * push(chunk, true);  // push last chunk
+ * ```
+ **/
+Inflate.prototype.push = function (data, mode) {
+  var strm = this.strm;
+  var chunkSize = this.options.chunkSize;
+  var dictionary = this.options.dictionary;
+  var status, _mode;
+  var next_out_utf8, tail, utf8str;
+
+  // Flag to properly process Z_BUF_ERROR on testing inflate call
+  // when we check that all output data was flushed.
+  var allowBufError = false;
+
+  if (this.ended) { return false; }
+  _mode = (mode === ~~mode) ? mode : ((mode === true) ? c.Z_FINISH : c.Z_NO_FLUSH);
+
+  // Convert data if needed
+  if (typeof data === 'string') {
+    // Only binary strings can be decompressed on practice
+    strm.input = strings.binstring2buf(data);
+  } else if (toString.call(data) === '[object ArrayBuffer]') {
+    strm.input = new Uint8Array(data);
+  } else {
+    strm.input = data;
+  }
+
+  strm.next_in = 0;
+  strm.avail_in = strm.input.length;
+
+  do {
+    if (strm.avail_out === 0) {
+      strm.output = new utils.Buf8(chunkSize);
+      strm.next_out = 0;
+      strm.avail_out = chunkSize;
+    }
+
+    status = zlib_inflate.inflate(strm, c.Z_NO_FLUSH);    /* no bad return value */
+
+    if (status === c.Z_NEED_DICT && dictionary) {
+      status = zlib_inflate.inflateSetDictionary(this.strm, dictionary);
+    }
+
+    if (status === c.Z_BUF_ERROR && allowBufError === true) {
+      status = c.Z_OK;
+      allowBufError = false;
+    }
+
+    if (status !== c.Z_STREAM_END && status !== c.Z_OK) {
+      this.onEnd(status);
+      this.ended = true;
+      return false;
+    }
+
+    if (strm.next_out) {
+      if (strm.avail_out === 0 || status === c.Z_STREAM_END || (strm.avail_in === 0 && (_mode === c.Z_FINISH || _mode === c.Z_SYNC_FLUSH))) {
+
+        if (this.options.to === 'string') {
+
+          next_out_utf8 = strings.utf8border(strm.output, strm.next_out);
+
+          tail = strm.next_out - next_out_utf8;
+          utf8str = strings.buf2string(strm.output, next_out_utf8);
+
+          // move tail
+          strm.next_out = tail;
+          strm.avail_out = chunkSize - tail;
+          if (tail) { utils.arraySet(strm.output, strm.output, next_out_utf8, tail, 0); }
+
+          this.onData(utf8str);
+
+        } else {
+          this.onData(utils.shrinkBuf(strm.output, strm.next_out));
+        }
+      }
+    }
+
+    // When no more input data, we should check that internal inflate buffers
+    // are flushed. The only way to do it when avail_out = 0 - run one more
+    // inflate pass. But if output data not exists, inflate return Z_BUF_ERROR.
+    // Here we set flag to process this error properly.
+    //
+    // NOTE. Deflate does not return error in this case and does not needs such
+    // logic.
+    if (strm.avail_in === 0 && strm.avail_out === 0) {
+      allowBufError = true;
+    }
+
+  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== c.Z_STREAM_END);
+
+  if (status === c.Z_STREAM_END) {
+    _mode = c.Z_FINISH;
+  }
+
+  // Finalize on the last chunk.
+  if (_mode === c.Z_FINISH) {
+    status = zlib_inflate.inflateEnd(this.strm);
+    this.onEnd(status);
+    this.ended = true;
+    return status === c.Z_OK;
+  }
+
+  // callback interim results if Z_SYNC_FLUSH.
+  if (_mode === c.Z_SYNC_FLUSH) {
+    this.onEnd(c.Z_OK);
+    strm.avail_out = 0;
+    return true;
+  }
+
+  return true;
+};
+
+
+/**
+ * Inflate#onData(chunk) -> Void
+ * - chunk (Uint8Array|Array|String): output data. Type of array depends
+ *   on js engine support. When string output requested, each chunk
+ *   will be string.
+ *
+ * By default, stores data blocks in `chunks[]` property and glue
+ * those in `onEnd`. Override this handler, if you need another behaviour.
+ **/
+Inflate.prototype.onData = function (chunk) {
+  this.chunks.push(chunk);
+};
+
+
+/**
+ * Inflate#onEnd(status) -> Void
+ * - status (Number): inflate status. 0 (Z_OK) on success,
+ *   other if not.
+ *
+ * Called either after you tell inflate that the input stream is
+ * complete (Z_FINISH) or should be flushed (Z_SYNC_FLUSH)
+ * or if an error happened. By default - join collected chunks,
+ * free memory and fill `results` / `err` properties.
+ **/
+Inflate.prototype.onEnd = function (status) {
+  // On success - join
+  if (status === c.Z_OK) {
+    if (this.options.to === 'string') {
+      // Glue & convert here, until we teach pako to send
+      // utf8 aligned strings to onData
+      this.result = this.chunks.join('');
+    } else {
+      this.result = utils.flattenChunks(this.chunks);
+    }
+  }
+  this.chunks = [];
+  this.err = status;
+  this.msg = this.strm.msg;
+};
+
+
+/**
+ * inflate(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * Decompress `data` with inflate/ungzip and `options`. Autodetect
+ * format via wrapper header by default. That's why we don't provide
+ * separate `ungzip` method.
+ *
+ * Supported options are:
+ *
+ * - windowBits
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information.
+ *
+ * Sugar (options):
+ *
+ * - `raw` (Boolean) - say that we work with raw stream, if you don't wish to specify
+ *   negative windowBits implicitly.
+ * - `to` (String) - if equal to 'string', then result will be converted
+ *   from utf8 to utf16 (javascript) string. When string output requested,
+ *   chunk length can differ from `chunkSize`, depending on content.
+ *
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , input = pako.deflate([1,2,3,4,5,6,7,8,9])
+ *   , output;
+ *
+ * try {
+ *   output = pako.inflate(input);
+ * } catch (err)
+ *   console.log(err);
+ * }
+ * ```
+ **/
+function inflate(input, options) {
+  var inflator = new Inflate(options);
+
+  inflator.push(input, true);
+
+  // That will never happens, if you don't cheat with options :)
+  if (inflator.err) { throw inflator.msg || msg[inflator.err]; }
+
+  return inflator.result;
+}
+
+
+/**
+ * inflateRaw(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * The same as [[inflate]], but creates raw data, without wrapper
+ * (header and adler32 crc).
+ **/
+function inflateRaw(input, options) {
+  options = options || {};
+  options.raw = true;
+  return inflate(input, options);
+}
+
+
+/**
+ * ungzip(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * Just shortcut to [[inflate]], because it autodetects format
+ * by header.content. Done for convenience.
+ **/
+
+
+exports.Inflate = Inflate;
+exports.inflate = inflate;
+exports.inflateRaw = inflateRaw;
+exports.ungzip  = inflate;
+
+},{"./utils/common":186,"./utils/strings":187,"./zlib/constants":189,"./zlib/gzheader":192,"./zlib/inflate":194,"./zlib/messages":196,"./zlib/zstream":198}],186:[function(require,module,exports){
 'use strict';
 
 
@@ -47436,7 +67313,196 @@ exports.setTyped = function (on) {
 
 exports.setTyped(TYPED_OK);
 
-},{}],135:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
+// String encode/decode helpers
+'use strict';
+
+
+var utils = require('./common');
+
+
+// Quick check if we can use fast array to bin string conversion
+//
+// - apply(Array) can fail on Android 2.2
+// - apply(Uint8Array) can fail on iOS 5.1 Safari
+//
+var STR_APPLY_OK = true;
+var STR_APPLY_UIA_OK = true;
+
+try { String.fromCharCode.apply(null, [ 0 ]); } catch (__) { STR_APPLY_OK = false; }
+try { String.fromCharCode.apply(null, new Uint8Array(1)); } catch (__) { STR_APPLY_UIA_OK = false; }
+
+
+// Table with utf8 lengths (calculated by first byte of sequence)
+// Note, that 5 & 6-byte values and some 4-byte values can not be represented in JS,
+// because max possible codepoint is 0x10ffff
+var _utf8len = new utils.Buf8(256);
+for (var q = 0; q < 256; q++) {
+  _utf8len[q] = (q >= 252 ? 6 : q >= 248 ? 5 : q >= 240 ? 4 : q >= 224 ? 3 : q >= 192 ? 2 : 1);
+}
+_utf8len[254] = _utf8len[254] = 1; // Invalid sequence start
+
+
+// convert string to array (typed, when possible)
+exports.string2buf = function (str) {
+  var buf, c, c2, m_pos, i, str_len = str.length, buf_len = 0;
+
+  // count binary size
+  for (m_pos = 0; m_pos < str_len; m_pos++) {
+    c = str.charCodeAt(m_pos);
+    if ((c & 0xfc00) === 0xd800 && (m_pos + 1 < str_len)) {
+      c2 = str.charCodeAt(m_pos + 1);
+      if ((c2 & 0xfc00) === 0xdc00) {
+        c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
+        m_pos++;
+      }
+    }
+    buf_len += c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4;
+  }
+
+  // allocate buffer
+  buf = new utils.Buf8(buf_len);
+
+  // convert
+  for (i = 0, m_pos = 0; i < buf_len; m_pos++) {
+    c = str.charCodeAt(m_pos);
+    if ((c & 0xfc00) === 0xd800 && (m_pos + 1 < str_len)) {
+      c2 = str.charCodeAt(m_pos + 1);
+      if ((c2 & 0xfc00) === 0xdc00) {
+        c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
+        m_pos++;
+      }
+    }
+    if (c < 0x80) {
+      /* one byte */
+      buf[i++] = c;
+    } else if (c < 0x800) {
+      /* two bytes */
+      buf[i++] = 0xC0 | (c >>> 6);
+      buf[i++] = 0x80 | (c & 0x3f);
+    } else if (c < 0x10000) {
+      /* three bytes */
+      buf[i++] = 0xE0 | (c >>> 12);
+      buf[i++] = 0x80 | (c >>> 6 & 0x3f);
+      buf[i++] = 0x80 | (c & 0x3f);
+    } else {
+      /* four bytes */
+      buf[i++] = 0xf0 | (c >>> 18);
+      buf[i++] = 0x80 | (c >>> 12 & 0x3f);
+      buf[i++] = 0x80 | (c >>> 6 & 0x3f);
+      buf[i++] = 0x80 | (c & 0x3f);
+    }
+  }
+
+  return buf;
+};
+
+// Helper (used in 2 places)
+function buf2binstring(buf, len) {
+  // On Chrome, the arguments in a function call that are allowed is `65534`.
+  // If the length of the buffer is smaller than that, we can use this optimization,
+  // otherwise we will take a slower path.
+  if (len < 65534) {
+    if ((buf.subarray && STR_APPLY_UIA_OK) || (!buf.subarray && STR_APPLY_OK)) {
+      return String.fromCharCode.apply(null, utils.shrinkBuf(buf, len));
+    }
+  }
+
+  var result = '';
+  for (var i = 0; i < len; i++) {
+    result += String.fromCharCode(buf[i]);
+  }
+  return result;
+}
+
+
+// Convert byte array to binary string
+exports.buf2binstring = function (buf) {
+  return buf2binstring(buf, buf.length);
+};
+
+
+// Convert binary string (typed, when possible)
+exports.binstring2buf = function (str) {
+  var buf = new utils.Buf8(str.length);
+  for (var i = 0, len = buf.length; i < len; i++) {
+    buf[i] = str.charCodeAt(i);
+  }
+  return buf;
+};
+
+
+// convert array to string
+exports.buf2string = function (buf, max) {
+  var i, out, c, c_len;
+  var len = max || buf.length;
+
+  // Reserve max possible length (2 words per char)
+  // NB: by unknown reasons, Array is significantly faster for
+  //     String.fromCharCode.apply than Uint16Array.
+  var utf16buf = new Array(len * 2);
+
+  for (out = 0, i = 0; i < len;) {
+    c = buf[i++];
+    // quick process ascii
+    if (c < 0x80) { utf16buf[out++] = c; continue; }
+
+    c_len = _utf8len[c];
+    // skip 5 & 6 byte codes
+    if (c_len > 4) { utf16buf[out++] = 0xfffd; i += c_len - 1; continue; }
+
+    // apply mask on first byte
+    c &= c_len === 2 ? 0x1f : c_len === 3 ? 0x0f : 0x07;
+    // join the rest
+    while (c_len > 1 && i < len) {
+      c = (c << 6) | (buf[i++] & 0x3f);
+      c_len--;
+    }
+
+    // terminated by end of string?
+    if (c_len > 1) { utf16buf[out++] = 0xfffd; continue; }
+
+    if (c < 0x10000) {
+      utf16buf[out++] = c;
+    } else {
+      c -= 0x10000;
+      utf16buf[out++] = 0xd800 | ((c >> 10) & 0x3ff);
+      utf16buf[out++] = 0xdc00 | (c & 0x3ff);
+    }
+  }
+
+  return buf2binstring(utf16buf, out);
+};
+
+
+// Calculate max possible position in utf8 buffer,
+// that will not break sequence. If that's not possible
+// - (very small limits) return max size as is.
+//
+// buf[] - utf8 bytes array
+// max   - length limit (mandatory);
+exports.utf8border = function (buf, max) {
+  var pos;
+
+  max = max || buf.length;
+  if (max > buf.length) { max = buf.length; }
+
+  // go back from last position, until start of sequence found
+  pos = max - 1;
+  while (pos >= 0 && (buf[pos] & 0xC0) === 0x80) { pos--; }
+
+  // Very small and broken sequence,
+  // return max, because we should return something anyway.
+  if (pos < 0) { return max; }
+
+  // If we came to start of buffer - that means buffer is too small,
+  // return max too.
+  if (pos === 0) { return max; }
+
+  return (pos + _utf8len[buf[pos]] > max) ? pos : max;
+};
+
+},{"./common":186}],188:[function(require,module,exports){
 'use strict';
 
 // Note: adler32 takes 12% for level 0 and 2% for level 6.
@@ -47489,7 +67555,7 @@ function adler32(adler, buf, len, pos) {
 
 module.exports = adler32;
 
-},{}],136:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -47559,7 +67625,7 @@ module.exports = {
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
 
-},{}],137:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 'use strict';
 
 // Note: we can't get significant speed boost here.
@@ -47620,7 +67686,7 @@ function crc32(crc, buf, len, pos) {
 
 module.exports = crc32;
 
-},{}],138:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -49496,7 +69562,67 @@ exports.deflatePrime = deflatePrime;
 exports.deflateTune = deflateTune;
 */
 
-},{"../utils/common":134,"./adler32":135,"./crc32":137,"./messages":142,"./trees":143}],139:[function(require,module,exports){
+},{"../utils/common":186,"./adler32":188,"./crc32":190,"./messages":196,"./trees":197}],192:[function(require,module,exports){
+'use strict';
+
+// (C) 1995-2013 Jean-loup Gailly and Mark Adler
+// (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+// 1. The origin of this software must not be misrepresented; you must not
+//   claim that you wrote the original software. If you use this software
+//   in a product, an acknowledgment in the product documentation would be
+//   appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//   misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
+
+function GZheader() {
+  /* true if compressed data believed to be text */
+  this.text       = 0;
+  /* modification time */
+  this.time       = 0;
+  /* extra flags (not used when writing a gzip file) */
+  this.xflags     = 0;
+  /* operating system */
+  this.os         = 0;
+  /* pointer to extra field or Z_NULL if none */
+  this.extra      = null;
+  /* extra field length (valid if extra != Z_NULL) */
+  this.extra_len  = 0; // Actually, we don't need it in JS,
+                       // but leave for few code modifications
+
+  //
+  // Setup limits is not necessary because in js we should not preallocate memory
+  // for inflate use constant limit in 65536 bytes
+  //
+
+  /* space at extra (only when reading header) */
+  // this.extra_max  = 0;
+  /* pointer to zero-terminated file name or Z_NULL */
+  this.name       = '';
+  /* space at name (only when reading header) */
+  // this.name_max   = 0;
+  /* pointer to zero-terminated comment or Z_NULL */
+  this.comment    = '';
+  /* space at comment (only when reading header) */
+  // this.comm_max   = 0;
+  /* true if there was or will be a header crc */
+  this.hcrc       = 0;
+  /* true when done reading gzip header (not used when writing a gzip file) */
+  this.done       = false;
+}
+
+module.exports = GZheader;
+
+},{}],193:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -49843,7 +69969,7 @@ module.exports = function inflate_fast(strm, start) {
   return;
 };
 
-},{}],140:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -51401,7 +71527,7 @@ exports.inflateSyncPoint = inflateSyncPoint;
 exports.inflateUndermine = inflateUndermine;
 */
 
-},{"../utils/common":134,"./adler32":135,"./crc32":137,"./inffast":139,"./inftrees":141}],141:[function(require,module,exports){
+},{"../utils/common":186,"./adler32":188,"./crc32":190,"./inffast":193,"./inftrees":195}],195:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -51746,7 +71872,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
   return 0;
 };
 
-},{"../utils/common":134}],142:[function(require,module,exports){
+},{"../utils/common":186}],196:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -51780,7 +71906,7 @@ module.exports = {
   '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
 };
 
-},{}],143:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -53004,7 +73130,7 @@ exports._tr_flush_block  = _tr_flush_block;
 exports._tr_tally = _tr_tally;
 exports._tr_align = _tr_align;
 
-},{"../utils/common":134}],144:[function(require,module,exports){
+},{"../utils/common":186}],198:[function(require,module,exports){
 'use strict';
 
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -53053,7 +73179,7 @@ function ZStream() {
 
 module.exports = ZStream;
 
-},{}],145:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 /*!
  * parseurl
  * Copyright(c) 2014 Jonathan Ong
@@ -53213,7 +73339,7 @@ function fresh (url, parsedUrl) {
     parsedUrl._raw === url
 }
 
-},{"url":190}],146:[function(require,module,exports){
+},{"url":270}],200:[function(require,module,exports){
 /**
  * Expose `pathtoRegexp`.
  */
@@ -53344,7 +73470,77 @@ function pathtoRegexp(path, keys, options) {
   return new RegExp(path, flags);
 };
 
-},{}],147:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
+'use strict';
+
+const processFn = (fn, options) => function (...args) {
+	const P = options.promiseModule;
+
+	return new P((resolve, reject) => {
+		if (options.multiArgs) {
+			args.push((...result) => {
+				if (options.errorFirst) {
+					if (result[0]) {
+						reject(result);
+					} else {
+						result.shift();
+						resolve(result);
+					}
+				} else {
+					resolve(result);
+				}
+			});
+		} else if (options.errorFirst) {
+			args.push((error, result) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(result);
+				}
+			});
+		} else {
+			args.push(resolve);
+		}
+
+		fn.apply(this, args);
+	});
+};
+
+module.exports = (input, options) => {
+	options = Object.assign({
+		exclude: [/.+(Sync|Stream)$/],
+		errorFirst: true,
+		promiseModule: Promise
+	}, options);
+
+	const objType = typeof input;
+	if (!(input !== null && (objType === 'object' || objType === 'function'))) {
+		throw new TypeError(`Expected \`input\` to be a \`Function\` or \`Object\`, got \`${input === null ? 'null' : objType}\``);
+	}
+
+	const filter = key => {
+		const match = pattern => typeof pattern === 'string' ? key === pattern : pattern.test(key);
+		return options.include ? options.include.some(match) : !options.exclude.some(match);
+	};
+
+	let ret;
+	if (objType === 'function') {
+		ret = function (...args) {
+			return options.excludeMain ? input(...args) : processFn(input, options).apply(this, args);
+		};
+	} else {
+		ret = Object.create(Object.getPrototypeOf(input));
+	}
+
+	for (const key in input) { // eslint-disable-line guard-for-in
+		const property = input[key];
+		ret[key] = typeof property === 'function' && filter(key) ? processFn(property, options) : property;
+	}
+
+	return ret;
+};
+
+},{}],202:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -53393,7 +73589,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 
 
 }).call(this,require('browserfs/dist/shims/process.js'))
-},{"browserfs/dist/shims/process.js":39}],148:[function(require,module,exports){
+},{"browserfs/dist/shims/process.js":68}],203:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -53579,7 +73775,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],149:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -54116,7 +74312,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],150:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -54136,9 +74332,9 @@ module.exports = {
     RFC3986: 'RFC3986'
 };
 
-},{}],151:[function(require,module,exports){
-arguments[4][26][0].apply(exports,arguments)
-},{"./formats":150,"./parse":152,"./stringify":153,"dup":26}],152:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"./formats":205,"./parse":207,"./stringify":208,"dup":55}],207:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -54382,7 +74578,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":154}],153:[function(require,module,exports){
+},{"./utils":209}],208:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -54653,7 +74849,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":150,"./utils":154}],154:[function(require,module,exports){
+},{"./formats":205,"./utils":209}],209:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -54885,7 +75081,7 @@ module.exports = {
     merge: merge
 };
 
-},{}],155:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -54971,7 +75167,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],156:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -55058,13 +75254,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],157:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":155,"./encode":156}],158:[function(require,module,exports){
+},{"./decode":210,"./encode":211}],213:[function(require,module,exports){
 (function (process,global,Buffer){
 /*!
  * raw-body
@@ -55354,10 +75550,10 @@ function readStream (stream, encoding, length, limit, callback) {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require('buffer').Buffer)
-},{"browserfs/dist/shims/process.js":39,"buffer":36,"bytes":42,"http-errors":86,"iconv-lite":105,"unpipe":189}],159:[function(require,module,exports){
+},{"browserfs/dist/shims/process.js":68,"buffer":65,"bytes":73,"http-errors":121,"iconv-lite":141,"unpipe":269}],214:[function(require,module,exports){
 module.exports = require('./lib/_stream_duplex.js');
 
-},{"./lib/_stream_duplex.js":160}],160:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":215}],215:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -55489,7 +75685,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
   pna.nextTick(cb, err);
 };
-},{"./_stream_readable":162,"./_stream_writable":164,"core-util-is":45,"inherits":106,"process-nextick-args":147}],161:[function(require,module,exports){
+},{"./_stream_readable":217,"./_stream_writable":219,"core-util-is":77,"inherits":142,"process-nextick-args":202}],216:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -55537,7 +75733,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":163,"core-util-is":45,"inherits":106}],162:[function(require,module,exports){
+},{"./_stream_transform":218,"core-util-is":77,"inherits":142}],217:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -56559,7 +76755,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./_stream_duplex":160,"./internal/streams/BufferList":165,"./internal/streams/destroy":166,"./internal/streams/stream":167,"browserfs/dist/shims/process.js":39,"core-util-is":45,"events":79,"inherits":106,"isarray":110,"process-nextick-args":147,"safe-buffer":178,"string_decoder/":168,"util":34}],163:[function(require,module,exports){
+},{"./_stream_duplex":215,"./internal/streams/BufferList":220,"./internal/streams/destroy":221,"./internal/streams/stream":222,"browserfs/dist/shims/process.js":68,"core-util-is":77,"events":114,"inherits":142,"isarray":146,"process-nextick-args":202,"safe-buffer":233,"string_decoder/":223,"util":63}],218:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -56774,7 +76970,7 @@ function done(stream, er, data) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":160,"core-util-is":45,"inherits":106}],164:[function(require,module,exports){
+},{"./_stream_duplex":215,"core-util-is":77,"inherits":142}],219:[function(require,module,exports){
 (function (process,global,setImmediate){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -57464,7 +77660,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"./_stream_duplex":160,"./internal/streams/destroy":166,"./internal/streams/stream":167,"browserfs/dist/shims/process.js":39,"core-util-is":45,"inherits":106,"process-nextick-args":147,"safe-buffer":178,"timers":186,"util-deprecate":192}],165:[function(require,module,exports){
+},{"./_stream_duplex":215,"./internal/streams/destroy":221,"./internal/streams/stream":222,"browserfs/dist/shims/process.js":68,"core-util-is":77,"inherits":142,"process-nextick-args":202,"safe-buffer":233,"timers":266,"util-deprecate":272}],220:[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -57544,7 +77740,7 @@ if (util && util.inspect && util.inspect.custom) {
     return this.constructor.name + ' ' + obj;
   };
 }
-},{"safe-buffer":178,"util":34}],166:[function(require,module,exports){
+},{"safe-buffer":233,"util":63}],221:[function(require,module,exports){
 'use strict';
 
 /*<replacement>*/
@@ -57619,10 +77815,9 @@ module.exports = {
   destroy: destroy,
   undestroy: undestroy
 };
-},{"process-nextick-args":147}],167:[function(require,module,exports){
-module.exports = require('events').EventEmitter;
-
-},{"events":79}],168:[function(require,module,exports){
+},{"process-nextick-args":202}],222:[function(require,module,exports){
+arguments[4][163][0].apply(exports,arguments)
+},{"dup":163,"events":114}],223:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -57919,10 +78114,10 @@ function simpleWrite(buf) {
 function simpleEnd(buf) {
   return buf && buf.length ? this.write(buf) : '';
 }
-},{"safe-buffer":178}],169:[function(require,module,exports){
+},{"safe-buffer":233}],224:[function(require,module,exports){
 module.exports = require('./readable').PassThrough
 
-},{"./readable":170}],170:[function(require,module,exports){
+},{"./readable":225}],225:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -57931,13 +78126,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":160,"./lib/_stream_passthrough.js":161,"./lib/_stream_readable.js":162,"./lib/_stream_transform.js":163,"./lib/_stream_writable.js":164}],171:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":215,"./lib/_stream_passthrough.js":216,"./lib/_stream_readable.js":217,"./lib/_stream_transform.js":218,"./lib/_stream_writable.js":219}],226:[function(require,module,exports){
 module.exports = require('./readable').Transform
 
-},{"./readable":170}],172:[function(require,module,exports){
+},{"./readable":225}],227:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
 
-},{"./lib/_stream_writable.js":164}],173:[function(require,module,exports){
+},{"./lib/_stream_writable.js":219}],228:[function(require,module,exports){
 (function (process,Buffer,setImmediate){
 /*!
  * router
@@ -58683,7 +78878,7 @@ function wrap(old, fn) {
 }
 
 }).call(this,require('browserfs/dist/shims/process.js'),require('buffer').Buffer,require("timers").setImmediate)
-},{"./lib/layer":174,"./lib/route":175,"array-flatten":176,"browserfs/dist/shims/process.js":39,"buffer":36,"debug":46,"methods":112,"parseurl":145,"setprototypeof":177,"timers":186,"utils-merge":198}],174:[function(require,module,exports){
+},{"./lib/layer":229,"./lib/route":230,"array-flatten":231,"browserfs/dist/shims/process.js":68,"buffer":65,"debug":79,"methods":167,"parseurl":199,"setprototypeof":232,"timers":266,"utils-merge":278}],229:[function(require,module,exports){
 /*!
  * router
  * Copyright(c) 2013 Roman Shtylman
@@ -58865,7 +79060,7 @@ function decode_param(val){
   }
 }
 
-},{"debug":46,"path-to-regexp":146}],175:[function(require,module,exports){
+},{"debug":79,"path-to-regexp":200}],230:[function(require,module,exports){
 /*!
  * router
  * Copyright(c) 2013 Roman Shtylman
@@ -59094,7 +79289,7 @@ methods.forEach(function (method) {
   }
 })
 
-},{"./layer":174,"array-flatten":176,"debug":46,"methods":112}],176:[function(require,module,exports){
+},{"./layer":229,"array-flatten":231,"debug":79,"methods":167}],231:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -59121,7 +79316,7 @@ function $flatten(array, result) {
     }
 }
 
-},{}],177:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -59140,7 +79335,7 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],178:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -59204,7 +79399,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":36}],179:[function(require,module,exports){
+},{"buffer":65}],234:[function(require,module,exports){
 (function (process){
 /* eslint-disable node/no-deprecated-api */
 
@@ -59285,7 +79480,1607 @@ if (!safer.constants) {
 module.exports = safer
 
 }).call(this,require('browserfs/dist/shims/process.js'))
-},{"browserfs/dist/shims/process.js":39,"buffer":36}],180:[function(require,module,exports){
+},{"browserfs/dist/shims/process.js":68,"buffer":65}],235:[function(require,module,exports){
+(function (process){
+exports = module.exports = SemVer
+
+var debug
+/* istanbul ignore next */
+if (typeof process === 'object' &&
+    process.env &&
+    process.env.NODE_DEBUG &&
+    /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
+  debug = function () {
+    var args = Array.prototype.slice.call(arguments, 0)
+    args.unshift('SEMVER')
+    console.log.apply(console, args)
+  }
+} else {
+  debug = function () {}
+}
+
+// Note: this is the semver.org version of the spec that it implements
+// Not necessarily the package version of this code.
+exports.SEMVER_SPEC_VERSION = '2.0.0'
+
+var MAX_LENGTH = 256
+var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER ||
+  /* istanbul ignore next */ 9007199254740991
+
+// Max safe segment length for coercion.
+var MAX_SAFE_COMPONENT_LENGTH = 16
+
+// The actual regexps go on exports.re
+var re = exports.re = []
+var src = exports.src = []
+var t = exports.tokens = {}
+var R = 0
+
+function tok (n) {
+  t[n] = R++
+}
+
+// The following Regular Expressions can be used for tokenizing,
+// validating, and parsing SemVer version strings.
+
+// ## Numeric Identifier
+// A single `0`, or a non-zero digit followed by zero or more digits.
+
+tok('NUMERICIDENTIFIER')
+src[t.NUMERICIDENTIFIER] = '0|[1-9]\\d*'
+tok('NUMERICIDENTIFIERLOOSE')
+src[t.NUMERICIDENTIFIERLOOSE] = '[0-9]+'
+
+// ## Non-numeric Identifier
+// Zero or more digits, followed by a letter or hyphen, and then zero or
+// more letters, digits, or hyphens.
+
+tok('NONNUMERICIDENTIFIER')
+src[t.NONNUMERICIDENTIFIER] = '\\d*[a-zA-Z-][a-zA-Z0-9-]*'
+
+// ## Main Version
+// Three dot-separated numeric identifiers.
+
+tok('MAINVERSION')
+src[t.MAINVERSION] = '(' + src[t.NUMERICIDENTIFIER] + ')\\.' +
+                   '(' + src[t.NUMERICIDENTIFIER] + ')\\.' +
+                   '(' + src[t.NUMERICIDENTIFIER] + ')'
+
+tok('MAINVERSIONLOOSE')
+src[t.MAINVERSIONLOOSE] = '(' + src[t.NUMERICIDENTIFIERLOOSE] + ')\\.' +
+                        '(' + src[t.NUMERICIDENTIFIERLOOSE] + ')\\.' +
+                        '(' + src[t.NUMERICIDENTIFIERLOOSE] + ')'
+
+// ## Pre-release Version Identifier
+// A numeric identifier, or a non-numeric identifier.
+
+tok('PRERELEASEIDENTIFIER')
+src[t.PRERELEASEIDENTIFIER] = '(?:' + src[t.NUMERICIDENTIFIER] +
+                            '|' + src[t.NONNUMERICIDENTIFIER] + ')'
+
+tok('PRERELEASEIDENTIFIERLOOSE')
+src[t.PRERELEASEIDENTIFIERLOOSE] = '(?:' + src[t.NUMERICIDENTIFIERLOOSE] +
+                                 '|' + src[t.NONNUMERICIDENTIFIER] + ')'
+
+// ## Pre-release Version
+// Hyphen, followed by one or more dot-separated pre-release version
+// identifiers.
+
+tok('PRERELEASE')
+src[t.PRERELEASE] = '(?:-(' + src[t.PRERELEASEIDENTIFIER] +
+                  '(?:\\.' + src[t.PRERELEASEIDENTIFIER] + ')*))'
+
+tok('PRERELEASELOOSE')
+src[t.PRERELEASELOOSE] = '(?:-?(' + src[t.PRERELEASEIDENTIFIERLOOSE] +
+                       '(?:\\.' + src[t.PRERELEASEIDENTIFIERLOOSE] + ')*))'
+
+// ## Build Metadata Identifier
+// Any combination of digits, letters, or hyphens.
+
+tok('BUILDIDENTIFIER')
+src[t.BUILDIDENTIFIER] = '[0-9A-Za-z-]+'
+
+// ## Build Metadata
+// Plus sign, followed by one or more period-separated build metadata
+// identifiers.
+
+tok('BUILD')
+src[t.BUILD] = '(?:\\+(' + src[t.BUILDIDENTIFIER] +
+             '(?:\\.' + src[t.BUILDIDENTIFIER] + ')*))'
+
+// ## Full Version String
+// A main version, followed optionally by a pre-release version and
+// build metadata.
+
+// Note that the only major, minor, patch, and pre-release sections of
+// the version string are capturing groups.  The build metadata is not a
+// capturing group, because it should not ever be used in version
+// comparison.
+
+tok('FULL')
+tok('FULLPLAIN')
+src[t.FULLPLAIN] = 'v?' + src[t.MAINVERSION] +
+                  src[t.PRERELEASE] + '?' +
+                  src[t.BUILD] + '?'
+
+src[t.FULL] = '^' + src[t.FULLPLAIN] + '$'
+
+// like full, but allows v1.2.3 and =1.2.3, which people do sometimes.
+// also, 1.0.0alpha1 (prerelease without the hyphen) which is pretty
+// common in the npm registry.
+tok('LOOSEPLAIN')
+src[t.LOOSEPLAIN] = '[v=\\s]*' + src[t.MAINVERSIONLOOSE] +
+                  src[t.PRERELEASELOOSE] + '?' +
+                  src[t.BUILD] + '?'
+
+tok('LOOSE')
+src[t.LOOSE] = '^' + src[t.LOOSEPLAIN] + '$'
+
+tok('GTLT')
+src[t.GTLT] = '((?:<|>)?=?)'
+
+// Something like "2.*" or "1.2.x".
+// Note that "x.x" is a valid xRange identifer, meaning "any version"
+// Only the first item is strictly required.
+tok('XRANGEIDENTIFIERLOOSE')
+src[t.XRANGEIDENTIFIERLOOSE] = src[t.NUMERICIDENTIFIERLOOSE] + '|x|X|\\*'
+tok('XRANGEIDENTIFIER')
+src[t.XRANGEIDENTIFIER] = src[t.NUMERICIDENTIFIER] + '|x|X|\\*'
+
+tok('XRANGEPLAIN')
+src[t.XRANGEPLAIN] = '[v=\\s]*(' + src[t.XRANGEIDENTIFIER] + ')' +
+                   '(?:\\.(' + src[t.XRANGEIDENTIFIER] + ')' +
+                   '(?:\\.(' + src[t.XRANGEIDENTIFIER] + ')' +
+                   '(?:' + src[t.PRERELEASE] + ')?' +
+                   src[t.BUILD] + '?' +
+                   ')?)?'
+
+tok('XRANGEPLAINLOOSE')
+src[t.XRANGEPLAINLOOSE] = '[v=\\s]*(' + src[t.XRANGEIDENTIFIERLOOSE] + ')' +
+                        '(?:\\.(' + src[t.XRANGEIDENTIFIERLOOSE] + ')' +
+                        '(?:\\.(' + src[t.XRANGEIDENTIFIERLOOSE] + ')' +
+                        '(?:' + src[t.PRERELEASELOOSE] + ')?' +
+                        src[t.BUILD] + '?' +
+                        ')?)?'
+
+tok('XRANGE')
+src[t.XRANGE] = '^' + src[t.GTLT] + '\\s*' + src[t.XRANGEPLAIN] + '$'
+tok('XRANGELOOSE')
+src[t.XRANGELOOSE] = '^' + src[t.GTLT] + '\\s*' + src[t.XRANGEPLAINLOOSE] + '$'
+
+// Coercion.
+// Extract anything that could conceivably be a part of a valid semver
+tok('COERCE')
+src[t.COERCE] = '(^|[^\\d])' +
+              '(\\d{1,' + MAX_SAFE_COMPONENT_LENGTH + '})' +
+              '(?:\\.(\\d{1,' + MAX_SAFE_COMPONENT_LENGTH + '}))?' +
+              '(?:\\.(\\d{1,' + MAX_SAFE_COMPONENT_LENGTH + '}))?' +
+              '(?:$|[^\\d])'
+tok('COERCERTL')
+re[t.COERCERTL] = new RegExp(src[t.COERCE], 'g')
+
+// Tilde ranges.
+// Meaning is "reasonably at or greater than"
+tok('LONETILDE')
+src[t.LONETILDE] = '(?:~>?)'
+
+tok('TILDETRIM')
+src[t.TILDETRIM] = '(\\s*)' + src[t.LONETILDE] + '\\s+'
+re[t.TILDETRIM] = new RegExp(src[t.TILDETRIM], 'g')
+var tildeTrimReplace = '$1~'
+
+tok('TILDE')
+src[t.TILDE] = '^' + src[t.LONETILDE] + src[t.XRANGEPLAIN] + '$'
+tok('TILDELOOSE')
+src[t.TILDELOOSE] = '^' + src[t.LONETILDE] + src[t.XRANGEPLAINLOOSE] + '$'
+
+// Caret ranges.
+// Meaning is "at least and backwards compatible with"
+tok('LONECARET')
+src[t.LONECARET] = '(?:\\^)'
+
+tok('CARETTRIM')
+src[t.CARETTRIM] = '(\\s*)' + src[t.LONECARET] + '\\s+'
+re[t.CARETTRIM] = new RegExp(src[t.CARETTRIM], 'g')
+var caretTrimReplace = '$1^'
+
+tok('CARET')
+src[t.CARET] = '^' + src[t.LONECARET] + src[t.XRANGEPLAIN] + '$'
+tok('CARETLOOSE')
+src[t.CARETLOOSE] = '^' + src[t.LONECARET] + src[t.XRANGEPLAINLOOSE] + '$'
+
+// A simple gt/lt/eq thing, or just "" to indicate "any version"
+tok('COMPARATORLOOSE')
+src[t.COMPARATORLOOSE] = '^' + src[t.GTLT] + '\\s*(' + src[t.LOOSEPLAIN] + ')$|^$'
+tok('COMPARATOR')
+src[t.COMPARATOR] = '^' + src[t.GTLT] + '\\s*(' + src[t.FULLPLAIN] + ')$|^$'
+
+// An expression to strip any whitespace between the gtlt and the thing
+// it modifies, so that `> 1.2.3` ==> `>1.2.3`
+tok('COMPARATORTRIM')
+src[t.COMPARATORTRIM] = '(\\s*)' + src[t.GTLT] +
+                      '\\s*(' + src[t.LOOSEPLAIN] + '|' + src[t.XRANGEPLAIN] + ')'
+
+// this one has to use the /g flag
+re[t.COMPARATORTRIM] = new RegExp(src[t.COMPARATORTRIM], 'g')
+var comparatorTrimReplace = '$1$2$3'
+
+// Something like `1.2.3 - 1.2.4`
+// Note that these all use the loose form, because they'll be
+// checked against either the strict or loose comparator form
+// later.
+tok('HYPHENRANGE')
+src[t.HYPHENRANGE] = '^\\s*(' + src[t.XRANGEPLAIN] + ')' +
+                   '\\s+-\\s+' +
+                   '(' + src[t.XRANGEPLAIN] + ')' +
+                   '\\s*$'
+
+tok('HYPHENRANGELOOSE')
+src[t.HYPHENRANGELOOSE] = '^\\s*(' + src[t.XRANGEPLAINLOOSE] + ')' +
+                        '\\s+-\\s+' +
+                        '(' + src[t.XRANGEPLAINLOOSE] + ')' +
+                        '\\s*$'
+
+// Star ranges basically just allow anything at all.
+tok('STAR')
+src[t.STAR] = '(<|>)?=?\\s*\\*'
+
+// Compile to actual regexp objects.
+// All are flag-free, unless they were created above with a flag.
+for (var i = 0; i < R; i++) {
+  debug(i, src[i])
+  if (!re[i]) {
+    re[i] = new RegExp(src[i])
+  }
+}
+
+exports.parse = parse
+function parse (version, options) {
+  if (!options || typeof options !== 'object') {
+    options = {
+      loose: !!options,
+      includePrerelease: false
+    }
+  }
+
+  if (version instanceof SemVer) {
+    return version
+  }
+
+  if (typeof version !== 'string') {
+    return null
+  }
+
+  if (version.length > MAX_LENGTH) {
+    return null
+  }
+
+  var r = options.loose ? re[t.LOOSE] : re[t.FULL]
+  if (!r.test(version)) {
+    return null
+  }
+
+  try {
+    return new SemVer(version, options)
+  } catch (er) {
+    return null
+  }
+}
+
+exports.valid = valid
+function valid (version, options) {
+  var v = parse(version, options)
+  return v ? v.version : null
+}
+
+exports.clean = clean
+function clean (version, options) {
+  var s = parse(version.trim().replace(/^[=v]+/, ''), options)
+  return s ? s.version : null
+}
+
+exports.SemVer = SemVer
+
+function SemVer (version, options) {
+  if (!options || typeof options !== 'object') {
+    options = {
+      loose: !!options,
+      includePrerelease: false
+    }
+  }
+  if (version instanceof SemVer) {
+    if (version.loose === options.loose) {
+      return version
+    } else {
+      version = version.version
+    }
+  } else if (typeof version !== 'string') {
+    throw new TypeError('Invalid Version: ' + version)
+  }
+
+  if (version.length > MAX_LENGTH) {
+    throw new TypeError('version is longer than ' + MAX_LENGTH + ' characters')
+  }
+
+  if (!(this instanceof SemVer)) {
+    return new SemVer(version, options)
+  }
+
+  debug('SemVer', version, options)
+  this.options = options
+  this.loose = !!options.loose
+
+  var m = version.trim().match(options.loose ? re[t.LOOSE] : re[t.FULL])
+
+  if (!m) {
+    throw new TypeError('Invalid Version: ' + version)
+  }
+
+  this.raw = version
+
+  // these are actually numbers
+  this.major = +m[1]
+  this.minor = +m[2]
+  this.patch = +m[3]
+
+  if (this.major > MAX_SAFE_INTEGER || this.major < 0) {
+    throw new TypeError('Invalid major version')
+  }
+
+  if (this.minor > MAX_SAFE_INTEGER || this.minor < 0) {
+    throw new TypeError('Invalid minor version')
+  }
+
+  if (this.patch > MAX_SAFE_INTEGER || this.patch < 0) {
+    throw new TypeError('Invalid patch version')
+  }
+
+  // numberify any prerelease numeric ids
+  if (!m[4]) {
+    this.prerelease = []
+  } else {
+    this.prerelease = m[4].split('.').map(function (id) {
+      if (/^[0-9]+$/.test(id)) {
+        var num = +id
+        if (num >= 0 && num < MAX_SAFE_INTEGER) {
+          return num
+        }
+      }
+      return id
+    })
+  }
+
+  this.build = m[5] ? m[5].split('.') : []
+  this.format()
+}
+
+SemVer.prototype.format = function () {
+  this.version = this.major + '.' + this.minor + '.' + this.patch
+  if (this.prerelease.length) {
+    this.version += '-' + this.prerelease.join('.')
+  }
+  return this.version
+}
+
+SemVer.prototype.toString = function () {
+  return this.version
+}
+
+SemVer.prototype.compare = function (other) {
+  debug('SemVer.compare', this.version, this.options, other)
+  if (!(other instanceof SemVer)) {
+    other = new SemVer(other, this.options)
+  }
+
+  return this.compareMain(other) || this.comparePre(other)
+}
+
+SemVer.prototype.compareMain = function (other) {
+  if (!(other instanceof SemVer)) {
+    other = new SemVer(other, this.options)
+  }
+
+  return compareIdentifiers(this.major, other.major) ||
+         compareIdentifiers(this.minor, other.minor) ||
+         compareIdentifiers(this.patch, other.patch)
+}
+
+SemVer.prototype.comparePre = function (other) {
+  if (!(other instanceof SemVer)) {
+    other = new SemVer(other, this.options)
+  }
+
+  // NOT having a prerelease is > having one
+  if (this.prerelease.length && !other.prerelease.length) {
+    return -1
+  } else if (!this.prerelease.length && other.prerelease.length) {
+    return 1
+  } else if (!this.prerelease.length && !other.prerelease.length) {
+    return 0
+  }
+
+  var i = 0
+  do {
+    var a = this.prerelease[i]
+    var b = other.prerelease[i]
+    debug('prerelease compare', i, a, b)
+    if (a === undefined && b === undefined) {
+      return 0
+    } else if (b === undefined) {
+      return 1
+    } else if (a === undefined) {
+      return -1
+    } else if (a === b) {
+      continue
+    } else {
+      return compareIdentifiers(a, b)
+    }
+  } while (++i)
+}
+
+SemVer.prototype.compareBuild = function (other) {
+  if (!(other instanceof SemVer)) {
+    other = new SemVer(other, this.options)
+  }
+
+  var i = 0
+  do {
+    var a = this.build[i]
+    var b = other.build[i]
+    debug('prerelease compare', i, a, b)
+    if (a === undefined && b === undefined) {
+      return 0
+    } else if (b === undefined) {
+      return 1
+    } else if (a === undefined) {
+      return -1
+    } else if (a === b) {
+      continue
+    } else {
+      return compareIdentifiers(a, b)
+    }
+  } while (++i)
+}
+
+// preminor will bump the version up to the next minor release, and immediately
+// down to pre-release. premajor and prepatch work the same way.
+SemVer.prototype.inc = function (release, identifier) {
+  switch (release) {
+    case 'premajor':
+      this.prerelease.length = 0
+      this.patch = 0
+      this.minor = 0
+      this.major++
+      this.inc('pre', identifier)
+      break
+    case 'preminor':
+      this.prerelease.length = 0
+      this.patch = 0
+      this.minor++
+      this.inc('pre', identifier)
+      break
+    case 'prepatch':
+      // If this is already a prerelease, it will bump to the next version
+      // drop any prereleases that might already exist, since they are not
+      // relevant at this point.
+      this.prerelease.length = 0
+      this.inc('patch', identifier)
+      this.inc('pre', identifier)
+      break
+    // If the input is a non-prerelease version, this acts the same as
+    // prepatch.
+    case 'prerelease':
+      if (this.prerelease.length === 0) {
+        this.inc('patch', identifier)
+      }
+      this.inc('pre', identifier)
+      break
+
+    case 'major':
+      // If this is a pre-major version, bump up to the same major version.
+      // Otherwise increment major.
+      // 1.0.0-5 bumps to 1.0.0
+      // 1.1.0 bumps to 2.0.0
+      if (this.minor !== 0 ||
+          this.patch !== 0 ||
+          this.prerelease.length === 0) {
+        this.major++
+      }
+      this.minor = 0
+      this.patch = 0
+      this.prerelease = []
+      break
+    case 'minor':
+      // If this is a pre-minor version, bump up to the same minor version.
+      // Otherwise increment minor.
+      // 1.2.0-5 bumps to 1.2.0
+      // 1.2.1 bumps to 1.3.0
+      if (this.patch !== 0 || this.prerelease.length === 0) {
+        this.minor++
+      }
+      this.patch = 0
+      this.prerelease = []
+      break
+    case 'patch':
+      // If this is not a pre-release version, it will increment the patch.
+      // If it is a pre-release it will bump up to the same patch version.
+      // 1.2.0-5 patches to 1.2.0
+      // 1.2.0 patches to 1.2.1
+      if (this.prerelease.length === 0) {
+        this.patch++
+      }
+      this.prerelease = []
+      break
+    // This probably shouldn't be used publicly.
+    // 1.0.0 "pre" would become 1.0.0-0 which is the wrong direction.
+    case 'pre':
+      if (this.prerelease.length === 0) {
+        this.prerelease = [0]
+      } else {
+        var i = this.prerelease.length
+        while (--i >= 0) {
+          if (typeof this.prerelease[i] === 'number') {
+            this.prerelease[i]++
+            i = -2
+          }
+        }
+        if (i === -1) {
+          // didn't increment anything
+          this.prerelease.push(0)
+        }
+      }
+      if (identifier) {
+        // 1.2.0-beta.1 bumps to 1.2.0-beta.2,
+        // 1.2.0-beta.fooblz or 1.2.0-beta bumps to 1.2.0-beta.0
+        if (this.prerelease[0] === identifier) {
+          if (isNaN(this.prerelease[1])) {
+            this.prerelease = [identifier, 0]
+          }
+        } else {
+          this.prerelease = [identifier, 0]
+        }
+      }
+      break
+
+    default:
+      throw new Error('invalid increment argument: ' + release)
+  }
+  this.format()
+  this.raw = this.version
+  return this
+}
+
+exports.inc = inc
+function inc (version, release, loose, identifier) {
+  if (typeof (loose) === 'string') {
+    identifier = loose
+    loose = undefined
+  }
+
+  try {
+    return new SemVer(version, loose).inc(release, identifier).version
+  } catch (er) {
+    return null
+  }
+}
+
+exports.diff = diff
+function diff (version1, version2) {
+  if (eq(version1, version2)) {
+    return null
+  } else {
+    var v1 = parse(version1)
+    var v2 = parse(version2)
+    var prefix = ''
+    if (v1.prerelease.length || v2.prerelease.length) {
+      prefix = 'pre'
+      var defaultResult = 'prerelease'
+    }
+    for (var key in v1) {
+      if (key === 'major' || key === 'minor' || key === 'patch') {
+        if (v1[key] !== v2[key]) {
+          return prefix + key
+        }
+      }
+    }
+    return defaultResult // may be undefined
+  }
+}
+
+exports.compareIdentifiers = compareIdentifiers
+
+var numeric = /^[0-9]+$/
+function compareIdentifiers (a, b) {
+  var anum = numeric.test(a)
+  var bnum = numeric.test(b)
+
+  if (anum && bnum) {
+    a = +a
+    b = +b
+  }
+
+  return a === b ? 0
+    : (anum && !bnum) ? -1
+    : (bnum && !anum) ? 1
+    : a < b ? -1
+    : 1
+}
+
+exports.rcompareIdentifiers = rcompareIdentifiers
+function rcompareIdentifiers (a, b) {
+  return compareIdentifiers(b, a)
+}
+
+exports.major = major
+function major (a, loose) {
+  return new SemVer(a, loose).major
+}
+
+exports.minor = minor
+function minor (a, loose) {
+  return new SemVer(a, loose).minor
+}
+
+exports.patch = patch
+function patch (a, loose) {
+  return new SemVer(a, loose).patch
+}
+
+exports.compare = compare
+function compare (a, b, loose) {
+  return new SemVer(a, loose).compare(new SemVer(b, loose))
+}
+
+exports.compareLoose = compareLoose
+function compareLoose (a, b) {
+  return compare(a, b, true)
+}
+
+exports.compareBuild = compareBuild
+function compareBuild (a, b, loose) {
+  var versionA = new SemVer(a, loose)
+  var versionB = new SemVer(b, loose)
+  return versionA.compare(versionB) || versionA.compareBuild(versionB)
+}
+
+exports.rcompare = rcompare
+function rcompare (a, b, loose) {
+  return compare(b, a, loose)
+}
+
+exports.sort = sort
+function sort (list, loose) {
+  return list.sort(function (a, b) {
+    return exports.compareBuild(a, b, loose)
+  })
+}
+
+exports.rsort = rsort
+function rsort (list, loose) {
+  return list.sort(function (a, b) {
+    return exports.compareBuild(b, a, loose)
+  })
+}
+
+exports.gt = gt
+function gt (a, b, loose) {
+  return compare(a, b, loose) > 0
+}
+
+exports.lt = lt
+function lt (a, b, loose) {
+  return compare(a, b, loose) < 0
+}
+
+exports.eq = eq
+function eq (a, b, loose) {
+  return compare(a, b, loose) === 0
+}
+
+exports.neq = neq
+function neq (a, b, loose) {
+  return compare(a, b, loose) !== 0
+}
+
+exports.gte = gte
+function gte (a, b, loose) {
+  return compare(a, b, loose) >= 0
+}
+
+exports.lte = lte
+function lte (a, b, loose) {
+  return compare(a, b, loose) <= 0
+}
+
+exports.cmp = cmp
+function cmp (a, op, b, loose) {
+  switch (op) {
+    case '===':
+      if (typeof a === 'object')
+        a = a.version
+      if (typeof b === 'object')
+        b = b.version
+      return a === b
+
+    case '!==':
+      if (typeof a === 'object')
+        a = a.version
+      if (typeof b === 'object')
+        b = b.version
+      return a !== b
+
+    case '':
+    case '=':
+    case '==':
+      return eq(a, b, loose)
+
+    case '!=':
+      return neq(a, b, loose)
+
+    case '>':
+      return gt(a, b, loose)
+
+    case '>=':
+      return gte(a, b, loose)
+
+    case '<':
+      return lt(a, b, loose)
+
+    case '<=':
+      return lte(a, b, loose)
+
+    default:
+      throw new TypeError('Invalid operator: ' + op)
+  }
+}
+
+exports.Comparator = Comparator
+function Comparator (comp, options) {
+  if (!options || typeof options !== 'object') {
+    options = {
+      loose: !!options,
+      includePrerelease: false
+    }
+  }
+
+  if (comp instanceof Comparator) {
+    if (comp.loose === !!options.loose) {
+      return comp
+    } else {
+      comp = comp.value
+    }
+  }
+
+  if (!(this instanceof Comparator)) {
+    return new Comparator(comp, options)
+  }
+
+  debug('comparator', comp, options)
+  this.options = options
+  this.loose = !!options.loose
+  this.parse(comp)
+
+  if (this.semver === ANY) {
+    this.value = ''
+  } else {
+    this.value = this.operator + this.semver.version
+  }
+
+  debug('comp', this)
+}
+
+var ANY = {}
+Comparator.prototype.parse = function (comp) {
+  var r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR]
+  var m = comp.match(r)
+
+  if (!m) {
+    throw new TypeError('Invalid comparator: ' + comp)
+  }
+
+  this.operator = m[1] !== undefined ? m[1] : ''
+  if (this.operator === '=') {
+    this.operator = ''
+  }
+
+  // if it literally is just '>' or '' then allow anything.
+  if (!m[2]) {
+    this.semver = ANY
+  } else {
+    this.semver = new SemVer(m[2], this.options.loose)
+  }
+}
+
+Comparator.prototype.toString = function () {
+  return this.value
+}
+
+Comparator.prototype.test = function (version) {
+  debug('Comparator.test', version, this.options.loose)
+
+  if (this.semver === ANY || version === ANY) {
+    return true
+  }
+
+  if (typeof version === 'string') {
+    try {
+      version = new SemVer(version, this.options)
+    } catch (er) {
+      return false
+    }
+  }
+
+  return cmp(version, this.operator, this.semver, this.options)
+}
+
+Comparator.prototype.intersects = function (comp, options) {
+  if (!(comp instanceof Comparator)) {
+    throw new TypeError('a Comparator is required')
+  }
+
+  if (!options || typeof options !== 'object') {
+    options = {
+      loose: !!options,
+      includePrerelease: false
+    }
+  }
+
+  var rangeTmp
+
+  if (this.operator === '') {
+    if (this.value === '') {
+      return true
+    }
+    rangeTmp = new Range(comp.value, options)
+    return satisfies(this.value, rangeTmp, options)
+  } else if (comp.operator === '') {
+    if (comp.value === '') {
+      return true
+    }
+    rangeTmp = new Range(this.value, options)
+    return satisfies(comp.semver, rangeTmp, options)
+  }
+
+  var sameDirectionIncreasing =
+    (this.operator === '>=' || this.operator === '>') &&
+    (comp.operator === '>=' || comp.operator === '>')
+  var sameDirectionDecreasing =
+    (this.operator === '<=' || this.operator === '<') &&
+    (comp.operator === '<=' || comp.operator === '<')
+  var sameSemVer = this.semver.version === comp.semver.version
+  var differentDirectionsInclusive =
+    (this.operator === '>=' || this.operator === '<=') &&
+    (comp.operator === '>=' || comp.operator === '<=')
+  var oppositeDirectionsLessThan =
+    cmp(this.semver, '<', comp.semver, options) &&
+    ((this.operator === '>=' || this.operator === '>') &&
+    (comp.operator === '<=' || comp.operator === '<'))
+  var oppositeDirectionsGreaterThan =
+    cmp(this.semver, '>', comp.semver, options) &&
+    ((this.operator === '<=' || this.operator === '<') &&
+    (comp.operator === '>=' || comp.operator === '>'))
+
+  return sameDirectionIncreasing || sameDirectionDecreasing ||
+    (sameSemVer && differentDirectionsInclusive) ||
+    oppositeDirectionsLessThan || oppositeDirectionsGreaterThan
+}
+
+exports.Range = Range
+function Range (range, options) {
+  if (!options || typeof options !== 'object') {
+    options = {
+      loose: !!options,
+      includePrerelease: false
+    }
+  }
+
+  if (range instanceof Range) {
+    if (range.loose === !!options.loose &&
+        range.includePrerelease === !!options.includePrerelease) {
+      return range
+    } else {
+      return new Range(range.raw, options)
+    }
+  }
+
+  if (range instanceof Comparator) {
+    return new Range(range.value, options)
+  }
+
+  if (!(this instanceof Range)) {
+    return new Range(range, options)
+  }
+
+  this.options = options
+  this.loose = !!options.loose
+  this.includePrerelease = !!options.includePrerelease
+
+  // First, split based on boolean or ||
+  this.raw = range
+  this.set = range.split(/\s*\|\|\s*/).map(function (range) {
+    return this.parseRange(range.trim())
+  }, this).filter(function (c) {
+    // throw out any that are not relevant for whatever reason
+    return c.length
+  })
+
+  if (!this.set.length) {
+    throw new TypeError('Invalid SemVer Range: ' + range)
+  }
+
+  this.format()
+}
+
+Range.prototype.format = function () {
+  this.range = this.set.map(function (comps) {
+    return comps.join(' ').trim()
+  }).join('||').trim()
+  return this.range
+}
+
+Range.prototype.toString = function () {
+  return this.range
+}
+
+Range.prototype.parseRange = function (range) {
+  var loose = this.options.loose
+  range = range.trim()
+  // `1.2.3 - 1.2.4` => `>=1.2.3 <=1.2.4`
+  var hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE]
+  range = range.replace(hr, hyphenReplace)
+  debug('hyphen replace', range)
+  // `> 1.2.3 < 1.2.5` => `>1.2.3 <1.2.5`
+  range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace)
+  debug('comparator trim', range, re[t.COMPARATORTRIM])
+
+  // `~ 1.2.3` => `~1.2.3`
+  range = range.replace(re[t.TILDETRIM], tildeTrimReplace)
+
+  // `^ 1.2.3` => `^1.2.3`
+  range = range.replace(re[t.CARETTRIM], caretTrimReplace)
+
+  // normalize spaces
+  range = range.split(/\s+/).join(' ')
+
+  // At this point, the range is completely trimmed and
+  // ready to be split into comparators.
+
+  var compRe = loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR]
+  var set = range.split(' ').map(function (comp) {
+    return parseComparator(comp, this.options)
+  }, this).join(' ').split(/\s+/)
+  if (this.options.loose) {
+    // in loose mode, throw out any that are not valid comparators
+    set = set.filter(function (comp) {
+      return !!comp.match(compRe)
+    })
+  }
+  set = set.map(function (comp) {
+    return new Comparator(comp, this.options)
+  }, this)
+
+  return set
+}
+
+Range.prototype.intersects = function (range, options) {
+  if (!(range instanceof Range)) {
+    throw new TypeError('a Range is required')
+  }
+
+  return this.set.some(function (thisComparators) {
+    return (
+      isSatisfiable(thisComparators, options) &&
+      range.set.some(function (rangeComparators) {
+        return (
+          isSatisfiable(rangeComparators, options) &&
+          thisComparators.every(function (thisComparator) {
+            return rangeComparators.every(function (rangeComparator) {
+              return thisComparator.intersects(rangeComparator, options)
+            })
+          })
+        )
+      })
+    )
+  })
+}
+
+// take a set of comparators and determine whether there
+// exists a version which can satisfy it
+function isSatisfiable (comparators, options) {
+  var result = true
+  var remainingComparators = comparators.slice()
+  var testComparator = remainingComparators.pop()
+
+  while (result && remainingComparators.length) {
+    result = remainingComparators.every(function (otherComparator) {
+      return testComparator.intersects(otherComparator, options)
+    })
+
+    testComparator = remainingComparators.pop()
+  }
+
+  return result
+}
+
+// Mostly just for testing and legacy API reasons
+exports.toComparators = toComparators
+function toComparators (range, options) {
+  return new Range(range, options).set.map(function (comp) {
+    return comp.map(function (c) {
+      return c.value
+    }).join(' ').trim().split(' ')
+  })
+}
+
+// comprised of xranges, tildes, stars, and gtlt's at this point.
+// already replaced the hyphen ranges
+// turn into a set of JUST comparators.
+function parseComparator (comp, options) {
+  debug('comp', comp, options)
+  comp = replaceCarets(comp, options)
+  debug('caret', comp)
+  comp = replaceTildes(comp, options)
+  debug('tildes', comp)
+  comp = replaceXRanges(comp, options)
+  debug('xrange', comp)
+  comp = replaceStars(comp, options)
+  debug('stars', comp)
+  return comp
+}
+
+function isX (id) {
+  return !id || id.toLowerCase() === 'x' || id === '*'
+}
+
+// ~, ~> --> * (any, kinda silly)
+// ~2, ~2.x, ~2.x.x, ~>2, ~>2.x ~>2.x.x --> >=2.0.0 <3.0.0
+// ~2.0, ~2.0.x, ~>2.0, ~>2.0.x --> >=2.0.0 <2.1.0
+// ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0
+// ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0
+// ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0
+function replaceTildes (comp, options) {
+  return comp.trim().split(/\s+/).map(function (comp) {
+    return replaceTilde(comp, options)
+  }).join(' ')
+}
+
+function replaceTilde (comp, options) {
+  var r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE]
+  return comp.replace(r, function (_, M, m, p, pr) {
+    debug('tilde', comp, _, M, m, p, pr)
+    var ret
+
+    if (isX(M)) {
+      ret = ''
+    } else if (isX(m)) {
+      ret = '>=' + M + '.0.0 <' + (+M + 1) + '.0.0'
+    } else if (isX(p)) {
+      // ~1.2 == >=1.2.0 <1.3.0
+      ret = '>=' + M + '.' + m + '.0 <' + M + '.' + (+m + 1) + '.0'
+    } else if (pr) {
+      debug('replaceTilde pr', pr)
+      ret = '>=' + M + '.' + m + '.' + p + '-' + pr +
+            ' <' + M + '.' + (+m + 1) + '.0'
+    } else {
+      // ~1.2.3 == >=1.2.3 <1.3.0
+      ret = '>=' + M + '.' + m + '.' + p +
+            ' <' + M + '.' + (+m + 1) + '.0'
+    }
+
+    debug('tilde return', ret)
+    return ret
+  })
+}
+
+// ^ --> * (any, kinda silly)
+// ^2, ^2.x, ^2.x.x --> >=2.0.0 <3.0.0
+// ^2.0, ^2.0.x --> >=2.0.0 <3.0.0
+// ^1.2, ^1.2.x --> >=1.2.0 <2.0.0
+// ^1.2.3 --> >=1.2.3 <2.0.0
+// ^1.2.0 --> >=1.2.0 <2.0.0
+function replaceCarets (comp, options) {
+  return comp.trim().split(/\s+/).map(function (comp) {
+    return replaceCaret(comp, options)
+  }).join(' ')
+}
+
+function replaceCaret (comp, options) {
+  debug('caret', comp, options)
+  var r = options.loose ? re[t.CARETLOOSE] : re[t.CARET]
+  return comp.replace(r, function (_, M, m, p, pr) {
+    debug('caret', comp, _, M, m, p, pr)
+    var ret
+
+    if (isX(M)) {
+      ret = ''
+    } else if (isX(m)) {
+      ret = '>=' + M + '.0.0 <' + (+M + 1) + '.0.0'
+    } else if (isX(p)) {
+      if (M === '0') {
+        ret = '>=' + M + '.' + m + '.0 <' + M + '.' + (+m + 1) + '.0'
+      } else {
+        ret = '>=' + M + '.' + m + '.0 <' + (+M + 1) + '.0.0'
+      }
+    } else if (pr) {
+      debug('replaceCaret pr', pr)
+      if (M === '0') {
+        if (m === '0') {
+          ret = '>=' + M + '.' + m + '.' + p + '-' + pr +
+                ' <' + M + '.' + m + '.' + (+p + 1)
+        } else {
+          ret = '>=' + M + '.' + m + '.' + p + '-' + pr +
+                ' <' + M + '.' + (+m + 1) + '.0'
+        }
+      } else {
+        ret = '>=' + M + '.' + m + '.' + p + '-' + pr +
+              ' <' + (+M + 1) + '.0.0'
+      }
+    } else {
+      debug('no pr')
+      if (M === '0') {
+        if (m === '0') {
+          ret = '>=' + M + '.' + m + '.' + p +
+                ' <' + M + '.' + m + '.' + (+p + 1)
+        } else {
+          ret = '>=' + M + '.' + m + '.' + p +
+                ' <' + M + '.' + (+m + 1) + '.0'
+        }
+      } else {
+        ret = '>=' + M + '.' + m + '.' + p +
+              ' <' + (+M + 1) + '.0.0'
+      }
+    }
+
+    debug('caret return', ret)
+    return ret
+  })
+}
+
+function replaceXRanges (comp, options) {
+  debug('replaceXRanges', comp, options)
+  return comp.split(/\s+/).map(function (comp) {
+    return replaceXRange(comp, options)
+  }).join(' ')
+}
+
+function replaceXRange (comp, options) {
+  comp = comp.trim()
+  var r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE]
+  return comp.replace(r, function (ret, gtlt, M, m, p, pr) {
+    debug('xRange', comp, ret, gtlt, M, m, p, pr)
+    var xM = isX(M)
+    var xm = xM || isX(m)
+    var xp = xm || isX(p)
+    var anyX = xp
+
+    if (gtlt === '=' && anyX) {
+      gtlt = ''
+    }
+
+    // if we're including prereleases in the match, then we need
+    // to fix this to -0, the lowest possible prerelease value
+    pr = options.includePrerelease ? '-0' : ''
+
+    if (xM) {
+      if (gtlt === '>' || gtlt === '<') {
+        // nothing is allowed
+        ret = '<0.0.0-0'
+      } else {
+        // nothing is forbidden
+        ret = '*'
+      }
+    } else if (gtlt && anyX) {
+      // we know patch is an x, because we have any x at all.
+      // replace X with 0
+      if (xm) {
+        m = 0
+      }
+      p = 0
+
+      if (gtlt === '>') {
+        // >1 => >=2.0.0
+        // >1.2 => >=1.3.0
+        // >1.2.3 => >= 1.2.4
+        gtlt = '>='
+        if (xm) {
+          M = +M + 1
+          m = 0
+          p = 0
+        } else {
+          m = +m + 1
+          p = 0
+        }
+      } else if (gtlt === '<=') {
+        // <=0.7.x is actually <0.8.0, since any 0.7.x should
+        // pass.  Similarly, <=7.x is actually <8.0.0, etc.
+        gtlt = '<'
+        if (xm) {
+          M = +M + 1
+        } else {
+          m = +m + 1
+        }
+      }
+
+      ret = gtlt + M + '.' + m + '.' + p + pr
+    } else if (xm) {
+      ret = '>=' + M + '.0.0' + pr + ' <' + (+M + 1) + '.0.0' + pr
+    } else if (xp) {
+      ret = '>=' + M + '.' + m + '.0' + pr +
+        ' <' + M + '.' + (+m + 1) + '.0' + pr
+    }
+
+    debug('xRange return', ret)
+
+    return ret
+  })
+}
+
+// Because * is AND-ed with everything else in the comparator,
+// and '' means "any version", just remove the *s entirely.
+function replaceStars (comp, options) {
+  debug('replaceStars', comp, options)
+  // Looseness is ignored here.  star is always as loose as it gets!
+  return comp.trim().replace(re[t.STAR], '')
+}
+
+// This function is passed to string.replace(re[t.HYPHENRANGE])
+// M, m, patch, prerelease, build
+// 1.2 - 3.4.5 => >=1.2.0 <=3.4.5
+// 1.2.3 - 3.4 => >=1.2.0 <3.5.0 Any 3.4.x will do
+// 1.2 - 3.4 => >=1.2.0 <3.5.0
+function hyphenReplace ($0,
+  from, fM, fm, fp, fpr, fb,
+  to, tM, tm, tp, tpr, tb) {
+  if (isX(fM)) {
+    from = ''
+  } else if (isX(fm)) {
+    from = '>=' + fM + '.0.0'
+  } else if (isX(fp)) {
+    from = '>=' + fM + '.' + fm + '.0'
+  } else {
+    from = '>=' + from
+  }
+
+  if (isX(tM)) {
+    to = ''
+  } else if (isX(tm)) {
+    to = '<' + (+tM + 1) + '.0.0'
+  } else if (isX(tp)) {
+    to = '<' + tM + '.' + (+tm + 1) + '.0'
+  } else if (tpr) {
+    to = '<=' + tM + '.' + tm + '.' + tp + '-' + tpr
+  } else {
+    to = '<=' + to
+  }
+
+  return (from + ' ' + to).trim()
+}
+
+// if ANY of the sets match ALL of its comparators, then pass
+Range.prototype.test = function (version) {
+  if (!version) {
+    return false
+  }
+
+  if (typeof version === 'string') {
+    try {
+      version = new SemVer(version, this.options)
+    } catch (er) {
+      return false
+    }
+  }
+
+  for (var i = 0; i < this.set.length; i++) {
+    if (testSet(this.set[i], version, this.options)) {
+      return true
+    }
+  }
+  return false
+}
+
+function testSet (set, version, options) {
+  for (var i = 0; i < set.length; i++) {
+    if (!set[i].test(version)) {
+      return false
+    }
+  }
+
+  if (version.prerelease.length && !options.includePrerelease) {
+    // Find the set of versions that are allowed to have prereleases
+    // For example, ^1.2.3-pr.1 desugars to >=1.2.3-pr.1 <2.0.0
+    // That should allow `1.2.3-pr.2` to pass.
+    // However, `1.2.4-alpha.notready` should NOT be allowed,
+    // even though it's within the range set by the comparators.
+    for (i = 0; i < set.length; i++) {
+      debug(set[i].semver)
+      if (set[i].semver === ANY) {
+        continue
+      }
+
+      if (set[i].semver.prerelease.length > 0) {
+        var allowed = set[i].semver
+        if (allowed.major === version.major &&
+            allowed.minor === version.minor &&
+            allowed.patch === version.patch) {
+          return true
+        }
+      }
+    }
+
+    // Version has a -pre, but it's not one of the ones we like.
+    return false
+  }
+
+  return true
+}
+
+exports.satisfies = satisfies
+function satisfies (version, range, options) {
+  try {
+    range = new Range(range, options)
+  } catch (er) {
+    return false
+  }
+  return range.test(version)
+}
+
+exports.maxSatisfying = maxSatisfying
+function maxSatisfying (versions, range, options) {
+  var max = null
+  var maxSV = null
+  try {
+    var rangeObj = new Range(range, options)
+  } catch (er) {
+    return null
+  }
+  versions.forEach(function (v) {
+    if (rangeObj.test(v)) {
+      // satisfies(v, range, options)
+      if (!max || maxSV.compare(v) === -1) {
+        // compare(max, v, true)
+        max = v
+        maxSV = new SemVer(max, options)
+      }
+    }
+  })
+  return max
+}
+
+exports.minSatisfying = minSatisfying
+function minSatisfying (versions, range, options) {
+  var min = null
+  var minSV = null
+  try {
+    var rangeObj = new Range(range, options)
+  } catch (er) {
+    return null
+  }
+  versions.forEach(function (v) {
+    if (rangeObj.test(v)) {
+      // satisfies(v, range, options)
+      if (!min || minSV.compare(v) === 1) {
+        // compare(min, v, true)
+        min = v
+        minSV = new SemVer(min, options)
+      }
+    }
+  })
+  return min
+}
+
+exports.minVersion = minVersion
+function minVersion (range, loose) {
+  range = new Range(range, loose)
+
+  var minver = new SemVer('0.0.0')
+  if (range.test(minver)) {
+    return minver
+  }
+
+  minver = new SemVer('0.0.0-0')
+  if (range.test(minver)) {
+    return minver
+  }
+
+  minver = null
+  for (var i = 0; i < range.set.length; ++i) {
+    var comparators = range.set[i]
+
+    comparators.forEach(function (comparator) {
+      // Clone to avoid manipulating the comparator's semver object.
+      var compver = new SemVer(comparator.semver.version)
+      switch (comparator.operator) {
+        case '>':
+          if (compver.prerelease.length === 0) {
+            compver.patch++
+          } else {
+            compver.prerelease.push(0)
+          }
+          compver.raw = compver.format()
+          /* fallthrough */
+        case '':
+        case '>=':
+          if (!minver || gt(minver, compver)) {
+            minver = compver
+          }
+          break
+        case '<':
+        case '<=':
+          /* Ignore maximum versions */
+          break
+        /* istanbul ignore next */
+        default:
+          throw new Error('Unexpected operation: ' + comparator.operator)
+      }
+    })
+  }
+
+  if (minver && range.test(minver)) {
+    return minver
+  }
+
+  return null
+}
+
+exports.validRange = validRange
+function validRange (range, options) {
+  try {
+    // Return '*' instead of '' so that truthiness works.
+    // This will throw if it's invalid anyway
+    return new Range(range, options).range || '*'
+  } catch (er) {
+    return null
+  }
+}
+
+// Determine if version is less than all the versions possible in the range
+exports.ltr = ltr
+function ltr (version, range, options) {
+  return outside(version, range, '<', options)
+}
+
+// Determine if version is greater than all the versions possible in the range.
+exports.gtr = gtr
+function gtr (version, range, options) {
+  return outside(version, range, '>', options)
+}
+
+exports.outside = outside
+function outside (version, range, hilo, options) {
+  version = new SemVer(version, options)
+  range = new Range(range, options)
+
+  var gtfn, ltefn, ltfn, comp, ecomp
+  switch (hilo) {
+    case '>':
+      gtfn = gt
+      ltefn = lte
+      ltfn = lt
+      comp = '>'
+      ecomp = '>='
+      break
+    case '<':
+      gtfn = lt
+      ltefn = gte
+      ltfn = gt
+      comp = '<'
+      ecomp = '<='
+      break
+    default:
+      throw new TypeError('Must provide a hilo val of "<" or ">"')
+  }
+
+  // If it satisifes the range it is not outside
+  if (satisfies(version, range, options)) {
+    return false
+  }
+
+  // From now on, variable terms are as if we're in "gtr" mode.
+  // but note that everything is flipped for the "ltr" function.
+
+  for (var i = 0; i < range.set.length; ++i) {
+    var comparators = range.set[i]
+
+    var high = null
+    var low = null
+
+    comparators.forEach(function (comparator) {
+      if (comparator.semver === ANY) {
+        comparator = new Comparator('>=0.0.0')
+      }
+      high = high || comparator
+      low = low || comparator
+      if (gtfn(comparator.semver, high.semver, options)) {
+        high = comparator
+      } else if (ltfn(comparator.semver, low.semver, options)) {
+        low = comparator
+      }
+    })
+
+    // If the edge version comparator has a operator then our version
+    // isn't outside it
+    if (high.operator === comp || high.operator === ecomp) {
+      return false
+    }
+
+    // If the lowest version comparator has an operator and our version
+    // is less than it then it isn't higher than the range
+    if ((!low.operator || low.operator === comp) &&
+        ltefn(version, low.semver)) {
+      return false
+    } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+      return false
+    }
+  }
+  return true
+}
+
+exports.prerelease = prerelease
+function prerelease (version, options) {
+  var parsed = parse(version, options)
+  return (parsed && parsed.prerelease.length) ? parsed.prerelease : null
+}
+
+exports.intersects = intersects
+function intersects (r1, r2, options) {
+  r1 = new Range(r1, options)
+  r2 = new Range(r2, options)
+  return r1.intersects(r2)
+}
+
+exports.coerce = coerce
+function coerce (version, options) {
+  if (version instanceof SemVer) {
+    return version
+  }
+
+  if (typeof version === 'number') {
+    version = String(version)
+  }
+
+  if (typeof version !== 'string') {
+    return null
+  }
+
+  options = options || {}
+
+  var match = null
+  if (!options.rtl) {
+    match = version.match(re[t.COERCE])
+  } else {
+    // Find the right-most coercible string that does not share
+    // a terminus with a more left-ward coercible string.
+    // Eg, '1.2.3.4' wants to coerce '2.3.4', not '3.4' or '4'
+    //
+    // Walk through the string checking with a /g regexp
+    // Manually set the index so as to pick up overlapping matches.
+    // Stop when we get a match that ends at the string end, since no
+    // coercible string can be more right-ward without the same terminus.
+    var next
+    while ((next = re[t.COERCERTL].exec(version)) &&
+      (!match || match.index + match[0].length !== version.length)
+    ) {
+      if (!match ||
+          next.index + next[0].length !== match.index + match[0].length) {
+        match = next
+      }
+      re[t.COERCERTL].lastIndex = next.index + next[1].length + next[2].length
+    }
+    // leave it in a clean state
+    re[t.COERCERTL].lastIndex = -1
+  }
+
+  if (match === null) {
+    return null
+  }
+
+  return parse(match[2] +
+    '.' + (match[3] || '0') +
+    '.' + (match[4] || '0'), options)
+}
+
+}).call(this,require('browserfs/dist/shims/process.js'))
+},{"browserfs/dist/shims/process.js":68}],236:[function(require,module,exports){
 'use strict'
 /* eslint no-proto: 0 */
 module.exports = Object.setPrototypeOf || ({ __proto__: [] } instanceof Array ? setProtoOf : mixinProperties)
@@ -59304,7 +81099,313 @@ function mixinProperties (obj, proto) {
   return obj
 }
 
-},{}],181:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
+var Buffer = require('safe-buffer').Buffer
+
+// prototype class for hash functions
+function Hash (blockSize, finalSize) {
+  this._block = Buffer.alloc(blockSize)
+  this._finalSize = finalSize
+  this._blockSize = blockSize
+  this._len = 0
+}
+
+Hash.prototype.update = function (data, enc) {
+  if (typeof data === 'string') {
+    enc = enc || 'utf8'
+    data = Buffer.from(data, enc)
+  }
+
+  var block = this._block
+  var blockSize = this._blockSize
+  var length = data.length
+  var accum = this._len
+
+  for (var offset = 0; offset < length;) {
+    var assigned = accum % blockSize
+    var remainder = Math.min(length - offset, blockSize - assigned)
+
+    for (var i = 0; i < remainder; i++) {
+      block[assigned + i] = data[offset + i]
+    }
+
+    accum += remainder
+    offset += remainder
+
+    if ((accum % blockSize) === 0) {
+      this._update(block)
+    }
+  }
+
+  this._len += length
+  return this
+}
+
+Hash.prototype.digest = function (enc) {
+  var rem = this._len % this._blockSize
+
+  this._block[rem] = 0x80
+
+  // zero (rem + 1) trailing bits, where (rem + 1) is the smallest
+  // non-negative solution to the equation (length + 1 + (rem + 1)) === finalSize mod blockSize
+  this._block.fill(0, rem + 1)
+
+  if (rem >= this._finalSize) {
+    this._update(this._block)
+    this._block.fill(0)
+  }
+
+  var bits = this._len * 8
+
+  // uint32
+  if (bits <= 0xffffffff) {
+    this._block.writeUInt32BE(bits, this._blockSize - 4)
+
+  // uint64
+  } else {
+    var lowBits = (bits & 0xffffffff) >>> 0
+    var highBits = (bits - lowBits) / 0x100000000
+
+    this._block.writeUInt32BE(highBits, this._blockSize - 8)
+    this._block.writeUInt32BE(lowBits, this._blockSize - 4)
+  }
+
+  this._update(this._block)
+  var hash = this._hash()
+
+  return enc ? hash.toString(enc) : hash
+}
+
+Hash.prototype._update = function () {
+  throw new Error('_update must be implemented by subclass')
+}
+
+module.exports = Hash
+
+},{"safe-buffer":233}],238:[function(require,module,exports){
+/*
+ * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ * in FIPS PUB 180-1
+ * Version 2.1a Copyright Paul Johnston 2000 - 2002.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for details.
+ */
+
+var inherits = require('inherits')
+var Hash = require('./hash')
+var Buffer = require('safe-buffer').Buffer
+
+var K = [
+  0x5a827999, 0x6ed9eba1, 0x8f1bbcdc | 0, 0xca62c1d6 | 0
+]
+
+var W = new Array(80)
+
+function Sha1 () {
+  this.init()
+  this._w = W
+
+  Hash.call(this, 64, 56)
+}
+
+inherits(Sha1, Hash)
+
+Sha1.prototype.init = function () {
+  this._a = 0x67452301
+  this._b = 0xefcdab89
+  this._c = 0x98badcfe
+  this._d = 0x10325476
+  this._e = 0xc3d2e1f0
+
+  return this
+}
+
+function rotl1 (num) {
+  return (num << 1) | (num >>> 31)
+}
+
+function rotl5 (num) {
+  return (num << 5) | (num >>> 27)
+}
+
+function rotl30 (num) {
+  return (num << 30) | (num >>> 2)
+}
+
+function ft (s, b, c, d) {
+  if (s === 0) return (b & c) | ((~b) & d)
+  if (s === 2) return (b & c) | (b & d) | (c & d)
+  return b ^ c ^ d
+}
+
+Sha1.prototype._update = function (M) {
+  var W = this._w
+
+  var a = this._a | 0
+  var b = this._b | 0
+  var c = this._c | 0
+  var d = this._d | 0
+  var e = this._e | 0
+
+  for (var i = 0; i < 16; ++i) W[i] = M.readInt32BE(i * 4)
+  for (; i < 80; ++i) W[i] = rotl1(W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16])
+
+  for (var j = 0; j < 80; ++j) {
+    var s = ~~(j / 20)
+    var t = (rotl5(a) + ft(s, b, c, d) + e + W[j] + K[s]) | 0
+
+    e = d
+    d = c
+    c = rotl30(b)
+    b = a
+    a = t
+  }
+
+  this._a = (a + this._a) | 0
+  this._b = (b + this._b) | 0
+  this._c = (c + this._c) | 0
+  this._d = (d + this._d) | 0
+  this._e = (e + this._e) | 0
+}
+
+Sha1.prototype._hash = function () {
+  var H = Buffer.allocUnsafe(20)
+
+  H.writeInt32BE(this._a | 0, 0)
+  H.writeInt32BE(this._b | 0, 4)
+  H.writeInt32BE(this._c | 0, 8)
+  H.writeInt32BE(this._d | 0, 12)
+  H.writeInt32BE(this._e | 0, 16)
+
+  return H
+}
+
+module.exports = Sha1
+
+},{"./hash":237,"inherits":142,"safe-buffer":233}],239:[function(require,module,exports){
+(function (Buffer){
+/*! simple-concat. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+module.exports = function (stream, cb) {
+  var chunks = []
+  stream.on('data', function (chunk) {
+    chunks.push(chunk)
+  })
+  stream.once('end', function () {
+    if (cb) cb(null, Buffer.concat(chunks))
+    cb = null
+  })
+  stream.once('error', function (err) {
+    if (cb) cb(err)
+    cb = null
+  })
+}
+
+}).call(this,require('buffer').Buffer)
+},{"buffer":65}],240:[function(require,module,exports){
+(function (Buffer){
+module.exports = simpleGet
+
+const concat = require('simple-concat')
+const decompressResponse = require('decompress-response') // excluded from browser build
+const http = require('http')
+const https = require('https')
+const once = require('once')
+const querystring = require('querystring')
+const url = require('url')
+
+const isStream = o => o !== null && typeof o === 'object' && typeof o.pipe === 'function'
+
+function simpleGet (opts, cb) {
+  opts = Object.assign({ maxRedirects: 10 }, typeof opts === 'string' ? { url: opts } : opts)
+  cb = once(cb)
+
+  if (opts.url) {
+    const { hostname, port, protocol, auth, path } = url.parse(opts.url) // eslint-disable-line node/no-deprecated-api
+    delete opts.url
+    if (!hostname && !port && !protocol && !auth) opts.path = path // Relative redirect
+    else Object.assign(opts, { hostname, port, protocol, auth, path }) // Absolute redirect
+  }
+
+  const headers = { 'accept-encoding': 'gzip, deflate' }
+  if (opts.headers) Object.keys(opts.headers).forEach(k => (headers[k.toLowerCase()] = opts.headers[k]))
+  opts.headers = headers
+
+  let body
+  if (opts.body) {
+    body = opts.json && !isStream(opts.body) ? JSON.stringify(opts.body) : opts.body
+  } else if (opts.form) {
+    body = typeof opts.form === 'string' ? opts.form : querystring.stringify(opts.form)
+    opts.headers['content-type'] = 'application/x-www-form-urlencoded'
+  }
+
+  if (body) {
+    if (!opts.method) opts.method = 'POST'
+    if (!isStream(body)) opts.headers['content-length'] = Buffer.byteLength(body)
+    if (opts.json && !opts.form) opts.headers['content-type'] = 'application/json'
+  }
+  delete opts.body; delete opts.form
+
+  if (opts.json) opts.headers.accept = 'application/json'
+  if (opts.method) opts.method = opts.method.toUpperCase()
+
+  const protocol = opts.protocol === 'https:' ? https : http // Support http/https urls
+  const req = protocol.request(opts, res => {
+    if (opts.followRedirects !== false && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+      opts.url = res.headers.location // Follow 3xx redirects
+      delete opts.headers.host // Discard `host` header on redirect (see #32)
+      res.resume() // Discard response
+
+      if (opts.method === 'POST' && [301, 302].includes(res.statusCode)) {
+        opts.method = 'GET' // On 301/302 redirect, change POST to GET (see #35)
+        delete opts.headers['content-length']; delete opts.headers['content-type']
+      }
+
+      if (opts.maxRedirects-- === 0) return cb(new Error('too many redirects'))
+      else return simpleGet(opts, cb)
+    }
+
+    const tryUnzip = typeof decompressResponse === 'function' && opts.method !== 'HEAD'
+    cb(null, tryUnzip ? decompressResponse(res) : res)
+  })
+  req.on('timeout', () => {
+    req.abort()
+    cb(new Error('Request timed out'))
+  })
+  req.on('error', cb)
+
+  if (isStream(body)) body.on('error', cb).pipe(req)
+  else req.end(body)
+
+  return req
+}
+
+simpleGet.concat = (opts, cb) => {
+  return simpleGet(opts, (err, res) => {
+    if (err) return cb(err)
+    concat(res, (err, data) => {
+      if (err) return cb(err)
+      if (opts.json) {
+        try {
+          data = JSON.parse(data.toString())
+        } catch (err) {
+          return cb(err, res, data)
+        }
+      }
+      cb(null, res, data)
+    })
+  })
+}
+
+;['get', 'post', 'put', 'patch', 'head', 'delete'].forEach(method => {
+  simpleGet[method] = (opts, cb) => {
+    if (typeof opts === 'string') opts = { url: opts }
+    return simpleGet(Object.assign({ method: method.toUpperCase() }, opts), cb)
+  }
+})
+
+}).call(this,require('buffer').Buffer)
+},{"buffer":65,"decompress-response":63,"http":244,"https":122,"once":181,"querystring":212,"simple-concat":239,"url":270}],241:[function(require,module,exports){
 module.exports={
   "100": "Continue",
   "101": "Switching Protocols",
@@ -59372,7 +81473,7 @@ module.exports={
   "511": "Network Authentication Required"
 }
 
-},{}],182:[function(require,module,exports){
+},{}],242:[function(require,module,exports){
 /*!
  * statuses
  * Copyright(c) 2014 Jonathan Ong
@@ -59487,7 +81588,7 @@ function status (code) {
   return n
 }
 
-},{"./codes.json":181}],183:[function(require,module,exports){
+},{"./codes.json":241}],243:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -59616,9 +81717,721 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":79,"inherits":106,"readable-stream/duplex.js":159,"readable-stream/passthrough.js":169,"readable-stream/readable.js":170,"readable-stream/transform.js":171,"readable-stream/writable.js":172}],184:[function(require,module,exports){
-arguments[4][168][0].apply(exports,arguments)
-},{"dup":168,"safe-buffer":185}],185:[function(require,module,exports){
+},{"events":114,"inherits":142,"readable-stream/duplex.js":214,"readable-stream/passthrough.js":224,"readable-stream/readable.js":225,"readable-stream/transform.js":226,"readable-stream/writable.js":227}],244:[function(require,module,exports){
+(function (global){
+var ClientRequest = require('./lib/request')
+var response = require('./lib/response')
+var extend = require('xtend')
+var statusCodes = require('builtin-status-codes')
+var url = require('url')
+
+var http = exports
+
+http.request = function (opts, cb) {
+	if (typeof opts === 'string')
+		opts = url.parse(opts)
+	else
+		opts = extend(opts)
+
+	// Normally, the page is loaded from http or https, so not specifying a protocol
+	// will result in a (valid) protocol-relative url. However, this won't work if
+	// the protocol is something else, like 'file:'
+	var defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
+
+	var protocol = opts.protocol || defaultProtocol
+	var host = opts.hostname || opts.host
+	var port = opts.port
+	var path = opts.path || '/'
+
+	// Necessary for IPv6 addresses
+	if (host && host.indexOf(':') !== -1)
+		host = '[' + host + ']'
+
+	// This may be a relative url. The browser should always be able to interpret it correctly.
+	opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
+	opts.method = (opts.method || 'GET').toUpperCase()
+	opts.headers = opts.headers || {}
+
+	// Also valid opts.auth, opts.mode
+
+	var req = new ClientRequest(opts)
+	if (cb)
+		req.on('response', cb)
+	return req
+}
+
+http.get = function get (opts, cb) {
+	var req = http.request(opts, cb)
+	req.end()
+	return req
+}
+
+http.ClientRequest = ClientRequest
+http.IncomingMessage = response.IncomingMessage
+
+http.Agent = function () {}
+http.Agent.defaultMaxSockets = 4
+
+http.globalAgent = new http.Agent()
+
+http.STATUS_CODES = statusCodes
+
+http.METHODS = [
+	'CHECKOUT',
+	'CONNECT',
+	'COPY',
+	'DELETE',
+	'GET',
+	'HEAD',
+	'LOCK',
+	'M-SEARCH',
+	'MERGE',
+	'MKACTIVITY',
+	'MKCOL',
+	'MOVE',
+	'NOTIFY',
+	'OPTIONS',
+	'PATCH',
+	'POST',
+	'PROPFIND',
+	'PROPPATCH',
+	'PURGE',
+	'PUT',
+	'REPORT',
+	'SEARCH',
+	'SUBSCRIBE',
+	'TRACE',
+	'UNLOCK',
+	'UNSUBSCRIBE'
+]
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./lib/request":246,"./lib/response":247,"builtin-status-codes":72,"url":270,"xtend":280}],245:[function(require,module,exports){
+(function (global){
+exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
+
+exports.writableStream = isFunction(global.WritableStream)
+
+exports.abortController = isFunction(global.AbortController)
+
+// The xhr request to example.com may violate some restrictive CSP configurations,
+// so if we're running in a browser that supports `fetch`, avoid calling getXHR()
+// and assume support for certain features below.
+var xhr
+function getXHR () {
+	// Cache the xhr value
+	if (xhr !== undefined) return xhr
+
+	if (global.XMLHttpRequest) {
+		xhr = new global.XMLHttpRequest()
+		// If XDomainRequest is available (ie only, where xhr might not work
+		// cross domain), use the page location. Otherwise use example.com
+		// Note: this doesn't actually make an http request.
+		try {
+			xhr.open('GET', global.XDomainRequest ? '/' : 'https://example.com')
+		} catch(e) {
+			xhr = null
+		}
+	} else {
+		// Service workers don't have XHR
+		xhr = null
+	}
+	return xhr
+}
+
+function checkTypeSupport (type) {
+	var xhr = getXHR()
+	if (!xhr) return false
+	try {
+		xhr.responseType = type
+		return xhr.responseType === type
+	} catch (e) {}
+	return false
+}
+
+// If fetch is supported, then arraybuffer will be supported too. Skip calling
+// checkTypeSupport(), since that calls getXHR().
+exports.arraybuffer = exports.fetch || checkTypeSupport('arraybuffer')
+
+// These next two tests unavoidably show warnings in Chrome. Since fetch will always
+// be used if it's available, just return false for these to avoid the warnings.
+exports.msstream = !exports.fetch && checkTypeSupport('ms-stream')
+exports.mozchunkedarraybuffer = !exports.fetch && checkTypeSupport('moz-chunked-arraybuffer')
+
+// If fetch is supported, then overrideMimeType will be supported too. Skip calling
+// getXHR().
+exports.overrideMimeType = exports.fetch || (getXHR() ? isFunction(getXHR().overrideMimeType) : false)
+
+function isFunction (value) {
+	return typeof value === 'function'
+}
+
+xhr = null // Help gc
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],246:[function(require,module,exports){
+(function (process,global,Buffer){
+var capability = require('./capability')
+var inherits = require('inherits')
+var response = require('./response')
+var stream = require('readable-stream')
+
+var IncomingMessage = response.IncomingMessage
+var rStates = response.readyStates
+
+function decideMode (preferBinary, useFetch) {
+	if (capability.fetch && useFetch) {
+		return 'fetch'
+	} else if (capability.mozchunkedarraybuffer) {
+		return 'moz-chunked-arraybuffer'
+	} else if (capability.msstream) {
+		return 'ms-stream'
+	} else if (capability.arraybuffer && preferBinary) {
+		return 'arraybuffer'
+	} else {
+		return 'text'
+	}
+}
+
+var ClientRequest = module.exports = function (opts) {
+	var self = this
+	stream.Writable.call(self)
+
+	self._opts = opts
+	self._body = []
+	self._headers = {}
+	if (opts.auth)
+		self.setHeader('Authorization', 'Basic ' + Buffer.from(opts.auth).toString('base64'))
+	Object.keys(opts.headers).forEach(function (name) {
+		self.setHeader(name, opts.headers[name])
+	})
+
+	var preferBinary
+	var useFetch = true
+	if (opts.mode === 'disable-fetch' || ('requestTimeout' in opts && !capability.abortController)) {
+		// If the use of XHR should be preferred. Not typically needed.
+		useFetch = false
+		preferBinary = true
+	} else if (opts.mode === 'prefer-streaming') {
+		// If streaming is a high priority but binary compatibility and
+		// the accuracy of the 'content-type' header aren't
+		preferBinary = false
+	} else if (opts.mode === 'allow-wrong-content-type') {
+		// If streaming is more important than preserving the 'content-type' header
+		preferBinary = !capability.overrideMimeType
+	} else if (!opts.mode || opts.mode === 'default' || opts.mode === 'prefer-fast') {
+		// Use binary if text streaming may corrupt data or the content-type header, or for speed
+		preferBinary = true
+	} else {
+		throw new Error('Invalid value for opts.mode')
+	}
+	self._mode = decideMode(preferBinary, useFetch)
+	self._fetchTimer = null
+
+	self.on('finish', function () {
+		self._onFinish()
+	})
+}
+
+inherits(ClientRequest, stream.Writable)
+
+ClientRequest.prototype.setHeader = function (name, value) {
+	var self = this
+	var lowerName = name.toLowerCase()
+	// This check is not necessary, but it prevents warnings from browsers about setting unsafe
+	// headers. To be honest I'm not entirely sure hiding these warnings is a good thing, but
+	// http-browserify did it, so I will too.
+	if (unsafeHeaders.indexOf(lowerName) !== -1)
+		return
+
+	self._headers[lowerName] = {
+		name: name,
+		value: value
+	}
+}
+
+ClientRequest.prototype.getHeader = function (name) {
+	var header = this._headers[name.toLowerCase()]
+	if (header)
+		return header.value
+	return null
+}
+
+ClientRequest.prototype.removeHeader = function (name) {
+	var self = this
+	delete self._headers[name.toLowerCase()]
+}
+
+ClientRequest.prototype._onFinish = function () {
+	var self = this
+
+	if (self._destroyed)
+		return
+	var opts = self._opts
+
+	var headersObj = self._headers
+	var body = null
+	if (opts.method !== 'GET' && opts.method !== 'HEAD') {
+        body = new Blob(self._body, {
+            type: (headersObj['content-type'] || {}).value || ''
+        });
+    }
+
+	// create flattened list of headers
+	var headersList = []
+	Object.keys(headersObj).forEach(function (keyName) {
+		var name = headersObj[keyName].name
+		var value = headersObj[keyName].value
+		if (Array.isArray(value)) {
+			value.forEach(function (v) {
+				headersList.push([name, v])
+			})
+		} else {
+			headersList.push([name, value])
+		}
+	})
+
+	if (self._mode === 'fetch') {
+		var signal = null
+		if (capability.abortController) {
+			var controller = new AbortController()
+			signal = controller.signal
+			self._fetchAbortController = controller
+
+			if ('requestTimeout' in opts && opts.requestTimeout !== 0) {
+				self._fetchTimer = global.setTimeout(function () {
+					self.emit('requestTimeout')
+					if (self._fetchAbortController)
+						self._fetchAbortController.abort()
+				}, opts.requestTimeout)
+			}
+		}
+
+		global.fetch(self._opts.url, {
+			method: self._opts.method,
+			headers: headersList,
+			body: body || undefined,
+			mode: 'cors',
+			credentials: opts.withCredentials ? 'include' : 'same-origin',
+			signal: signal
+		}).then(function (response) {
+			self._fetchResponse = response
+			self._connect()
+		}, function (reason) {
+			global.clearTimeout(self._fetchTimer)
+			if (!self._destroyed)
+				self.emit('error', reason)
+		})
+	} else {
+		var xhr = self._xhr = new global.XMLHttpRequest()
+		try {
+			xhr.open(self._opts.method, self._opts.url, true)
+		} catch (err) {
+			process.nextTick(function () {
+				self.emit('error', err)
+			})
+			return
+		}
+
+		// Can't set responseType on really old browsers
+		if ('responseType' in xhr)
+			xhr.responseType = self._mode
+
+		if ('withCredentials' in xhr)
+			xhr.withCredentials = !!opts.withCredentials
+
+		if (self._mode === 'text' && 'overrideMimeType' in xhr)
+			xhr.overrideMimeType('text/plain; charset=x-user-defined')
+
+		if ('requestTimeout' in opts) {
+			xhr.timeout = opts.requestTimeout
+			xhr.ontimeout = function () {
+				self.emit('requestTimeout')
+			}
+		}
+
+		headersList.forEach(function (header) {
+			xhr.setRequestHeader(header[0], header[1])
+		})
+
+		self._response = null
+		xhr.onreadystatechange = function () {
+			switch (xhr.readyState) {
+				case rStates.LOADING:
+				case rStates.DONE:
+					self._onXHRProgress()
+					break
+			}
+		}
+		// Necessary for streaming in Firefox, since xhr.response is ONLY defined
+		// in onprogress, not in onreadystatechange with xhr.readyState = 3
+		if (self._mode === 'moz-chunked-arraybuffer') {
+			xhr.onprogress = function () {
+				self._onXHRProgress()
+			}
+		}
+
+		xhr.onerror = function () {
+			if (self._destroyed)
+				return
+			self.emit('error', new Error('XHR error'))
+		}
+
+		try {
+			xhr.send(body)
+		} catch (err) {
+			process.nextTick(function () {
+				self.emit('error', err)
+			})
+			return
+		}
+	}
+}
+
+/**
+ * Checks if xhr.status is readable and non-zero, indicating no error.
+ * Even though the spec says it should be available in readyState 3,
+ * accessing it throws an exception in IE8
+ */
+function statusValid (xhr) {
+	try {
+		var status = xhr.status
+		return (status !== null && status !== 0)
+	} catch (e) {
+		return false
+	}
+}
+
+ClientRequest.prototype._onXHRProgress = function () {
+	var self = this
+
+	if (!statusValid(self._xhr) || self._destroyed)
+		return
+
+	if (!self._response)
+		self._connect()
+
+	self._response._onXHRProgress()
+}
+
+ClientRequest.prototype._connect = function () {
+	var self = this
+
+	if (self._destroyed)
+		return
+
+	self._response = new IncomingMessage(self._xhr, self._fetchResponse, self._mode, self._fetchTimer)
+	self._response.on('error', function(err) {
+		self.emit('error', err)
+	})
+
+	self.emit('response', self._response)
+}
+
+ClientRequest.prototype._write = function (chunk, encoding, cb) {
+	var self = this
+
+	self._body.push(chunk)
+	cb()
+}
+
+ClientRequest.prototype.abort = ClientRequest.prototype.destroy = function () {
+	var self = this
+	self._destroyed = true
+	global.clearTimeout(self._fetchTimer)
+	if (self._response)
+		self._response._destroyed = true
+	if (self._xhr)
+		self._xhr.abort()
+	else if (self._fetchAbortController)
+		self._fetchAbortController.abort()
+}
+
+ClientRequest.prototype.end = function (data, encoding, cb) {
+	var self = this
+	if (typeof data === 'function') {
+		cb = data
+		data = undefined
+	}
+
+	stream.Writable.prototype.end.call(self, data, encoding, cb)
+}
+
+ClientRequest.prototype.flushHeaders = function () {}
+ClientRequest.prototype.setTimeout = function () {}
+ClientRequest.prototype.setNoDelay = function () {}
+ClientRequest.prototype.setSocketKeepAlive = function () {}
+
+// Taken from http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader%28%29-method
+var unsafeHeaders = [
+	'accept-charset',
+	'accept-encoding',
+	'access-control-request-headers',
+	'access-control-request-method',
+	'connection',
+	'content-length',
+	'cookie',
+	'cookie2',
+	'date',
+	'dnt',
+	'expect',
+	'host',
+	'keep-alive',
+	'origin',
+	'referer',
+	'te',
+	'trailer',
+	'transfer-encoding',
+	'upgrade',
+	'via'
+]
+
+}).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require('buffer').Buffer)
+},{"./capability":245,"./response":247,"browserfs/dist/shims/process.js":68,"buffer":65,"inherits":248,"readable-stream":263}],247:[function(require,module,exports){
+(function (process,global,Buffer){
+var capability = require('./capability')
+var inherits = require('inherits')
+var stream = require('readable-stream')
+
+var rStates = exports.readyStates = {
+	UNSENT: 0,
+	OPENED: 1,
+	HEADERS_RECEIVED: 2,
+	LOADING: 3,
+	DONE: 4
+}
+
+var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode, fetchTimer) {
+	var self = this
+	stream.Readable.call(self)
+
+	self._mode = mode
+	self.headers = {}
+	self.rawHeaders = []
+	self.trailers = {}
+	self.rawTrailers = []
+
+	// Fake the 'close' event, but only once 'end' fires
+	self.on('end', function () {
+		// The nextTick is necessary to prevent the 'request' module from causing an infinite loop
+		process.nextTick(function () {
+			self.emit('close')
+		})
+	})
+
+	if (mode === 'fetch') {
+		self._fetchResponse = response
+
+		self.url = response.url
+		self.statusCode = response.status
+		self.statusMessage = response.statusText
+		
+		response.headers.forEach(function (header, key){
+			self.headers[key.toLowerCase()] = header
+			self.rawHeaders.push(key, header)
+		})
+
+		if (capability.writableStream) {
+			var writable = new WritableStream({
+				write: function (chunk) {
+					return new Promise(function (resolve, reject) {
+						if (self._destroyed) {
+							reject()
+						} else if(self.push(Buffer.from(chunk))) {
+							resolve()
+						} else {
+							self._resumeFetch = resolve
+						}
+					})
+				},
+				close: function () {
+					global.clearTimeout(fetchTimer)
+					if (!self._destroyed)
+						self.push(null)
+				},
+				abort: function (err) {
+					if (!self._destroyed)
+						self.emit('error', err)
+				}
+			})
+
+			try {
+				response.body.pipeTo(writable).catch(function (err) {
+					global.clearTimeout(fetchTimer)
+					if (!self._destroyed)
+						self.emit('error', err)
+				})
+				return
+			} catch (e) {} // pipeTo method isn't defined. Can't find a better way to feature test this
+		}
+		// fallback for when writableStream or pipeTo aren't available
+		var reader = response.body.getReader()
+		function read () {
+			reader.read().then(function (result) {
+				if (self._destroyed)
+					return
+				if (result.done) {
+					global.clearTimeout(fetchTimer)
+					self.push(null)
+					return
+				}
+				self.push(Buffer.from(result.value))
+				read()
+			}).catch(function (err) {
+				global.clearTimeout(fetchTimer)
+				if (!self._destroyed)
+					self.emit('error', err)
+			})
+		}
+		read()
+	} else {
+		self._xhr = xhr
+		self._pos = 0
+
+		self.url = xhr.responseURL
+		self.statusCode = xhr.status
+		self.statusMessage = xhr.statusText
+		var headers = xhr.getAllResponseHeaders().split(/\r?\n/)
+		headers.forEach(function (header) {
+			var matches = header.match(/^([^:]+):\s*(.*)/)
+			if (matches) {
+				var key = matches[1].toLowerCase()
+				if (key === 'set-cookie') {
+					if (self.headers[key] === undefined) {
+						self.headers[key] = []
+					}
+					self.headers[key].push(matches[2])
+				} else if (self.headers[key] !== undefined) {
+					self.headers[key] += ', ' + matches[2]
+				} else {
+					self.headers[key] = matches[2]
+				}
+				self.rawHeaders.push(matches[1], matches[2])
+			}
+		})
+
+		self._charset = 'x-user-defined'
+		if (!capability.overrideMimeType) {
+			var mimeType = self.rawHeaders['mime-type']
+			if (mimeType) {
+				var charsetMatch = mimeType.match(/;\s*charset=([^;])(;|$)/)
+				if (charsetMatch) {
+					self._charset = charsetMatch[1].toLowerCase()
+				}
+			}
+			if (!self._charset)
+				self._charset = 'utf-8' // best guess
+		}
+	}
+}
+
+inherits(IncomingMessage, stream.Readable)
+
+IncomingMessage.prototype._read = function () {
+	var self = this
+
+	var resolve = self._resumeFetch
+	if (resolve) {
+		self._resumeFetch = null
+		resolve()
+	}
+}
+
+IncomingMessage.prototype._onXHRProgress = function () {
+	var self = this
+
+	var xhr = self._xhr
+
+	var response = null
+	switch (self._mode) {
+		case 'text':
+			response = xhr.responseText
+			if (response.length > self._pos) {
+				var newData = response.substr(self._pos)
+				if (self._charset === 'x-user-defined') {
+					var buffer = Buffer.alloc(newData.length)
+					for (var i = 0; i < newData.length; i++)
+						buffer[i] = newData.charCodeAt(i) & 0xff
+
+					self.push(buffer)
+				} else {
+					self.push(newData, self._charset)
+				}
+				self._pos = response.length
+			}
+			break
+		case 'arraybuffer':
+			if (xhr.readyState !== rStates.DONE || !xhr.response)
+				break
+			response = xhr.response
+			self.push(Buffer.from(new Uint8Array(response)))
+			break
+		case 'moz-chunked-arraybuffer': // take whole
+			response = xhr.response
+			if (xhr.readyState !== rStates.LOADING || !response)
+				break
+			self.push(Buffer.from(new Uint8Array(response)))
+			break
+		case 'ms-stream':
+			response = xhr.response
+			if (xhr.readyState !== rStates.LOADING)
+				break
+			var reader = new global.MSStreamReader()
+			reader.onprogress = function () {
+				if (reader.result.byteLength > self._pos) {
+					self.push(Buffer.from(new Uint8Array(reader.result.slice(self._pos))))
+					self._pos = reader.result.byteLength
+				}
+			}
+			reader.onload = function () {
+				self.push(null)
+			}
+			// reader.onerror = ??? // TODO: this
+			reader.readAsArrayBuffer(response)
+			break
+	}
+
+	// The ms-stream case handles end separately in reader.onload()
+	if (self._xhr.readyState === rStates.DONE && self._mode !== 'ms-stream') {
+		self.push(null)
+	}
+}
+
+}).call(this,require('browserfs/dist/shims/process.js'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require('buffer').Buffer)
+},{"./capability":245,"browserfs/dist/shims/process.js":68,"buffer":65,"inherits":248,"readable-stream":263}],248:[function(require,module,exports){
+arguments[4][53][0].apply(exports,arguments)
+},{"dup":53}],249:[function(require,module,exports){
+arguments[4][150][0].apply(exports,arguments)
+},{"dup":150}],250:[function(require,module,exports){
+arguments[4][151][0].apply(exports,arguments)
+},{"./_stream_readable":252,"./_stream_writable":254,"browserfs/dist/shims/process.js":68,"dup":151,"inherits":248}],251:[function(require,module,exports){
+arguments[4][152][0].apply(exports,arguments)
+},{"./_stream_transform":253,"dup":152,"inherits":248}],252:[function(require,module,exports){
+arguments[4][153][0].apply(exports,arguments)
+},{"../errors":249,"./_stream_duplex":250,"./internal/streams/async_iterator":255,"./internal/streams/buffer_list":256,"./internal/streams/destroy":257,"./internal/streams/from":259,"./internal/streams/state":261,"./internal/streams/stream":262,"browserfs/dist/shims/process.js":68,"buffer":65,"dup":153,"events":114,"inherits":248,"string_decoder/":264,"util":63}],253:[function(require,module,exports){
+arguments[4][154][0].apply(exports,arguments)
+},{"../errors":249,"./_stream_duplex":250,"dup":154,"inherits":248}],254:[function(require,module,exports){
+arguments[4][155][0].apply(exports,arguments)
+},{"../errors":249,"./_stream_duplex":250,"./internal/streams/destroy":257,"./internal/streams/state":261,"./internal/streams/stream":262,"browserfs/dist/shims/process.js":68,"buffer":65,"dup":155,"inherits":248,"util-deprecate":272}],255:[function(require,module,exports){
+arguments[4][156][0].apply(exports,arguments)
+},{"./end-of-stream":258,"browserfs/dist/shims/process.js":68,"dup":156}],256:[function(require,module,exports){
+arguments[4][157][0].apply(exports,arguments)
+},{"buffer":65,"dup":157,"util":63}],257:[function(require,module,exports){
+arguments[4][158][0].apply(exports,arguments)
+},{"browserfs/dist/shims/process.js":68,"dup":158}],258:[function(require,module,exports){
+arguments[4][159][0].apply(exports,arguments)
+},{"../../../errors":249,"dup":159}],259:[function(require,module,exports){
+arguments[4][160][0].apply(exports,arguments)
+},{"dup":160}],260:[function(require,module,exports){
+arguments[4][161][0].apply(exports,arguments)
+},{"../../../errors":249,"./end-of-stream":258,"dup":161}],261:[function(require,module,exports){
+arguments[4][162][0].apply(exports,arguments)
+},{"../../../errors":249,"dup":162}],262:[function(require,module,exports){
+arguments[4][163][0].apply(exports,arguments)
+},{"dup":163,"events":114}],263:[function(require,module,exports){
+arguments[4][164][0].apply(exports,arguments)
+},{"./lib/_stream_duplex.js":250,"./lib/_stream_passthrough.js":251,"./lib/_stream_readable.js":252,"./lib/_stream_transform.js":253,"./lib/_stream_writable.js":254,"./lib/internal/streams/end-of-stream.js":258,"./lib/internal/streams/pipeline.js":260,"dup":164}],264:[function(require,module,exports){
+arguments[4][223][0].apply(exports,arguments)
+},{"dup":223,"safe-buffer":265}],265:[function(require,module,exports){
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
@@ -59685,7 +82498,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
   return buffer.SlowBuffer(size)
 }
 
-},{"buffer":36}],186:[function(require,module,exports){
+},{"buffer":65}],266:[function(require,module,exports){
 (function (setImmediate,clearImmediate){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -59764,7 +82577,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":148,"timers":186}],187:[function(require,module,exports){
+},{"process/browser.js":203,"timers":266}],267:[function(require,module,exports){
 /*!
  * toidentifier
  * Copyright(c) 2016 Douglas Christopher Wilson
@@ -59796,7 +82609,7 @@ function toIdentifier (str) {
     .replace(/[^ _0-9a-z]/gi, '')
 }
 
-},{}],188:[function(require,module,exports){
+},{}],268:[function(require,module,exports){
 /*!
  * type-is
  * Copyright(c) 2014 Jonathan Ong
@@ -60064,7 +82877,7 @@ function tryNormalizeType (value) {
   }
 }
 
-},{"media-typer":111,"mime-types":115}],189:[function(require,module,exports){
+},{"media-typer":166,"mime-types":170}],269:[function(require,module,exports){
 /*!
  * unpipe
  * Copyright(c) 2015 Douglas Christopher Wilson
@@ -60135,7 +82948,7 @@ function unpipe(stream) {
   }
 }
 
-},{}],190:[function(require,module,exports){
+},{}],270:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -60869,7 +83682,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":191,"punycode":149,"querystring":157}],191:[function(require,module,exports){
+},{"./util":271,"punycode":204,"querystring":212}],271:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -60887,7 +83700,7 @@ module.exports = {
   }
 };
 
-},{}],192:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 (function (global){
 
 /**
@@ -60958,7 +83771,7 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],193:[function(require,module,exports){
+},{}],273:[function(require,module,exports){
 'use strict';
 
 var isES5 = typeof Object.defineProperty === 'function'
@@ -61048,7 +83861,7 @@ module.exports = function promisify(orig) {
 module.exports.custom = kCustomPromisifiedSymbol;
 module.exports.customPromisifyArgs = kCustomPromisifyArgsSymbol;
 
-},{"es-abstract/helpers/callBound":75,"has-symbols":83,"object.getownpropertydescriptors":129}],194:[function(require,module,exports){
+},{"es-abstract/helpers/callBound":110,"has-symbols":118,"object.getownpropertydescriptors":177}],274:[function(require,module,exports){
 'use strict';
 
 var util = require('util');
@@ -61061,7 +83874,7 @@ module.exports = function getPolyfill() {
 	return implementation;
 };
 
-},{"./implementation":193,"util":197}],195:[function(require,module,exports){
+},{"./implementation":273,"util":277}],275:[function(require,module,exports){
 'use strict';
 
 var util = require('util');
@@ -61080,11 +83893,11 @@ module.exports = function shimUtilPromisify() {
 	return polyfill;
 };
 
-},{"./polyfill":194,"util":197}],196:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"dup":16}],197:[function(require,module,exports){
-arguments[4][17][0].apply(exports,arguments)
-},{"./support/isBuffer":196,"browserfs/dist/shims/process.js":39,"dup":17,"inherits":106}],198:[function(require,module,exports){
+},{"./polyfill":274,"util":277}],276:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],277:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"./support/isBuffer":276,"browserfs/dist/shims/process.js":68,"dup":44,"inherits":142}],278:[function(require,module,exports){
 /**
  * Merge object b with object a.
  *
@@ -61109,7 +83922,63 @@ exports = module.exports = function(a, b){
   return a;
 };
 
-},{}],199:[function(require,module,exports){
+},{}],279:[function(require,module,exports){
+// Returns a wrapper function that returns a wrapped callback
+// The wrapper function should do some stuff, and return a
+// presumably different callback function.
+// This makes sure that own properties are retained, so that
+// decorations and such are not lost along the way.
+module.exports = wrappy
+function wrappy (fn, cb) {
+  if (fn && cb) return wrappy(fn)(cb)
+
+  if (typeof fn !== 'function')
+    throw new TypeError('need wrapper function')
+
+  Object.keys(fn).forEach(function (k) {
+    wrapper[k] = fn[k]
+  })
+
+  return wrapper
+
+  function wrapper() {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
+    var ret = fn.apply(this, args)
+    var cb = args[args.length-1]
+    if (typeof ret === 'function' && ret !== cb) {
+      Object.keys(cb).forEach(function (k) {
+        ret[k] = cb[k]
+      })
+    }
+    return ret
+  }
+}
+
+},{}],280:[function(require,module,exports){
+module.exports = extend
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        for (var key in source) {
+            if (hasOwnProperty.call(source, key)) {
+                target[key] = source[key]
+            }
+        }
+    }
+
+    return target
+}
+
+},{}],281:[function(require,module,exports){
 (function (process,BrowserFS){
 //==== BROWSER FIXES ====
 
@@ -61158,13 +84027,13 @@ BrowserFS.configure(
     // const startPublishingLocaltunnel = require("./expose-localtunnel/start-localtunnel");
     // startPublishingLocaltunnel();
 
-    // const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
-    // startSynchronizationGit();
+    const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
+    startSynchronizationGit();
   }
 );
 
-}).call(this,require('browserfs/dist/shims/process.js'),require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"./app-list/app-config":5,"./distrib-browser/create-app":10,"./distrib-browser/fsPromisified":11,"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":35,"browserfs/dist/shims/process.js":39,"fs":37,"util.promisify/shim":195}],200:[function(require,module,exports){
+}).call(this,require('browserfs/dist/shims/process.js'),require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"./app-list/app-config":5,"./distrib-browser/create-app":10,"./distrib-browser/fsPromisified":11,"./synchronization-git/start-synchronization-git":290,"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64,"browserfs/dist/shims/process.js":68,"fs":66,"util.promisify/shim":275}],282:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
@@ -61187,7 +84056,7 @@ module.exports = async function (key) {
   await fs.unlink(filePath);
 };
 
-},{"../@configuration":1,"./exists":201,"fs":37,"path":38}],201:[function(require,module,exports){
+},{"../@configuration":1,"./exists":283,"fs":66,"path":67}],283:[function(require,module,exports){
 const fs = require("fs").promises;
 
 module.exports = async function (filePath) {
@@ -61199,7 +84068,7 @@ module.exports = async function (filePath) {
     return false
   }
 };
-},{"fs":37}],202:[function(require,module,exports){
+},{"fs":66}],284:[function(require,module,exports){
 module.exports = {
     read: require('./read'),
     write: require('./write'),
@@ -61207,7 +84076,7 @@ module.exports = {
     listKeys: require('./listKeys'),
     listSubFolders: require('./listSubFolders')
 }
-},{"./delete":200,"./listKeys":203,"./listSubFolders":204,"./read":205,"./write":206}],203:[function(require,module,exports){
+},{"./delete":282,"./listKeys":285,"./listSubFolders":286,"./read":287,"./write":288}],285:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
@@ -61232,7 +84101,7 @@ module.exports = async function (keyFolder) {
   return keyFiles;
 };
 
-},{"../@configuration":1,"./exists":201,"fs":37,"path":38}],204:[function(require,module,exports){
+},{"../@configuration":1,"./exists":283,"fs":66,"path":67}],286:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
@@ -61257,7 +84126,7 @@ module.exports = async function (keyFolder) {
   return subFolders;
 };
 
-},{"../@configuration":1,"./exists":201,"fs":37,"path":38}],205:[function(require,module,exports){
+},{"../@configuration":1,"./exists":283,"fs":66,"path":67}],287:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
@@ -61281,10 +84150,10 @@ module.exports = async function (key) {
   return JSON.parse(rawValue);
 };
 
-},{"../@configuration":1,"./exists":201,"fs":37,"path":38}],206:[function(require,module,exports){
+},{"../@configuration":1,"./exists":283,"fs":66,"path":67}],288:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
-const mkdirp = require("mkdirp");
+const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const exists = require("./exists");
 
@@ -61299,10 +84168,264 @@ module.exports = async function (key, value) {
   const filePath = path.join(fileDirectory, `${keyFile}.json`);
 
   if (!(await exists(fileDirectory))) {
-    await mkdirp(fileDirectory);
+    await makeDir(fileDirectory);
   }
 
   await fs.writeFile(filePath, JSON.stringify(value));
 };
 
-},{"../@configuration":1,"./exists":201,"fs":37,"mkdirp":116,"path":38}]},{},[199]);
+},{"../@configuration":1,"./exists":283,"fs":66,"make-dir":165,"path":67}],289:[function(require,module,exports){
+const configuration = require("../@configuration");
+
+async function loadGit() {
+  if (configuration.useNativeGit) {
+    const gitNative = require("../git-native");
+    const isGitNativeSupported = await gitNative.isSupported();
+    if (isGitNativeSupported) {
+      console.log("[synchronization-git] Use native Git");
+      return gitNative;
+    }
+  }
+
+  console.log("[synchronization-git] Use isomorphic Git");
+  const gitIsomorphic = require("../git-isomorphic");
+  return gitIsomorphic;
+}
+
+module.exports = loadGit;
+
+},{"../@configuration":1,"../git-isomorphic":20,"../git-native":34}],290:[function(require,module,exports){
+const path = require("path");
+const fs = require("fs");
+const makeDir = require("make-dir");
+const configuration = require("../@configuration");
+const { listKeys, read } = require("../@storage");
+const loadGit = require("./loadGit");
+
+module.exports = async function () {
+  if (!configuration.syncEnabled) {
+    console.log("[synchronization-git] Synchronization is disabled");
+    return;
+  }
+
+  const git = await loadGit();
+
+  await sync(
+    git,
+    configuration.localStorageFolder,
+    configuration.repositoriesStorageKey,
+    configuration.localSubfoldersToSync
+  );
+  setInterval(async () => {
+    await sync(
+      git,
+      configuration.localStorageFolder,
+      configuration.repositoriesStorageKey,
+      configuration.localSubfoldersToSync
+    );
+  }, configuration.gitSyncPeriodInMs || 10000);
+};
+
+async function sync(
+  git,
+  localStorageFolder,
+  repositoriesStorageKey,
+  localSubfoldersToSync
+) {
+  const repositoriesIds = await listKeys(repositoriesStorageKey);
+  let repositoriesToSync = await Promise.all(
+    repositoriesIds.map(async (repositoryId) => {
+      return await read(`${repositoriesStorageKey}/${repositoryId}`);
+    })
+  );
+
+  const remoteName = "test";
+  const remoteBranch = "master";
+  const remoteUrl = "https://github.com/acailly/zDemocracy-lowtech-data.git";
+  const repository = {
+    name: remoteName,
+    remoteRepository: remoteUrl,
+    branch: remoteBranch,
+  };
+  repositoriesToSync = [repository];
+  await prepareSync(
+    git,
+    localStorageFolder,
+    localSubfoldersToSync,
+    repositoriesToSync
+  );
+
+  await runSync(
+    git,
+    localStorageFolder,
+    localSubfoldersToSync,
+    repositoriesToSync
+  );
+}
+
+async function prepareSync(
+  git,
+  localStorageFolder,
+  localSubfoldersToSync,
+  repositoriesToSync
+) {
+  await initializeGitRepositoryIfNecessary(git, localStorageFolder);
+
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < repositoriesToSync.length;
+    repositoryIndex++
+  ) {
+    const repository = repositoriesToSync[repositoryIndex];
+    await registerRemoteRepositoryIfNecessary(
+      git,
+      localStorageFolder,
+      repository
+    );
+  }
+
+  for (const localSubfolder of localSubfoldersToSync) {
+    const fullLocalSubfolderPath = path.join(
+      localStorageFolder,
+      localSubfolder
+    );
+    if (!fs.existsSync(fullLocalSubfolderPath)) {
+      console.log(
+        "[synchronization-git] Local subfolder doesn't exist, create it:",
+        localSubfolder
+      );
+      await makeDir(fullLocalSubfolderPath);
+    }
+  }
+}
+
+async function initializeGitRepositoryIfNecessary(git, localStorageFolder) {
+  // Check that the local storage folder exists
+
+  if (!fs.existsSync(localStorageFolder)) {
+    console.log(
+      "[synchronization-git] Local storage folder doesn't exist, create it"
+    );
+    await makeDir(localStorageFolder);
+  }
+
+  // Check that the git repository exists
+
+  const gitRepositoryPath = path.join(localStorageFolder, ".git");
+  if (!fs.existsSync(gitRepositoryPath)) {
+    console.log("[synchronization-git] Git repository doesn't exist, init it");
+    await git.init(localStorageFolder);
+  }
+}
+
+async function registerRemoteRepositoryIfNecessary(
+  git,
+  localStorageFolder,
+  repository
+) {
+  const url = await git.getRemoteUrl(localStorageFolder, repository.name);
+  if (!url) {
+    console.log("[synchronization-git] register repository:", repository.name);
+    await git.addRemote(
+      localStorageFolder,
+      repository.name,
+      repository.remoteRepository
+    );
+  }
+}
+
+async function runSync(
+  git,
+  localStorageFolder,
+  localSubfoldersToSync,
+  repositories
+) {
+  console.log(
+    "[synchronization-git] Starting to synchronize on git:",
+    localStorageFolder
+  );
+
+  await commitCurrentChanges(git, localStorageFolder, localSubfoldersToSync);
+
+  await updateServerInfo(git, localStorageFolder);
+
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < repositories.length;
+    repositoryIndex++
+  ) {
+    const repository = repositories[repositoryIndex];
+
+    if (!(await canFetchRepository(git, localStorageFolder, repository))) {
+      continue;
+    }
+
+    await pullRemoteChanges(git, localStorageFolder, repository);
+    if (repository.enablePush) {
+      await pushLocalChanges(git, localStorageFolder, repository);
+    }
+  }
+
+  await updateServerInfo(git, localStorageFolder);
+
+  console.log("[synchronization-git] Finished");
+}
+
+async function commitCurrentChanges(
+  git,
+  localStorageFolder,
+  localSubfoldersToSync
+) {
+  for (const localSubfolder of localSubfoldersToSync) {
+    console.log("[synchronization-git] Add subfolder:", localSubfolder);
+    await git.add(localStorageFolder, localSubfolder);
+  }
+
+  const somethingToCommit = await git.somethingToCommit(localStorageFolder);
+  if (somethingToCommit) {
+    console.log("[synchronization-git] Commit");
+    await git.commit(localStorageFolder);
+  } else {
+    console.log("[synchronization-git] No local changes");
+  }
+}
+
+async function updateServerInfo(git, localStorageFolder) {
+  console.log("[synchronization-git] Update server info");
+  await git.updateServerInfo(localStorageFolder);
+}
+
+async function canFetchRepository(git, localStorageFolder, repository) {
+  console.log("[synchronization-git] Can fetch", repository.name, "?");
+  const canFetch = await git.canFetchRemote(
+    localStorageFolder,
+    repository.name,
+    repository.remoteRepository,
+    repository.branch,
+    repository.login,
+    repository.password
+  );
+  console.log("[synchronization-git]", canFetch ? "Yes" : "No");
+  return canFetch;
+}
+
+async function pullRemoteChanges(git, localStorageFolder, repository) {
+  console.log("[synchronization-git] Fetch repository:", repository.name);
+  await git.fetch(localStorageFolder, repository.name, repository.branch);
+
+  console.log("[synchronization-git] Merge repository:", repository.name);
+  await git.merge(localStorageFolder, repository.name, repository.branch);
+}
+
+async function pushLocalChanges(git, localStorageFolder, repository) {
+  console.log("[synchronization-git] Push to repository:", repository.name);
+  await git.push(
+    localStorageFolder,
+    repository.name,
+    repository.branch,
+    repository.login,
+    repository.password
+  );
+}
+
+},{"../@configuration":1,"../@storage":2,"./loadGit":289,"fs":66,"make-dir":165,"path":67}]},{},[281]);
