@@ -827,7 +827,11 @@ Ca m'a pris 1H45 de plus, et pour l'instant je suis bloqué :-/
 
 Je continue sur Linux en attendant, car le problème ne s'y produit pas. 1H de plus.
 
-TODO 5H30min+
+Finalement les corrections sous Linux ont eu l'air de regler le problème sous Windows... étrange...
+
+Je rajoute un bouton "Actualiser" dans l'application pour pouvoir voir les mises à jour effectuées par les autres participants. Ca me prend 30min.
+
+TODO 6Hmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
