@@ -29123,23 +29123,23 @@ return /******/ (function(modules) { // webpackBootstrap
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('buffer');
 
-}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],66:[function(require,module,exports){
+}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],66:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('fs');
 
-}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],67:[function(require,module,exports){
+}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],67:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('path');
 
-}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],68:[function(require,module,exports){
+}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],68:[function(require,module,exports){
 (function (BrowserFS){
 module.exports = BrowserFS.BFSRequire('process');
 
-}).call(this,require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],69:[function(require,module,exports){
+}).call(this,require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64}],69:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
 /* eslint camelcase: "off" */
@@ -33112,7 +33112,7 @@ module.exports={
   "_args": [
     [
       "ejs@3.1.3",
-      "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech"
+      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
     ]
   ],
   "_from": "ejs@3.1.3",
@@ -33136,7 +33136,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-3.1.3.tgz",
   "_spec": "3.1.3",
-  "_where": "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech",
+  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -84032,8 +84032,8 @@ BrowserFS.configure(
   }
 );
 
-}).call(this,require('browserfs/dist/shims/process.js'),require('/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
-},{"./app-list/app-config":5,"./distrib-browser/create-app":10,"./distrib-browser/fsPromisified":11,"./synchronization-git/start-synchronization-git":290,"/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64,"browserfs/dist/shims/process.js":68,"fs":66,"util.promisify/shim":275}],282:[function(require,module,exports){
+}).call(this,require('browserfs/dist/shims/process.js'),require('C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js'))
+},{"./app-list/app-config":5,"./distrib-browser/create-app":10,"./distrib-browser/fsPromisified":11,"./synchronization-git/start-synchronization-git":290,"C:/_Projets/Perso/zDemocracy/zDemocracy-lowtech/node_modules/browserfs/dist/browserfs.js":64,"browserfs/dist/shims/process.js":68,"fs":66,"util.promisify/shim":275}],282:[function(require,module,exports){
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
@@ -84248,6 +84248,7 @@ async function sync(
     branch: remoteBranch,
   };
   repositoriesToSync = [repository];
+
   await prepareSync(
     git,
     localStorageFolder,
