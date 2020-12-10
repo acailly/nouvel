@@ -139,30 +139,50 @@ async function runSync(
     localStorageFolder
   );
 
-  await commitCurrentChanges(git, localStorageFolder, localSubfoldersToSync);
-
-  await updateServerInfo(git, localStorageFolder);
-
+  // Find reachable peers
+  const reachableRepositories = [];
   for (
     let repositoryIndex = 0;
     repositoryIndex < repositories.length;
     repositoryIndex++
   ) {
     const repository = repositories[repositoryIndex];
-
-    if (!(await canFetchRepository(git, localStorageFolder, repository))) {
-      continue;
+    if (await canFetchRepository(git, localStorageFolder, repository)) {
+      reachableRepositories.push(repository);
     }
+  }
 
+  // Pull changes from peers
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < reachableRepositories.length;
+    repositoryIndex++
+  ) {
+    const repository = reachableRepositories[repositoryIndex];
     await pullRemoteChanges(git, localStorageFolder, repository);
+    }
+  await updateServerInfo(git, localStorageFolder);
+
+  // Push local changes
+  await commitCurrentChanges(git, localStorageFolder, localSubfoldersToSync);
+  for (
+    let repositoryIndex = 0;
+    repositoryIndex < reachableRepositories.length;
+    repositoryIndex++
+  ) {
+    const repository = reachableRepositories[repositoryIndex];
     if (repository.enablePush) {
       await pushLocalChanges(git, localStorageFolder, repository);
     }
   }
-
   await updateServerInfo(git, localStorageFolder);
 
-  console.log("[synchronization-git] Finished");
+  const currentCommitOid = await git.getCurrentCommitOid(localStorageFolder);
+
+  console.log(
+    "[synchronization-git] Finished, currently at commit",
+    currentCommitOid
+  );
 }
 
 async function commitCurrentChanges(

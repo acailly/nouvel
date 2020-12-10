@@ -837,17 +837,24 @@ Ca me prends 45min.
 
 Je fait un test de modification concurrente entre :
 
-- une version locale express, lancée sur mon PC, avec les droits de push
-- une version browser PWA, lancée sur mon PC, avec les droits de push
-- une version browser PWA, lancée sur mon smartphone, sans les droits de push
+- Alice : une version locale express, git natif, lancée sur mon PC, avec les droits de push
+- Bob : une version browser PWA, isomorphic git, lancée sur mon PC, avec les droits de push
+- Charlie : une version browser PWA, isomorphic git, lancée sur mon PC, sans les droits de push
 
-Résultats : XXX, ca m'a pris XXmin
+Test 1 : Il y a 1 élément dans la liste, Alice ajoute un élément, Bob et Charlie actualisent et voient cet élément
+C'est un échec, l'élément d'Alice est bien envoyé mais disparait ensuite quand Bob se synchronise :-/
 
-TODO 6H45min+
+J'ai essayé pendant 1H de trouver pourquoi Bob effacait le commit
+Je reproduis le cas quand Alice et Bob utilisent tous deux isomorphic git et que Bob ajoute l'élément, ce qui permet de reproduire le bug dans la version local express, bonne nouvelle
+Et ca a donc l'air de venir de la gestion des changements à commiter avec isomorphic git
+
+TODO 7H45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO tester la modification en même temps sur le même github
+TODO Corriger les liens "/xxx" pour rajouter le baseUrl derrière
+TODO Faire un bouton pour mettre à jour la PWA
 
 # Refacto et fonctions bonus
 
