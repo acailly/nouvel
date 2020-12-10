@@ -831,7 +831,19 @@ Finalement les corrections sous Linux ont eu l'air de regler le problème sous W
 
 Je rajoute un bouton "Actualiser" dans l'application pour pouvoir voir les mises à jour effectuées par les autres participants. Ca me prend 30min.
 
-TODO 6Hmin+
+Je me rends compte qu'il y a encore un souci dans le push avec isomorphic git.
+Ca a l'air d'être cette issue : https://github.com/isomorphic-git/isomorphic-git/issues/398
+Ca me prends 45min.
+
+Je fait un test de modification concurrente entre :
+
+- une version locale express, lancée sur mon PC, avec les droits de push
+- une version browser PWA, lancée sur mon PC, avec les droits de push
+- une version browser PWA, lancée sur mon smartphone, sans les droits de push
+
+Résultats : XXX, ca m'a pris XXmin
+
+TODO 6H45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
