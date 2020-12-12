@@ -858,7 +858,23 @@ Au total 8H30min et un test bien moins ambitieux que ce que j'espérais (deux gi
 
 # 35 : Bug bloquant - ???
 
-TODO Comment on se dépatouille de https://github.com/isomorphic-git/isomorphic-git/issues/1275 ???
+Comment on se dépatouille de https://github.com/isomorphic-git/isomorphic-git/issues/1275 ???
+
+Le mainteneur de isomorphic-git a l'air toujours actif mais pas très réactif, je ne vais pas lui en vouloir
+
+J'ai donc l'impression qu'il va falloir que je corrige moi même le bug, que j'essaie du moins
+
+Le bon côté c'est que comme ca je pourrais juger si cette brique, dont je me serais passé avec plaisir s'il y avait eu une alternative plus simple, est maintenable pas un développeur qui n'y connait pas grand chose sur le projet
+
+Le mauvais côté c'est que ca peut me prendre BEAUCOUP de temps, que le succès n'est pas garanti et que ca peut remettre en cause pas mal de choses sur mes choix passés :-/
+
+Allez, j'essaie.
+
+Je décide de repartir d'un repo qui isole le bug, pour que ce soit plus simples.
+Je créé le repo suivant : https://github.com/isomorphic-git/isomorphic-git/issues/1275
+Ca me prend 45min
+
+TODO 45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
