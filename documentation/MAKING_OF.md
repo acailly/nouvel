@@ -874,7 +874,14 @@ Je décide de repartir d'un repo qui isole le bug, pour que ce soit plus simples
 Je créé le repo suivant : https://github.com/isomorphic-git/isomorphic-git/issues/1275
 Ca me prend 45min
 
-TODO 45min+
+Je creuse pendant 45min de plus et j'identifie plus précisément où se trouve le problème, sans avoir pour autant de piste de solution : https://github.com/isomorphic-git/isomorphic-git/issues/1275#issuecomment-743766873
+
+TODO à essayer :
+
+- ca a l'air d'être lié à windows, creuser le sujet sur le net
+- utiliser node 14 comme sur WSL
+
+TODO 1H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
