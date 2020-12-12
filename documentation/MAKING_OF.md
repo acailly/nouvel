@@ -803,7 +803,7 @@ A l'étape 16 on était à 33H
 
 52H15, soit l'équivalent de 6,5j de 8H de travail non stop
 
-# 34 : Tester la modification en même temps - ??
+# 34 : Tester la modification en même temps - 8H30
 
 Je voudrais tester la modification en même temps sur desktop et mobile, il faut donc que j'active la synchro git sur la version Browser
 
@@ -848,11 +848,21 @@ J'ai essayé pendant 1H de trouver pourquoi Bob effacait le commit
 Je reproduis le cas quand Alice et Bob utilisent tous deux isomorphic git et que Bob ajoute l'élément, ce qui permet de reproduire le bug dans la version local express, bonne nouvelle
 Et ca a donc l'air de venir de la gestion des changements à commiter avec isomorphic git
 
-TODO 7H45min+
+Après 30min, j'ai l'impression que c'est toujours du à ce souci sur Windows (https://github.com/isomorphic-git/isomorphic-git/issues/1275), il faudra que j'essaie sur Linux
+
+En attendant je teste avec deux git natifs pour valider le fait que les modifs se font bien, ca me prend 15min et c'est un succès !
+
+Je teste avec succès le fait qu'Alice ajoute un TODO et que Bob le recoive, et le fait qu'Alice et Bob ajoutent un TODO chacun et que chacun finissent par afficher ces deux TODOs (Bob a un échec de push quand il essaie de pousser en même temps que Alice, mais à la synchro suivante ca passe)
+
+Au total 8H30min et un test bien moins ambitieux que ce que j'espérais (deux gits natifs sur le même PC)
+
+# 35 : Bug bloquant - ???
+
+TODO Comment on se dépatouille de https://github.com/isomorphic-git/isomorphic-git/issues/1275 ???
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO tester la modification en même temps sur le même github
+TODO Essayer de corriger https://github.com/isomorphic-git/isomorphic-git/issues/1275
 TODO Corriger les liens "/xxx" pour rajouter le baseUrl derrière
 TODO Faire un bouton pour mettre à jour la PWA
 
