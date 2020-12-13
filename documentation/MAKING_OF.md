@@ -912,8 +912,9 @@ Encore 1H15min d'investigation pour trouver que `git merge test master` et `isog
 Le comportement est reproduit sur Windows et Linux
 
 Il va falloir que je fasse un nouveau mini repo pour isoler le problème...
+1H après, voici la nouvelle issue postée sur le repo d'isomorphic-git : https://github.com/isomorphic-git/isomorphic-git/issues/1286
 
-TODO 4H15min+
+TODO 5H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
