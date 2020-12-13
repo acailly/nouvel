@@ -14,8 +14,8 @@ module.exports = async (folder, files) => {
       Promise.all(
         status.map(([FILE, HEAD, WORKDIR, STAGE]) => {
           return WORKDIR
-            ? git.add({ fs, dir: folder, FILE })
-            : git.remove({ fs, dir: folder, FILE });
+            ? git.add({ fs, dir: folder, filepath: FILE })
+            : git.remove({ fs, dir: folder, filepath: FILE });
         })
       )
     );
