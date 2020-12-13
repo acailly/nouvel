@@ -925,9 +925,27 @@ Ces 30min de tests marquent la fin d'une belle galère !
 
 Total 6H15min
 
+# 36 : Une faille dans le routeur côté browser - ?
+
+(interlude: petite correction qui me prend 15min)
+
+Il y a encore un problème qui me paraît encore assez bloquant pour potentiellement remettre en cause les choix techniques effectués
+
+Quand on ouvre l'appli PWA sur http://localhost:9999/zDemocracy-lowtech/ et qu'on clic sur le menu 'repositories', on arrive sur http://localhost:9999/zDemocracy-lowtech/repositories
+
+Si on rafraichit la page à ce moment (CTRL+R), alors on obtient une 404 avec le message suivant :
+
+```
+Cannot GET /zDemocracy-lowtech/repositories
+```
+
+Comment faire pour que le routeur capte et traite la requête qui arrive à ce moment la ???
+
+TODO 15min+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Corriger les liens "/xxx" pour rajouter le baseUrl derrière
+TODO Essayer de régler le problème de rafraichissement dans la PWA
 TODO Faire un bouton pour mettre à jour la PWA
 
 # Refacto et fonctions bonus
