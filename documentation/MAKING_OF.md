@@ -907,9 +907,13 @@ Je fait un nouveeau test de modification concurrente entre :
 - Alice : une version locale express, git natif, lancée sur mon PC, avec les droits de push
 - Bob : une version locale express, isomorphic git, lancée sur mon PC, avec les droits de push
 
-TODO ca donne quoi ?
+Il y a toujours le problème d'avant, à savoir que quand Alice ajoute un élément dans la liste, Bob le supprime à la synchronisation d'après...
+Encore 1H15min d'investigation pour trouver que `git merge test master` et `isogit merge --theirs="remotes/test/master" --author.name="Mr. Test" --author.email="mrtest@example.com"` n'ont pas le même effet, le premier rappatrie les nouveaux éléments, le deuxième les supprime
+Le comportement est reproduit sur Windows et Linux
 
-TODO 3Hmin+
+Il va falloir que je fasse un nouveau mini repo pour isoler le problème...
+
+TODO 4H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
