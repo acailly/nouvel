@@ -1,5 +1,8 @@
 const version = "v1";
 
+const baseUrl = location.href.slice(0, -"serviceworker.js".length);
+console.log("[service-worker] Base URL is", baseUrl);
+
 // Declare filesToCache variable
 self.importScripts("./filesToCache.js");
 
@@ -15,21 +18,27 @@ self.addEventListener("install", function (event) {
   event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener("fetch", function (event) {
-  // Special case for root URL '/' => open '/index.html'
-  var requestURL = new URL(event.request.url);
-  if (requestURL.origin === location.origin) {
-    if (requestURL.pathname === "/") {
-      event.respondWith(caches.match("/index.html"));
-      return;
-    }
-  }
+self.addEventListener("fetch", async function (event) {
+  // TL;DR; Strategy: Cache falling back to app falling back the network
 
-  // Strategy: Cache falling back to the network
   event.respondWith(
-    caches.match(event.request).then(function (response) {
-      return response || fetch(event.request);
-    })
+    // Start searching in the cache...
+    caches
+      .match(event.request)
+      .then(function (response) {
+        if (response) {
+          return response;
+        }
+
+        //... if not found, look if it is an URL of an app page
+        if (event.request.url.startsWith(baseUrl)) {
+          return caches.match(`${baseUrl}index.html`);
+        }
+      })
+      //... else fallback to the network
+      .then((response) => {
+        return response || fetch(event.request);
+      })
   );
 });
 

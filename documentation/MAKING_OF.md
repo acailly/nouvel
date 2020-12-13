@@ -925,7 +925,7 @@ Ces 30min de tests marquent la fin d'une belle galère !
 
 Total 6H15min
 
-# 36 : Une faille dans le routeur côté browser - ?
+# 36 : Une faille dans le routeur côté browser - 1H30
 
 (interlude: petite correction qui me prend 15min)
 
@@ -939,17 +939,36 @@ Si on rafraichit la page à ce moment (CTRL+R), alors on obtient une 404 avec le
 Cannot GET /zDemocracy-lowtech/repositories
 ```
 
-Comment faire pour que le routeur capte et traite la requête qui arrive à ce moment la ???
+Comment faire pour que le routeur capte et traite la requête qui arrive à ce moment la ?
 
-TODO 15min+
+Après 1H15, la nouvelle stratégie du service worker a l'air de fonctionner :-)
+
+Total : 1H30min
+
+J'ai maintenant le sentiment d'avoir un fonctionnement relativement stable et sans gros blocage pouvant remettre en cause le tout
+La prochaine étape me semble de faire une application réelle et utile : un lecteur de flux RSS
+
+# 37 : Lecteur de flux RSS - ???
+
+L'objectif de cette étape est multiple :
+
+- mesurer le temps que je met à construire une petite app réellement utile (avec de la chance, ce ne sera pas beaucoup)
+
+- commencer à utiliser moi même le fruit de ce projet (pour garder la motivation)
+
+- fournir un support concret pour parler de ce projet, au lieu de dire "on pourrait faire ci, on pourrait faire ca"
+
+- fournir une application d'exemple pour tester de nouvelles formes de distribution (sous mobile avec Capacitor par exemple ?)
+
+TODO
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Essayer de régler le problème de rafraichissement dans la PWA
-TODO Faire un bouton pour mettre à jour la PWA
+TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus
 
+TODO Faire un bouton pour mettre à jour la PWA
 TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
 TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???
 TODO Ajouter une commande pour lancer l'appli via webopen
