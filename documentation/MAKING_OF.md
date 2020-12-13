@@ -876,12 +876,40 @@ Ca me prend 45min
 
 Je creuse pendant 45min de plus et j'identifie plus précisément où se trouve le problème, sans avoir pour autant de piste de solution : https://github.com/isomorphic-git/isomorphic-git/issues/1275#issuecomment-743766873
 
-TODO à essayer :
+Pistes à explorer :
 
 - ca a l'air d'être lié à windows, creuser le sujet sur le net
 - utiliser node 14 comme sur WSL
 
-TODO 1H30min+
+Je commence par mettre à jour Node de la version v12.18.4 à v14.15.1
+Bilan : ca ne corrige rien :-(
+15min
+
+J'oriente donc mes recherches vers "node inode windows"
+Je me rends compte que c'est peut être lié à Git finalement, en affichant l'index il semblerait qu'il y a bien 0 écrit là où est écrit l'inode
+(https://git-scm.com/docs/index-format)
+(https://stackoverflow.com/a/25806452)
+Je tente de mettre à jour Git. Bilan : toujours le bug :-(
+
+Ca va être compliqué à corriger si ca vient de Git...
+Au bout de 3H d'investigation, j'ai identifié que le problème venait en fait des caractères de fin de ligne (CRLF sous Windows, LF sous Linux), classique...
+
+Cette subtilité n'est pas gérée par isomorphic-git, et vu l'ampleur des changements que ca peut entraîner, il y a peu de chance que ca soit le cas dans un avenir proche
+
+J'ai trouvé un moyen de contourner ce problème, en forcant le caractère de fin de ligne LF dans un fichier `.gitattributes` qu'on met sur le repo :
+
+```
+*		text eol=lf
+```
+
+Je fait un nouveeau test de modification concurrente entre :
+
+- Alice : une version locale express, git natif, lancée sur mon PC, avec les droits de push
+- Bob : une version locale express, isomorphic git, lancée sur mon PC, avec les droits de push
+
+TODO ca donne quoi ?
+
+TODO 3Hmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
