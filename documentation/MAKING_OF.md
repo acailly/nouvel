@@ -856,7 +856,7 @@ Je teste avec succès le fait qu'Alice ajoute un TODO et que Bob le recoive, et 
 
 Au total 8H30min et un test bien moins ambitieux que ce que j'espérais (deux gits natifs sur le même PC)
 
-# 35 : Bug bloquant - ???
+# 35 : Bug bloquant - 6H15min
 
 Comment on se dépatouille de https://github.com/isomorphic-git/isomorphic-git/issues/1275 ???
 
@@ -913,18 +913,26 @@ Le comportement est reproduit sur Windows et Linux
 
 Il va falloir que je fasse un nouveau mini repo pour isoler le problème...
 1H après, voici la nouvelle issue postée sur le repo d'isomorphic-git : https://github.com/isomorphic-git/isomorphic-git/issues/1286
+30min après avoir naviguer dans le code d'isomorphic-git, je découvre que la commande merge ne fait que modifier la ref mais ne la checkout pas
+J'ajoute un checkout juste après mon merge et ca fonctionne \o/
 
-TODO 5H15min+
+Je fait un nouveau test de modification concurrente entre :
+
+- Alice : une version locale express, git natif, lancée sur mon PC, avec les droits de push
+- Bob : une version browser PWA, isomorphic git, lancée sur mon PC, avec les droits de push
+
+Ces 30min de tests marquent la fin d'une belle galère !
+
+Total 6H15min
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Essayer de corriger https://github.com/isomorphic-git/isomorphic-git/issues/1275
 TODO Corriger les liens "/xxx" pour rajouter le baseUrl derrière
 TODO Faire un bouton pour mettre à jour la PWA
 
 # Refacto et fonctions bonus
 
-TODO Faire une application de gestion de liste pour tester plus simplement les cas de conflits
+TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
 TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???
 TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
