@@ -5,13 +5,6 @@ module.exports = async (folder, remoteName, remoteBranch) => {
   if (!branches || !branches.length) {
     // Isomorphic git does not handle merge when repository is empty
     // see https://github.com/isomorphic-git/isomorphic-git/issues/685
-
-    await git.checkout({
-      fs,
-      dir: folder,
-      remote: remoteName,
-      ref: remoteBranch,
-    });
   } else {
     await git.merge({
       fs,
@@ -24,4 +17,12 @@ module.exports = async (folder, remoteName, remoteBranch) => {
       },
     });
   }
+  // Merge command does not checkout the result of the merge
+  // see https://github.com/isomorphic-git/isomorphic-git/issues/1286
+  await git.checkout({
+    fs,
+    dir: folder,
+    remote: remoteName,
+    ref: remoteBranch,
+  });
 };
