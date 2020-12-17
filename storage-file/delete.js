@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const configuration = require("../@configuration");
-const exists = require("./exists");
+const _fileExists = require("./_fileExists");
 
 module.exports = async function (key) {
   const keyPath = key.split("/");
@@ -13,7 +13,7 @@ module.exports = async function (key) {
     `${keyFile}.json`
   );
 
-  if (!(await exists(filePath))) {
+  if (!(await _fileExists(filePath))) {
     return;
   }
 

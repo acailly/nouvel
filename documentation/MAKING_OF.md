@@ -948,6 +948,8 @@ Total : 1H30min
 J'ai maintenant le sentiment d'avoir un fonctionnement relativement stable et sans gros blocage pouvant remettre en cause le tout
 La prochaine étape me semble de faire une application réelle et utile : un lecteur de flux RSS
 
+L'appli semble bien parti pour fonctionner dans le browser, mais les CORS bloquent la récupération du contenu des flux
+
 # 37 : Lecteur de flux RSS - ???
 
 L'objectif de cette étape est multiple :
@@ -960,7 +962,10 @@ L'objectif de cette étape est multiple :
 
 - fournir une application d'exemple pour tester de nouvelles formes de distribution (sous mobile avec Capacitor par exemple ?)
 
-TODO
+Au bout d'1H45, j'ai une appli qui permet d'ajouter des feeds et de télécharger leurs news pour les afficher sur la page d'accueil
+J'ai été aidé de la base de la Todo list d'un côté, et du code de récupération de flux RSS d'un autre projet
+
+TODO 1H45+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

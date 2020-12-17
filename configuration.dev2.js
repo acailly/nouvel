@@ -16,6 +16,9 @@ const zdemocracyServerPort = 8080;
 // APP LIST
 const listServerPort = 8083;
 
+// APP NEWS
+const newsServerPort = 8093;
+
 // SYNCHRONIZATION GIT
 const syncEnabled = true;
 const useNativeGit = false;
@@ -41,6 +44,7 @@ const configuration = {
   localStorageFolder,
   zdemocracyServerPort,
   listServerPort,
+  newsServerPort,
   syncEnabled,
   useNativeGit,
   gitSyncPeriodInMs,

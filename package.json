@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "browser-express": "^4.6.0",
     "browserfs": "^1.4.3",
@@ -28,6 +29,7 @@
     "isomorphic-git": "^1.7.8",
     "localtunnel": "^2.0.0",
     "make-dir": "^3.1.0",
+    "rss-parser": "^3.10.0",
     "util.promisify": "^1.0.1",
     "uuid": "^8.3.0"
   },

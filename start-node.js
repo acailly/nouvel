@@ -8,10 +8,14 @@ console.log(`Connected as ${identity.id}`);
 // const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
 // startZDemocracyExpress();
 
-const appListPath = path.join(__dirname, "app-list");
-const appConfig = require("./app-list/app-config");
 const createNodeApp = require("./distrib-node/create-app");
-createNodeApp(appListPath, appConfig, configuration.listServerPort);
+// const appListPath = path.join(__dirname, "app-list");
+// const appListConfig = require("./app-list/app-config");
+// const createNodeApp = require("./distrib-node/create-app");
+// createNodeApp(appListPath, appListConfig, configuration.listServerPort);
+const appNewsPath = path.join(__dirname, "app-news");
+const appNewsConfig = require("./app-news/app-config");
+createNodeApp(appNewsPath, appNewsConfig, configuration.newsServerPort);
 
 // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
 // startPublishingGitDumbHttp();
@@ -20,5 +24,4 @@ createNodeApp(appListPath, appConfig, configuration.listServerPort);
 // startPublishingLocaltunnel();
 
 const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
-const createApp = require("./distrib-browser/create-app");
 startSynchronizationGit();

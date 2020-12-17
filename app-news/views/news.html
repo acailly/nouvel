@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>News</h1>
+      <form method="POST" action="/fetch-feeds">
+        <input type="submit" value="Actualiser" />
+      </form>
+      <ul>
+        <% items.forEach(function(item){ %>
+        <li><a href="<%= item.url%>" target="_blank"><%- item.title%></a></li>
+        <% }); %>
+      </ul>
+    </section>
+  </body>
+</html>

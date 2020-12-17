@@ -35,9 +35,11 @@ BrowserFS.configure(
     // const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
     // startZDemocracyExpress();
 
-    const appConfig = require("./app-list/app-config");
     const createBrowserApp = require("./distrib-browser/create-app");
-    createBrowserApp(appConfig);
+    // const appListConfig = require("./app-list/app-config");
+    // createBrowserApp(appListConfig);
+    const appNewsConfig = require("./app-news/app-config");
+    createBrowserApp(appNewsConfig);
 
     // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
     // startPublishingGitDumbHttp();

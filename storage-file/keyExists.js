@@ -13,10 +13,5 @@ module.exports = async function (key) {
     `${keyFile}.json`
   );
 
-  if (!(await _fileExists(filePath))) {
-    return null;
-  }
-
-  const rawValue = await fs.readFile(filePath);
-  return JSON.parse(rawValue);
+  return await _fileExists(filePath);
 };

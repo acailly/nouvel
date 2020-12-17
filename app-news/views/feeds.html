@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>Abonnements</h1>
+      <form method="POST" action="/new-feed">
+        <label for="title">Nom</label>
+        <input type="text" id="title" name="title" />
+        <label for="url">Adresse</label>
+        <input type="text" id="url" name="url" />
+        <input type="submit" value="Ajouter cet abonnement" />
+      </form>
+      <ul>
+        <% feeds.forEach(function(feed){ %>
+        <li>
+          <%= feed.title%> (<a href="<%= feed.url%>" target="_blank"
+            ><%= feed.url%></a
+          >)
+        </li>
+        <% }); %>
+      </ul>
+    </section>
+  </body>
+</html>
