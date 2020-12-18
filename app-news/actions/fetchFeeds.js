@@ -23,8 +23,7 @@ module.exports = async function (req, res) {
       const response = await axios.get(feed.url);
       feedContent = await parser.parseString(response.data);
     } catch (e) {
-      console.error("Fetch RSS - Error with feed", feed.name, " - ", feed.url);
-      console.error(e);
+      console.error("[ERROR] Error with feed", feed.title, " - ", feed.url);
       continue;
     }
 
@@ -36,7 +35,7 @@ module.exports = async function (req, res) {
 
     for (const item of itemsWithTimestamp) {
       const entryHash = fastHash(item.link);
-      const itemKey = `news/items/${entryHash}`;
+      const itemKey = `news/items/${feed.title}/${entryHash}`;
 
       // Item already exists
       if (await keyExists(itemKey)) {

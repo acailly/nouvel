@@ -12,12 +12,14 @@ module.exports = async function (keyFolder) {
 
   const files = await fs.readdir(keyFolderPath);
 
-  const subFolders = await Promise.all(
-    files.filter(
-      async (file) =>
-        await fs.lstat(path.join(keyFolderPath, file)).isDirectory()
-    )
+  const fileIsDirectory = await Promise.all(
+    files.map(async (file) => {
+      const stats = await fs.lstat(path.join(keyFolderPath, file));
+      return stats.isDirectory();
+    })
   );
+
+  const subFolders = files.filter((_, index) => fileIsDirectory[index]);
 
   return subFolders;
 };

@@ -965,7 +965,12 @@ L'objectif de cette étape est multiple :
 Au bout d'1H45, j'ai une appli qui permet d'ajouter des feeds et de télécharger leurs news pour les afficher sur la page d'accueil
 J'ai été aidé de la base de la Todo list d'un côté, et du code de récupération de flux RSS d'un autre projet
 
-TODO 1H45+
+1H45 après j'avais la possibilité de télécharger dans leur dossier respectif
+et j'avais migré tous mes feeds depuis mon appli existante
+
+TODO Etape suivante : gérer la suppression (placer un fichier vide dans news/items/deleted-id/{feed}/{itemId} + déplacer dans news/items/deleted/{feed}/{itemId}) et le fait de ne pas retélécharger les éléments déjà lus (checker news/items/deleted-id/{feed}/{itemId} + synchroniser ce dossier), et synchroniser le dossier feed
+
+TODO 3H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

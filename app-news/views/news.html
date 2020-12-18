@@ -8,8 +8,17 @@
     <section>
       <h1>News</h1>
       <form method="POST" action="/fetch-feeds">
-        <input type="submit" value="Actualiser" />
+        <input type="submit" value="Télécharger les news" />
       </form>
+      <ul>
+        <% folders.forEach(function(folder){ %>
+        <li>
+          <a href="?path=<%= currentPath%>/<%= folder.name%>"
+            ><%- folder.name%> (<%= folder.count%>)</a
+          >
+        </li>
+        <% }); %>
+      </ul>
       <ul>
         <% items.forEach(function(item){ %>
         <li><a href="<%= item.url%>" target="_blank"><%- item.title%></a></li>
