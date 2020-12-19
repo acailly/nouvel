@@ -13,12 +13,14 @@ module.exports = function (app) {
   const actionNewFeed = require("./actions/newFeed");
   const actionNewRepository = require("./actions/newRepository");
   const actionFetchFeeds = require("./actions/fetchFeeds");
+  const removeNewsItem = require("./actions/removeNewsItem");
 
   // ROUTES
   app.get("/", viewNews);
   app.get("/feeds", viewFeeds);
   app.post("/new-feed", actionNewFeed);
   app.post("/fetch-feeds", actionFetchFeeds);
+  app.post("/remove-news-item", removeNewsItem);
   app.get("/repositories", viewRepositories);
   app.post("/new-repository", actionNewRepository);
   app.use(view404);

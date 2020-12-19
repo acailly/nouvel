@@ -51,7 +51,7 @@ module.exports = async function (req, res) {
     }
   }
 
-  res.redirect(302, `/`);
+  res.redirect("back");
 };
 
 // From https://zserge.com/posts/rss/

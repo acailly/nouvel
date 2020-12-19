@@ -21,7 +21,13 @@
       </ul>
       <ul>
         <% items.forEach(function(item){ %>
-        <li><a href="<%= item.url%>" target="_blank"><%- item.title%></a></li>
+        <li>
+          <a href="<%= item.url%>" target="_blank"><%- item.title%></a>
+          <form method="POST" action="/remove-news-item">
+            <input type="hidden" name="key" value="<%- item.key%>" />
+            <input type="submit" value="Supprimer" />
+          </form>
+        </li>
         <% }); %>
       </ul>
     </section>

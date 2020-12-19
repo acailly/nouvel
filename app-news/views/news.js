@@ -21,7 +21,12 @@ module.exports = async function (req, res) {
 
   const items = await Promise.all(
     itemIds.map(async (itemId) => {
-      return await read(`${currentFullPath}/${itemId}`);
+      const itemKey = `${currentFullPath}/${itemId}`;
+      const itemContent = await read(itemKey);
+      return {
+        ...itemContent,
+        key: itemKey,
+      };
     })
   );
 
