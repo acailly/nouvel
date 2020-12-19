@@ -970,13 +970,23 @@ et j'avais migré tous mes feeds depuis mon appli existante
 
 1H après les news étaient triées par date, la suppression était gérée, ainsi que le fait de ne pas ajouter une deuxième fois des éléments qui avaient déjà été ajoutés
 
-TODO 15min+ Etape suivante : supprimer les éléments déjà lus, synchroniser le dossier deletedflag et synchroniser le dossier feed
+1H après, j'ai supprimé les items déjà lus
 
-TODO 4H+
+TODO 15min+ Etape suivante :
+
+- supprimer les éléments déjà lus,
+- synchroniser le dossier deletedflag
+- synchroniser le dossier feed
+- ajouter un fil d'arianne (et un compteur d'items et sous dossiers) dans la navigation des news
+- remettre l'ordre de tri par date decroissante
+- masquer les catégories sans items dans la page de news
+
+TODO 5H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Faire une app de lecteur RSS
+TODO Gérer les secrets (github token pour le repo)
 
 # Refacto et fonctions bonus
 
