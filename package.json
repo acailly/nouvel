@@ -30,6 +30,7 @@
     "localtunnel": "^2.0.0",
     "make-dir": "^3.1.0",
     "rss-parser": "^3.10.0",
+    "twitter": "^1.7.1",
     "util.promisify": "^1.0.1",
     "uuid": "^8.3.0"
   },

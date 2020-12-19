@@ -6,7 +6,11 @@
   <body>
     <header><%- await include('partials/header.html'); %></header>
     <section>
-      <h1>News</h1>
+      <h1>
+        <a href="<%= locals.baseURL || '' %>/">News</a>
+        <small><%= currentPath%></small>
+      </h1>
+      <p><%= folders.length || 0%> dossiers, <%= items.length || 0%> news</p>
       <ul>
         <% folders.forEach(function(folder){ %>
         <li>

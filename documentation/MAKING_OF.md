@@ -972,24 +972,23 @@ et j'avais migré tous mes feeds depuis mon appli existante
 
 1H après, j'ai supprimé les items déjà lus
 
-TODO 15min+ Etape suivante :
+2H après j'ai ajouté la gestion du feed twitter à la main (il n'y a pas encrore moyen d'ajouter un feed dans l'UI)
 
-- supprimer les éléments déjà lus,
+TODO Etape suivante :
+
 - synchroniser le dossier deletedflag
 - synchroniser le dossier feed
-- ajouter un fil d'arianne (et un compteur d'items et sous dossiers) dans la navigation des news
-- remettre l'ordre de tri par date decroissante
-- masquer les catégories sans items dans la page de news
 
-TODO 5H+
+TODO 7H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Faire une app de lecteur RSS
-TODO Gérer les secrets (github token pour le repo)
+TODO Gérer les secrets (github token pour le repo, twitter tokens)
 
 # Refacto et fonctions bonus
 
+TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Faire un bouton pour mettre à jour la PWA
 TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
 TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???

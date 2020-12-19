@@ -1,5 +1,6 @@
 const axios = require("axios");
 const Parser = require("rss-parser");
+const Twitter = require("twitter");
 const { listKeys, read, write } = require("../../@storage");
 const shouldAddNewItem = require("../rules/shouldAddNewItem");
 
@@ -19,22 +20,15 @@ module.exports = async function (req, res) {
   );
 
   for (const feed of feeds) {
-    let feedContent;
+    let items;
     try {
-      const response = await axios.get(feed.url);
-      feedContent = await parser.parseString(response.data);
+      items = await fetchFeedContent(feed);
     } catch (e) {
-      console.error("[ERROR] Error with feed", feed.title, " - ", feed.url);
+      console.error("[ERROR] Error with feed", feed.title);
       continue;
     }
 
-    const itemsWithTimestamp = feedContent.items.map((item) => {
-      const timestamp = new Date(item.pubDate).getTime();
-      item.timestamp = timestamp;
-      return item;
-    });
-
-    for (const item of itemsWithTimestamp) {
+    for (const item of items) {
       const entryHash = fastHash(item.link);
       const itemKey = `news/items/${feed.title}/${entryHash}`;
 
@@ -55,34 +49,6 @@ module.exports = async function (req, res) {
   res.redirect("back");
 };
 
-// From https://zserge.com/posts/rss/
-function parseFeed(text) {
-  const xml = new DOMParser().parseFromString(text, "text/xml");
-  const map = (c, f) => Array.prototype.slice.call(c, 0).map(f);
-  const tag = (item, name) =>
-    (item.getElementsByTagName(name)[0] || {}).textContent;
-  switch (xml.documentElement.nodeName) {
-    case "rss":
-      return map(xml.documentElement.getElementsByTagName("item"), (item) => ({
-        link: tag(item, "link"),
-        title: tag(item, "title"),
-        timestamp: new Date(tag(item, "pubDate")),
-      }));
-    case "feed":
-      return map(xml.documentElement.getElementsByTagName("entry"), (item) => ({
-        link: map(item.getElementsByTagName("link"), (link) => {
-          const rel = link.getAttribute("rel");
-          if (!rel || rel === "alternate") {
-            return link.getAttribute("href");
-          }
-        })[0],
-        title: tag(item, "title"),
-        timestamp: new Date(tag(item, "updated")),
-      }));
-  }
-  return [];
-}
-
 //From https://stackoverflow.com/a/7616484
 function fastHash(text) {
   var hash = 0,
@@ -94,4 +60,59 @@ function fastHash(text) {
     hash |= 0; // Convert to 32bit integer
   }
   return hash;
+}
+
+async function fetchFeedContent(feed) {
+  if (feed.type === "twitter") {
+    return await fetchTwitterFeedContent(feed);
+  }
+
+  return await fetchRSSFeedContent(feed);
+}
+
+async function fetchTwitterFeedContent(feed) {
+  //From https://apps.twitter.com/
+  const client = new Twitter({
+    consumer_key: feed.consumer_key,
+    consumer_secret: feed.consumer_secret,
+    access_token_key: feed.access_token_key,
+    access_token_secret: feed.access_token_secret,
+  });
+
+  const params = {
+    count: 200,
+    //https://developer.twitter.com/en/docs/tweets/tweet-updates
+    tweet_mode: "extended",
+  };
+
+  const fetchPromise = new Promise((resolve, reject) => {
+    // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
+    client.get("statuses/home_timeline", params, function (error, tweets) {
+      if (error) {
+        reject(error);
+      }
+      const items = tweets.map((tweet) => {
+        return {
+          title: `${tweet.user.name} - ${tweet.full_text}`,
+          link: `https://twitter.com/i/web/status/${tweet.id_str}`,
+          timestamp: new Date(tweet.created_at).getTime(),
+        };
+      });
+      resolve(items);
+    });
+  });
+  return await fetchPromise;
+}
+
+async function fetchRSSFeedContent(feed) {
+  const response = await axios.get(feed.url);
+  const feedContent = await parser.parseString(response.data);
+
+  const itemsWithTimestamp = feedContent.items.map((item) => {
+    const timestamp = new Date(item.pubDate).getTime();
+    item.timestamp = timestamp;
+    return item;
+  });
+
+  return itemsWithTimestamp;
 }

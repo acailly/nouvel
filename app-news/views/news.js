@@ -17,6 +17,8 @@ module.exports = async function (req, res) {
     })
   );
 
+  const foldersNonEmpty = folders.filter((folder) => folder.count);
+
   const itemIds = await listKeys(currentFullPath);
 
   const items = await Promise.all(
@@ -36,12 +38,11 @@ module.exports = async function (req, res) {
     })
   );
 
-  // TODO ACY Inverser le sens
-  const itemsSortedByDateDesc = items.sort((a, b) => a.timestamp - b.timestamp);
+  const itemsSortedByDateDesc = items.sort((a, b) => b.timestamp - a.timestamp);
 
   res.render("news.html", {
     items: itemsSortedByDateDesc,
-    folders,
+    folders: foldersNonEmpty,
     currentPath,
   });
 };
