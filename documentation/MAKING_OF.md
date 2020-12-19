@@ -968,9 +968,11 @@ J'ai été aidé de la base de la Todo list d'un côté, et du code de récupér
 1H45 après j'avais la possibilité de télécharger dans leur dossier respectif
 et j'avais migré tous mes feeds depuis mon appli existante
 
-TODO Etape suivante : gérer la suppression (placer un fichier vide dans news/items/deleted-id/{feed}/{itemId} + déplacer dans news/items/deleted/{feed}/{itemId}) et le fait de ne pas retélécharger les éléments déjà lus (checker news/items/deleted-id/{feed}/{itemId} + synchroniser ce dossier), et synchroniser le dossier feed
+45min après la suppression était gérée, ainsi que le fait de ne pas ajouter une deuxième fois des éléments qui avaient déjà été ajoutés
 
-TODO 3H+
+TODO Etape suivante : synchroniser le dossier deletedflag et synchroniser le dossier feed
+
+TODO 3H45+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -1,14 +1,16 @@
 const { read, write, remove } = require("../../@storage");
+const deletedKeyFromItemKey = require("../rules/deletedKeyFromItemKey");
+const deletedFlagKeyFromItemKey = require("../rules/deletedFlagKeyFromItemKey");
 
 module.exports = async function (req, res) {
   const itemKey = req.body.key;
 
   const itemContent = await read(itemKey);
 
-  const deletedItemKey = itemKey.replace("news/", "news/_deleted/");
+  const deletedItemKey = deletedKeyFromItemKey(itemKey);
   await write(deletedItemKey, itemContent);
 
-  const deletedFlagItemKey = itemKey.replace("news/", "news/_deleted_flag/");
+  const deletedFlagItemKey = deletedFlagKeyFromItemKey(itemKey);
   await write(deletedFlagItemKey, {});
 
   await remove(itemKey);

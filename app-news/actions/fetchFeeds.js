@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Parser = require("rss-parser");
-const { listKeys, read, write, keyExists } = require("../../@storage");
+const { listKeys, read, write } = require("../../@storage");
+const shouldAddNewItem = require("../rules/shouldAddNewItem");
 
 const parser = new Parser({
   headers: {
@@ -37,8 +38,8 @@ module.exports = async function (req, res) {
       const entryHash = fastHash(item.link);
       const itemKey = `news/items/${feed.title}/${entryHash}`;
 
-      // Item already exists
-      if (await keyExists(itemKey)) {
+      // Item should not be created (already exists, deleted, whatever)
+      if (!(await shouldAddNewItem(itemKey))) {
         continue;
       }
 
