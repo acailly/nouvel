@@ -23,12 +23,25 @@ module.exports = async function (req, res) {
     itemIds.map(async (itemId) => {
       const itemKey = `${currentFullPath}/${itemId}`;
       const itemContent = await read(itemKey);
+      const itemDate = new Date(itemContent.timestamp);
+      const formattedItemDate = `${itemDate.getDate()}/${
+        itemDate.getMonth() + 1
+      }/${itemDate.getFullYear()} ${itemDate.getHours()}:${itemDate.getMinutes()}`;
+
       return {
         ...itemContent,
         key: itemKey,
+        date: formattedItemDate,
       };
     })
   );
 
-  res.render("news.html", { items, folders, currentPath });
+  // TODO ACY Inverser le sens
+  const itemsSortedByDateDesc = items.sort((a, b) => a.timestamp - b.timestamp);
+
+  res.render("news.html", {
+    items: itemsSortedByDateDesc,
+    folders,
+    currentPath,
+  });
 };

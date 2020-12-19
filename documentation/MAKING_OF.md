@@ -968,11 +968,11 @@ J'ai été aidé de la base de la Todo list d'un côté, et du code de récupér
 1H45 après j'avais la possibilité de télécharger dans leur dossier respectif
 et j'avais migré tous mes feeds depuis mon appli existante
 
-45min après la suppression était gérée, ainsi que le fait de ne pas ajouter une deuxième fois des éléments qui avaient déjà été ajoutés
+1H après les news étaient triées par date, la suppression était gérée, ainsi que le fait de ne pas ajouter une deuxième fois des éléments qui avaient déjà été ajoutés
 
-TODO Etape suivante : synchroniser le dossier deletedflag et synchroniser le dossier feed
+TODO 15min+ Etape suivante : supprimer les éléments déjà lus, synchroniser le dossier deletedflag et synchroniser le dossier feed
 
-TODO 3H45+
+TODO 4H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

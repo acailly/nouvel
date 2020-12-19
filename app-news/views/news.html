@@ -7,9 +7,6 @@
     <header><%- await include('partials/header.html'); %></header>
     <section>
       <h1>News</h1>
-      <form method="POST" action="/fetch-feeds">
-        <input type="submit" value="Télécharger les news" />
-      </form>
       <ul>
         <% folders.forEach(function(folder){ %>
         <li>
@@ -26,6 +23,7 @@
           <form method="POST" action="/remove-news-item">
             <input type="hidden" name="key" value="<%- item.key%>" />
             <input type="submit" value="Supprimer" />
+            <label><%= item.date%></label>
           </form>
         </li>
         <% }); %>
