@@ -997,12 +997,11 @@ Ce qui me plait, c'est qu'on reste sur des approches de chiffrement qui sont mat
 
 1H45 après le mécanisme de gestion de secret est ajouté, et il est validé avec Github et Twitter
 
-TODO Etape suivante :
+15min après j'ai ajouté les dossiers news/feed et news/\_deleted_flag dans las synchronisation Git
 
-- synchroniser le dossier deletedflag
-- synchroniser le dossier feed
+TODO Prochaine étape : tester la PWA
 
-TODO 8H45+
+TODO 9H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

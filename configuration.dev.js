@@ -23,7 +23,7 @@ const newsServerPort = 8092;
 const syncEnabled = true;
 const useNativeGit = true;
 const gitSyncPeriodInMs = 20000;
-const localSubfoldersToSync = ["lists"];
+const localSubfoldersToSync = ["news/_deleted_flag", "news/feed"];
 const repositoriesStorageKey = "repositories";
 
 // PUBLISH GIT DUMB HTTP
