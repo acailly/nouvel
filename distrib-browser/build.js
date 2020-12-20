@@ -110,6 +110,9 @@ function exportBundle() {
       buffer: require.resolve("browserfs/dist/shims/buffer.js"),
       fs: require.resolve("browserfs/dist/shims/fs.js"),
       path: require.resolve("browserfs/dist/shims/path.js"),
+      // Fix with openpgpjs
+      // see : https://github.com/openpgpjs/openpgpjs/issues/472#issuecomment-237918797
+      openpgp: require.resolve("openpgp/dist/openpgp.min.js"),
     }),
     insertGlobalVars: {
       // process, Buffer, and BrowserFS globals.

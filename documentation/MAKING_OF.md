@@ -999,14 +999,27 @@ Ce qui me plait, c'est qu'on reste sur des approches de chiffrement qui sont mat
 
 15min après j'ai ajouté les dossiers news/feed et news/\_deleted_flag dans las synchronisation Git
 
-TODO Prochaine étape : tester la PWA
+J'essaie de tester la PWA et les résultats sont encourageants sauf que (et m....) la redirection redirect("back") utilisée pour certaines actions ne prend pas en compte la base URL
+Le gestion de la base URL se fait déjà à la main car "browser-express" ne la gère pas nativement
+Je rajoute la gestion de ce cas dans le code spécifique au browser, au final ce n'est pas très compliqué
+1H s'est écoulée
 
-TODO 9H+
+Ensuite je me rend compte que quand la synchro git est longue, la suivante démarre avant que la première ait terminée, ce qui a de grande chances de mettre la machine à genoux
+Du coup je change le mécanisme de synchro pour qu'il attende la fin d'une itération pour lancer la suivante
+Au bout de 45min, j'ai bien modifié la synchro mais je constate que les données ne sont pas rappatriées puisque je ne vois aucun feed
+D'autant plus que la synchro semble s'arrêter sans pour autant renvoyer une erreur...
+
+TODO Ma première piste est de tester avec node et isomorphic git, pour voir si le souci ne vient pas de ce dernier
+TODO Ma seconde piste est de faire une page de debug affichant les fichiers et dossiers, pour bien voir ce qui se trouve dans la base indexeddb
+
+TODO Prochaine étape : tester la PWA + lecture flux offline
+
+TODO 10H45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Faire une app de lecteur RSS
-TODO Gérer les secrets (github token pour le repo, twitter tokens)
+TODO Faire un document récapitulant les différentes briques et des implémentations présentes et potentielles (storage, secrets, identity, etc.)
 
 # Refacto et fonctions bonus
 

@@ -18,14 +18,22 @@ module.exports = redirectWithBaseURLMiddleware;
 
 function monkeyPatchRedirect(redirect) {
   return function (arg1, arg2) {
-    let editedArg2 = arg2;
+    // Example : res.redirect("back")
+    if (configuration.deployBaseURL && arg1 === "back") {
+      const previousLocation = `${configuration.deployBaseURL}${this.prevLocation}`;
+      return redirect(302, previousLocation);
+    }
+
+    // Example : res.redirect("302", "/items")
     if (
       configuration.deployBaseURL &&
       typeof arg2 === "string" &&
       arg2.startsWith("/")
     ) {
-      editedArg2 = `${configuration.deployBaseURL}${arg2}`;
+      const editedArg2 = `${configuration.deployBaseURL}${arg2}`;
+      return redirect(arg1, editedArg2);
     }
-    return redirect(arg1, editedArg2);
+
+    return redirect(arg1, arg2);
   };
 }

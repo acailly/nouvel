@@ -14,20 +14,16 @@ module.exports = async function () {
 
   const git = await loadGit();
 
-  await sync(
-    git,
-    configuration.localStorageFolder,
-    configuration.repositoriesStorageKey,
-    configuration.localSubfoldersToSync
-  );
-  setInterval(async () => {
+  const nextIteration = async () => {
     await sync(
       git,
       configuration.localStorageFolder,
       configuration.repositoriesStorageKey,
       configuration.localSubfoldersToSync
     );
-  }, configuration.gitSyncPeriodInMs || 10000);
+    setTimeout(nextIteration, configuration.gitSyncPeriodInMs || 10000);
+  };
+  nextIteration();
 };
 
 async function sync(
