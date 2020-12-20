@@ -2,6 +2,7 @@ const axios = require("axios");
 const Parser = require("rss-parser");
 const Twitter = require("twitter");
 const { listKeys, read, write } = require("../../@storage");
+const { isLocked, decrypt } = require("../../@secrets");
 const shouldAddNewItem = require("../rules/shouldAddNewItem");
 
 const parser = new Parser({
@@ -71,12 +72,24 @@ async function fetchFeedContent(feed) {
 }
 
 async function fetchTwitterFeedContent(feed) {
+  let consumerKey = feed.consumer_key;
+  let consumerSecret = feed.consumer_secret;
+  let accessTokenKey = feed.access_token_key;
+  let accessTokenSecret = feed.access_token_secret;
+
+  if (!isLocked()) {
+    consumerKey = await decrypt(consumerKey);
+    consumerSecret = await decrypt(consumerSecret);
+    accessTokenKey = await decrypt(accessTokenKey);
+    accessTokenSecret = await decrypt(accessTokenSecret);
+  }
+
   //From https://apps.twitter.com/
   const client = new Twitter({
-    consumer_key: feed.consumer_key,
-    consumer_secret: feed.consumer_secret,
-    access_token_key: feed.access_token_key,
-    access_token_secret: feed.access_token_secret,
+    consumer_key: consumerKey,
+    consumer_secret: consumerSecret,
+    access_token_key: accessTokenKey,
+    access_token_secret: accessTokenSecret,
   });
 
   const params = {

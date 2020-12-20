@@ -7,7 +7,7 @@
     <header><%- await include('partials/header.html'); %></header>
     <section>
       <h1>
-        <a href="<%= locals.baseURL || '' %>/">News</a>
+        <a href="<%= locals.baseURL || '' %>/news">News</a>
         <small><%= currentPath%></small>
       </h1>
       <p><%= folders.length || 0%> dossiers, <%= items.length || 0%> news</p>

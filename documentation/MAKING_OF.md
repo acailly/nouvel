@@ -974,12 +974,35 @@ et j'avais migré tous mes feeds depuis mon appli existante
 
 2H après j'ai ajouté la gestion du feed twitter à la main (il n'y a pas encrore moyen d'ajouter un feed dans l'UI)
 
+Maintenant le dernier blocage vient de la gestion des secrets. Il y a le github token utilisé pour la synchro avec le repository git, et les twitter tokens pour récupérer les news twitter.
+
+Des recherches précédentes m'ont donné comme conclusion que je n'allais pas facilement trouver de solution bien sécurisée qui fonctionne dans le browser et dans node sans avoir à investir beaucoup de temps
+
+Une des options attirantes est la génération d'une clé non extractable générée avec l'api Browser WebCrypto et stockée dans IndexedDB (qui peut stocker directement la clé sans avoir à la transformer, apparement)
+... Mais cette API n'est pas dispo sur Node, je n'ai pas investit assez de temps pour savoir s'il y avait des choses équivalente, ni même si c'était utile
+
+En revanche je suis tombé sur OpenPGP.js (https://github.com/openpgpjs/openpgpjs), maintenu par ProtonMail, qui offre PGP dans le browser et dans Node.
+Elle offre même le chiffrement symétrique à l'aide d'un mot de passe.
+
+Comme première solution, cela me parait correct :
+
+- au chargement, on demande le mot de passe à l'utilisateur
+- on stocke ce mot de passe en mémoire
+- à chaque fois qu'il faut lire une donnée chifrée, on utilise OpenPGP.js avec le mot de passe stocké en mémoire
+
+Il y a sûrement des problème de sécu dues au mot de passe se trouvant en clair en mémoire, d'autant que je n'ai pas du tout regardé les CSP sur ce projet.
+Bref, la sécu n'est pas un sujet sur lequel je pourrais vanter les mérites de ce projet, pour l'instant du moins.
+
+Ce qui me plait, c'est qu'on reste sur des approches de chiffrement qui sont matures (OpenPGP), même si elles ne surement pas parfaites.
+
+1H45 après le mécanisme de gestion de secret est ajouté, et il est validé avec Github et Twitter
+
 TODO Etape suivante :
 
 - synchroniser le dossier deletedflag
 - synchroniser le dossier feed
 
-TODO 7H+
+TODO 8H45+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
@@ -1006,6 +1029,7 @@ TODO Ajouter des fichier \*.schema.json qui contiennent un JSON schema pour vali
 TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
 TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
 TODO Essayer d'ajouter un déploiement simple via Capacitor (à priori beaucoup plus léger que Cordova) : https://capacitorjs.com/
+TODO Regler les CSP de manière à améliorer la sécurité de l'appli
 
 # Interrogations :
 

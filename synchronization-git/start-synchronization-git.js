@@ -3,6 +3,7 @@ const fs = require("fs");
 const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const { listKeys, read } = require("../@storage");
+const { decrypt, isLocked } = require("../@secrets");
 const loadGit = require("./loadGit");
 
 module.exports = async function () {
@@ -36,9 +37,20 @@ async function sync(
   localSubfoldersToSync
 ) {
   const repositoriesIds = await listKeys(repositoriesStorageKey);
-  const repositoriesToSync = await Promise.all(
+  let repositoriesToSync = await Promise.all(
     repositoriesIds.map(async (repositoryId) => {
-      return await read(`${repositoriesStorageKey}/${repositoryId}`);
+      const repositoryToSync = await read(
+        `${repositoriesStorageKey}/${repositoryId}`
+      );
+
+      if (!isLocked()) {
+        const encryptedPassword = repositoryToSync.password;
+        const password = await decrypt(encryptedPassword);
+        repositoryToSync.encryptedPassword = encryptedPassword;
+        repositoryToSync.password = password;
+      }
+
+      return repositoryToSync;
     })
   );
 
@@ -160,7 +172,7 @@ async function runSync(
   ) {
     const repository = reachableRepositories[repositoryIndex];
     await pullRemoteChanges(git, localStorageFolder, repository);
-    }
+  }
   await updateServerInfo(git, localStorageFolder);
 
   // Push local changes
