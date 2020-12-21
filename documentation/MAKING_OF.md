@@ -1009,12 +1009,14 @@ Du coup je change le mécanisme de synchro pour qu'il attende la fin d'une itér
 Au bout de 45min, j'ai bien modifié la synchro mais je constate que les données ne sont pas rappatriées puisque je ne vois aucun feed
 D'autant plus que la synchro semble s'arrêter sans pour autant renvoyer une erreur...
 
-TODO Ma première piste est de tester avec node et isomorphic git, pour voir si le souci ne vient pas de ce dernier
-TODO Ma seconde piste est de faire une page de debug affichant les fichiers et dossiers, pour bien voir ce qui se trouve dans la base indexeddb
+Je me rends compte rapidement que je m'étais trompé dans le nom du dossier à synchroniser (feed au lieu de feeds), donc c'est normal si je n'avais aucun feed qui apparaissait
+Je constate également que l'ajout des dossier (git add) est trèèèèèès long et fait souffler le ventilo du PC.
+Je fais un petit script de test sur le fait de faire un "git add" sur le dossier "news/\_deleted_flag", et ca donne 100s pour 2400 fichiers qui n'ont aucun changement, pas top :-/
+Au bout d'1H15, je n'ai toujours pas trouvé de moyen d'accélerer ce temps. Ca veut dire que chaque synchro mettera 100s quand on utilise isomorphic-git... c'est une coup dur !
 
 TODO Prochaine étape : tester la PWA + lecture flux offline
 
-TODO 10H45min+
+TODO 12Hmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
