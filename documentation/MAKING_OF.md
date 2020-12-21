@@ -1014,9 +1014,11 @@ Je constate également que l'ajout des dossier (git add) est trèèèèèès lon
 Je fais un petit script de test sur le fait de faire un "git add" sur le dossier "news/\_deleted_flag", et ca donne 100s pour 2400 fichiers qui n'ont aucun changement, pas top :-/
 Au bout d'1H15, je n'ai toujours pas trouvé de moyen d'accélerer ce temps. Ca veut dire que chaque synchro mettera 100s quand on utilise isomorphic-git... c'est une coup dur !
 
-TODO Prochaine étape : tester la PWA + lecture flux offline
+Je prends quand même 30min pour retester la PWA, les feeds sont bien récupérés (cool) mais l'étape "git add" prend un temps infini (pas cool) et en plus la plupart des feeds ne peuvent pas être récupérés parce qu'ils ne gèrent pas les CORS (pas cool, mais à la limite s'il n'y avait que ca, on pourait utiliser des proxy CORS dispos)
 
-TODO 12Hmin+
+TODO Prochaine étape : Est ce que la PWA est encore une option viable ?
+
+TODO 12H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
