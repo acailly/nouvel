@@ -1047,7 +1047,14 @@ Ca me prend 15 minutes, en utilisant directement l'api du module `storage-file`.
 
 Et cette fois ci la PWA arrive à synchroniser les fichiers en un temps (long mais) acceptable \o/
 
-TODO 1H30min+
+Reste le problème de CORS
+Je teste d'utiliser le proxy de zserge (https://github.com/zserge/headline/blob/master/app.js)
+15 min après j'ai la plupart des feeds qui se synchronisent SAUF certains dont Twitter :-/
+Et je me rends compte que la suppression ne fonctionne pas
+
+Bref, ya du mieux, mais je ne peux pas vraiment dire que c'est une solution viable pour un projet avec de plus grandes ambitions (pas encore?)
+
+TODO 1H45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

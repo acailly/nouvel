@@ -141,7 +141,12 @@ async function fetchTwitterFeedContent(feed) {
 }
 
 async function fetchRSSFeedContent(feed) {
-  const response = await axios.get(feed.url);
+  // From https://github.com/zserge/headline/blob/master/app.js, should
+  // probably use another one if traffic increases
+  const corsProxifiedURL = `https://cors.zserge.com/?u=${encodeURIComponent(
+    feed.url
+  )}`;
+  const response = await axios.get(corsProxifiedURL);
   const feedContent = await parser.parseString(response.data);
 
   const itemsWithTimestamp = feedContent.items.map((item) => {
