@@ -1,9 +1,9 @@
 const axios = require("axios");
 const Parser = require("rss-parser");
 const Twitter = require("twitter");
-const { listKeys, read, write } = require("../../@storage");
+const { listKeys, read, write, keyExists } = require("../../@storage");
 const { isLocked, decrypt } = require("../../@secrets");
-const shouldAddNewItem = require("../rules/shouldAddNewItem");
+const deletedFlagPathFromPath = require("../rules/deletedFlagPathFromPath");
 
 const parser = new Parser({
   headers: {
@@ -21,6 +21,7 @@ module.exports = async function (req, res) {
   );
 
   for (const feed of feeds) {
+    // Fetch feed content
     let items;
     try {
       items = await fetchFeedContent(feed);
@@ -29,15 +30,37 @@ module.exports = async function (req, res) {
       continue;
     }
 
+    const feedFolder = `news/items/${feed.title}`;
+
+    // Get the set of already deleted items
+    const deletedItemsForFeed = [];
+    const deletedFeedFolder = deletedFlagPathFromPath(feedFolder);
+    const deletedItemsLists = await listKeys(deletedFeedFolder);
+    for (const deletedItemsList of deletedItemsLists) {
+      const deletedItems = await read(
+        `${deletedFeedFolder}/${deletedItemsList}`
+      );
+      deletedItemsForFeed.push(...deletedItems);
+    }
+
+    // Process each feed item
     for (const item of items) {
       const entryHash = fastHash(item.link);
-      const itemKey = `news/items/${feed.title}/${entryHash}`;
+      const itemKey = `${feedFolder}/${entryHash}`;
 
-      // Item should not be created (already exists, deleted, whatever)
-      if (!(await shouldAddNewItem(itemKey))) {
+      // Item already exists, skip
+      const itemAlreadyExists = await keyExists(itemKey);
+      if (itemAlreadyExists) {
         continue;
       }
 
+      // Item has already been deleted, skip
+      const itemHasBeenDeleted = deletedItemsForFeed.indexOf(entryHash) !== -1;
+      if (itemHasBeenDeleted) {
+        continue;
+      }
+
+      // Write new item
       const newItem = {
         title: item.title,
         url: item.link,
@@ -60,7 +83,7 @@ function fastHash(text) {
     hash = (hash << 5) - hash + chr;
     hash |= 0; // Convert to 32bit integer
   }
-  return hash;
+  return hash.toString();
 }
 
 async function fetchFeedContent(feed) {

@@ -1030,6 +1030,25 @@ Pour me changer les idées, je fait une page de doc avec les différents modules
 
 Ca me prend 30min
 
+# 39 : Lecteur RSS - la suite - ???
+
+Le fait de faire la liste des modules m'a donné plein d'idées alternatives pour me débloquer : utiliser pouchdb par exemple, qui semble être assez mature pour ne pas détonner parmi les autres choix effectués. Ou encore un serveur Webdav, qui pour le coup est encore plus Low Tech que tout le reste.
+Toutefois tant que l'espoir de faire marcher le projet avec Git persiste, je préfère garder ce choix car :
+
+- il est BEAUCOUP plus simple aujourd'hui d'avoir un repo Git accessible sur le net gratuitement que d'avoir un serveur compatible pouchdb, webdav ou autre
+- ce choix permet une totale transparence des données et une synchronisation/backup parralèlle hyper simple
+
+Bref je décide de m'entêter sur Git et me résigne à simplifier l'application puisque isomorphic-git montre déjà ses limites
+
+Permière piste : au lieu de stocker un fichier par item lu dans `_deleted_flag/items/nom_du_feed/id_de_l_item.json`, je vais stocker la liste des items lus par une personne spécifique dans un fichier `_deleted_flag/items/nom_du_feed/id_du_user.json`
+Ca devrait faire baisser le nombre de fichier et j'espère permettre à isomorphic-git de traiter ce volume en un temps raisonnable
+Au bout d'1H15, j'ai une implémentation qui fonctionne. Il me faut maintenant reprendre les données existants (plus de 5000 items déjà supprimés) pour appliquer le nouveau format.
+Ca me prend 15 minutes, en utilisant directement l'api du module `storage-file`.
+
+Et cette fois ci la PWA arrive à synchroniser les fichiers en un temps (long mais) acceptable \o/
+
+TODO 1H30min+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Faire une app de lecteur RSS
