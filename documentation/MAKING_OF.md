@@ -1016,9 +1016,15 @@ Au bout d'1H15, je n'ai toujours pas trouvé de moyen d'accélerer ce temps. Ca 
 
 Je prends quand même 30min pour retester la PWA, les feeds sont bien récupérés (cool) mais l'étape "git add" prend un temps infini (pas cool) et en plus la plupart des feeds ne peuvent pas être récupérés parce qu'ils ne gèrent pas les CORS (pas cool, mais à la limite s'il n'y avait que ca, on pourait utiliser des proxy CORS dispos)
 
+Je passe 45min à tester si la méthode d'ajouter tout par défaut fonctionne, en listant les fichiers à l'aide de globby (https://isomorphic-git.org/docs/en/snippets#git-add-no-all-), mais cela semble pire
+
+Je tente une autre approche, celle d'utiliser `wasm-git` (https://github.com/petersalomonsen/wasm-git) au lieu de `isomorphic-git`. Il y a moins de star, ca a l'air moins utilisé, mais ca a l'air d'être plus proche du Git original, donc potentiellement plus rapide et plus complet
+Je me lance pour écrire une implémentation `git-wasm` et puis je me rend compte que ca va encore me prendre un temps fou et j'ai déjà l'impression qu'il manque des choses... que faire ?
+Il s'est encore écoulé 1H et je ne sais pas comment continuer...
+
 TODO Prochaine étape : Est ce que la PWA est encore une option viable ?
 
-TODO 12H30min+
+TODO 13H30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

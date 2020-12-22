@@ -1,5 +1,7 @@
 const git = require("isomorphic-git");
 const fs = require("fs");
+
+// Warning: This method has proved itself very slow when there is many files to check (in my case, 5000+)
 module.exports = async (folder, files) => {
   // From snippet https://isomorphic-git.org/docs/en/snippets#git-add-a-
   // Using wonderful command statusMatrix
