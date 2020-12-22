@@ -1024,10 +1024,15 @@ Il s'est encore écoulé 1H et je ne sais pas comment continuer...
 
 Au total, 13H30min sur cette étape
 
+# 38 : Récapitulatif des modules - 30min
+
+Pour me changer les idées, je fait une page de doc avec les différents modules de ce projet, leurs implémentations existantes et possibles
+
+Ca me prend 30min
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Faire une app de lecteur RSS
-TODO Faire un document récapitulant les différentes briques et des implémentations présentes et potentielles (storage, secrets, identity, etc.)
 
 # Refacto et fonctions bonus
 
