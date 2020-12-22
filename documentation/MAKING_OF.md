@@ -950,7 +950,7 @@ La prochaine étape me semble de faire une application réelle et utile : un lec
 
 L'appli semble bien parti pour fonctionner dans le browser, mais les CORS bloquent la récupération du contenu des flux
 
-# 37 : Lecteur de flux RSS - ???
+# 37 : Lecteur de flux RSS - 13H30
 
 L'objectif de cette étape est multiple :
 
@@ -1022,9 +1022,7 @@ Je tente une autre approche, celle d'utiliser `wasm-git` (https://github.com/pet
 Je me lance pour écrire une implémentation `git-wasm` et puis je me rend compte que ca va encore me prendre un temps fou et j'ai déjà l'impression qu'il manque des choses... que faire ?
 Il s'est encore écoulé 1H et je ne sais pas comment continuer...
 
-TODO Prochaine étape : Est ce que la PWA est encore une option viable ?
-
-TODO 13H30min+
+Au total, 13H30min sur cette étape
 
 # Next pour avoir un exemple représentatif de l'approche :
 
