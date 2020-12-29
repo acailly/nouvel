@@ -1071,7 +1071,17 @@ Il va falloir aussi décider si je garde l'espèce d'abstraction (à base de cl�
 Je me lance, je créé le dossier storage-pouchdb
 Ca ne me prend qu'1H15 pour refaire les mêmes fonctions que `storage-file`, alors que je n'avais jamais utilisé PouchDB avant, c'est une bonne surprise
 
-TODO 1H15+
+Je créé un compte heroku et y mettre une instance couchdb à l'aide du buildpack suivant : https://elements.heroku.com/buildpacks/creativegeekjp/heroku-buildpack-couchdb
+(`heroku buildpacks:set https://github.com/creativegeekjp/heroku-buildpack-couchdb.git`)
+Au bout de 45min je n'arrive toujours pas à le faire marcher
+Je bascule sur une autre option : le free tier sur cloudant (https://www.ibm.com/cloud/free)
+Au bout de 15min j'ai reussi à créer une instance cloudant et je cherche comment marche l'auth. Mais je me dis que ce serait aussi simple avec un `pouchdb-server` sur heroku (https://github.com/pouchdb/pouchdb-server)
+
+... sauf qu'en cherchant sur le net je tombe sur un projet qui pourrait beaucoup ressembler à ce que je suis en train de faire : https://github.com/lybekk/offPIM
+Il dit qu'il arrive à se connecter à cloudant en précisant simplement une URL et un login/mot de passe.
+Du coup je passe 30min en plus pour trouver où se trouve les crédentials à utiliser, il fallait bien préciser à la création de l'instance qu'on voulait le mode d'authentification legacy.
+
+TODO 2H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

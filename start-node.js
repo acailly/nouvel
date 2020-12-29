@@ -23,5 +23,5 @@ createNodeApp(appNewsPath, appNewsConfig, configuration.newsServerPort);
 // const startPublishingLocaltunnel = require("./expose-localtunnel/start-localtunnel");
 // startPublishingLocaltunnel();
 
-const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
-startSynchronizationGit();
+// const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
+// startSynchronizationGit();
