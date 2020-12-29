@@ -1,1 +1,1 @@
-module.exports = require('./storage-file')
+module.exports = require("./storage-pouchdb");

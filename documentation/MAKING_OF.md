@@ -1030,7 +1030,7 @@ Pour me changer les idées, je fait une page de doc avec les différents modules
 
 Ca me prend 30min
 
-# 39 : Lecteur RSS - la suite - ???
+# 39 : Lecteur RSS - la suite - 1H45
 
 Le fait de faire la liste des modules m'a donné plein d'idées alternatives pour me débloquer : utiliser pouchdb par exemple, qui semble être assez mature pour ne pas détonner parmi les autres choix effectués. Ou encore un serveur Webdav, qui pour le coup est encore plus Low Tech que tout le reste.
 Toutefois tant que l'espoir de faire marcher le projet avec Git persiste, je préfère garder ce choix car :
@@ -1054,10 +1054,28 @@ Et je me rends compte que la suppression ne fonctionne pas
 
 Bref, ya du mieux, mais je ne peux pas vraiment dire que c'est une solution viable pour un projet avec de plus grandes ambitions (pas encore?)
 
-TODO 1H45min+
+Total : 1H45min
+
+# 40 : On change de cap, storage-pouchdb - ???
+
+Je sens que le fait d'utiliser Git dans une PWA est de moins en moins en phase avec mon idée de faire quelque chose avec des technos matures que l'on peut facilement apprivoiser. D'autant que niveau performance, même si ce n'était pas un critère essentiel, ce n'est vraiment pas terrible.
+
+Dans mes recherches pour une autre technologie mature de synchronisation, je n'ai pas trouvé grand chose autre que PouchDB
+
+Allons y, après tout c'est une techno qui existe depuis un bout de temps, qui a l'air d'être encore utilisée et qui a l'air de privilegier la simplicité (le slogan de CouchDB était "time to relax")
+
+Mon seul regret est de ne pas profiter de la facilité d'avoir un repository Git, il va falloir héberger une instance de CouchDB quelque part je le crains.
+
+Il va falloir aussi décider si je garde l'espèce d'abstraction (à base de clé valeur) que j'avais utilisée au dessus du stockage fichier
+
+Je me lance, je créé le dossier storage-pouchdb
+Ca ne me prend qu'1H15 pour refaire les mêmes fonctions que `storage-file`, alors que je n'avais jamais utilisé PouchDB avant, c'est une bonne surprise
+
+TODO 1H15+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Faire une couche de stockage pouchdb
 TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus

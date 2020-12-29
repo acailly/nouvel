@@ -10,6 +10,9 @@ const secretsFile = path.join(os.homedir(), ".zDemocracy2", "secrets.json");
 // STORAGE FILE
 const localStorageFolder = path.join(os.homedir(), ".zDemocracy2", "data");
 
+// STORAGE POUCHDB
+const localDatabaseName = "storage";
+
 // APP ZDEMOCRACY
 const zdemocracyServerPort = 8080;
 
@@ -42,6 +45,7 @@ const configuration = {
   identityFile,
   secretsFile,
   localStorageFolder,
+  localDatabaseName,
   zdemocracyServerPort,
   listServerPort,
   newsServerPort,
