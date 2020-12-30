@@ -1113,7 +1113,13 @@ Ca me prend 15min
 
 # 44 : synchronization-pouchdb - ???
 
-TODO XXmin+
+Je commence le module de synchro avec PouchDB, normalement ca devrait être bien plus simple qu'avec Git
+
+Au bout de 30 minutes j'ai un truc qui est supposé marcher avec un remote mis en dur dans le code, sauf que j'ai une erreur de CORS sur le expose-pouchdbserver
+
+"The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '\*' when the request's credentials mode is 'include'"
+
+TODO 30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

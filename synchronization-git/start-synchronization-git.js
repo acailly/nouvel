@@ -7,7 +7,7 @@ const { decrypt, isLocked } = require("../@secrets");
 const loadGit = require("./loadGit");
 
 module.exports = async function () {
-  if (!configuration.syncEnabled) {
+  if (!configuration.syncGitEnabled) {
     console.log("[synchronization-git] Synchronization is disabled");
     return;
   }

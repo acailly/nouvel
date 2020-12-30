@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const configuration = require("../@configuration");
 const { getPouchDBObject, getDatabase } = require("../@pouchdb");
@@ -8,6 +9,9 @@ module.exports = function () {
 
   const app = express();
   app.use(express.urlencoded({ extended: true }));
+
+  // CORS
+  app.use(cors());
 
   const CustomPouchDB = getPouchDBObject();
   app.use("/db", require("express-pouchdb")(CustomPouchDB));

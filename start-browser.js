@@ -5,3 +5,6 @@ const createBrowserApp = require("./distrib-browser/create-app");
 // createBrowserApp(appListConfig);
 const appNewsConfig = require("./app-news/app-config");
 createBrowserApp(appNewsConfig);
+
+const startSynchronizationPouchDB = require("./synchronization-pouchdb/start-synchronization-pouchdb");
+startSynchronizationPouchDB();

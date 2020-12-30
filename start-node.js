@@ -28,3 +28,6 @@ createNodeApp(appNewsPath, appNewsConfig, configuration.newsServerPort);
 
 const startPublishingPouchDBServer = require("./expose-pouchdbserver/start-pouchdbserver");
 startPublishingPouchDBServer();
+
+const startSynchronizationPouchDB = require("./synchronization-pouchdb/start-synchronization-pouchdb");
+startSynchronizationPouchDB();

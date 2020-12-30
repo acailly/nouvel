@@ -26,11 +26,14 @@ const listServerPort = 8083;
 const newsServerPort = 8093;
 
 // SYNCHRONIZATION GIT
-const syncEnabled = true;
+const syncGitEnabled = true;
 const useNativeGit = false;
 const gitSyncPeriodInMs = 20000;
 const localSubfoldersToSync = ["news/_deleted_flag", "news/feeds"];
 const repositoriesStorageKey = "repositories";
+
+// SYNCHRONIZATION POUCHDB
+const syncPouchDBEnabled = true;
 
 // EXPOSE GIT DUMB HTTP
 const gitDumbHttpPort = 8081;
@@ -56,12 +59,13 @@ const configuration = {
   zdemocracyServerPort,
   listServerPort,
   newsServerPort,
-  syncEnabled,
+  syncGitEnabled,
   useNativeGit,
   gitSyncPeriodInMs,
   pouchdbServerPort,
   localSubfoldersToSync,
   repositoriesStorageKey,
+  syncPouchDBEnabled,
   gitDumbHttpPort,
   tunnellingHost,
   tunnellingLocalPort,
