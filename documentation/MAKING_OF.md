@@ -1111,7 +1111,7 @@ Ca laisse de la place pour tester d'autres configurations de pouchdb (plugins di
 
 Ca me prend 15min
 
-# 44 : synchronization-pouchdb - ???
+# 44 : synchronization-pouchdb - 1H30
 
 Je commence le module de synchro avec PouchDB, normalement ca devrait être bien plus simple qu'avec Git
 
@@ -1127,7 +1127,18 @@ Ce sera corrigé en mettant `{origin: true, credentials: true}` dans les options
 
 La différence avec la synchro git, c'est que la quasi totalité des données de l'appli va être synchronisée, il faut donc que je fasse attention à bien stocker les infos de remote dans une clé locale (`_local/xxx`) qui n'est pas répliquée
 
-TODO 45min+
+45min après la gestion des remotes était fonctionnelle (y compris la gestion des mots de passe, même si je n'ai pas encore testé)
+
+Total : 1H30
+
+# 45 : identity - ???
+
+Il y a une erreur dans le browser quand j'essaie de marquer un élément comme lu
+Ca semble venir du module identity, qui est toujours basé sur un fichier
+
+L'idée serait de la stocker dans `_local/identity`
+
+TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -34,6 +34,8 @@ const repositoriesStorageKey = "repositories";
 
 // SYNCHRONIZATION POUCHDB
 const syncPouchDBEnabled = true;
+const remoteListKey = "_local/remotes";
+const pouchdbSyncPeriodInMs = 20000;
 
 // EXPOSE GIT DUMB HTTP
 const gitDumbHttpPort = 8081;
@@ -66,6 +68,8 @@ const configuration = {
   localSubfoldersToSync,
   repositoriesStorageKey,
   syncPouchDBEnabled,
+  remoteListKey,
+  pouchdbSyncPeriodInMs,
   gitDumbHttpPort,
   tunnellingHost,
   tunnellingLocalPort,
