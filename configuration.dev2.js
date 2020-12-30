@@ -1,18 +1,20 @@
 const path = require("path");
 const os = require("os");
 
+const homeDirectory = path.join(os.homedir(), ".zDemocracy");
+
 // IDENTITY UUID
-const identityFile = path.join(os.homedir(), ".zDemocracy2", "identity.json");
+const identityFile = path.join(homeDirectory, "identity.json");
 
 // SECRETS PLAINTEXT
-const secretsFile = path.join(os.homedir(), ".zDemocracy2", "secrets.json");
+const secretsFile = path.join(homeDirectory, "secrets.json");
 
 // STORAGE FILE
-const localStorageFolder = path.join(os.homedir(), ".zDemocracy2", "data");
+const localStorageFolder = path.join(homeDirectory, "data");
 
 // STORAGE POUCHDB
 const localDatabaseName = "storage";
-const localDatabaseFolder = path.join(os.homedir(), ".zDemocracy2", "db");
+const localDatabaseFolder = path.join(homeDirectory, "db");
 
 // APP ZDEMOCRACY
 const zdemocracyServerPort = 8080;

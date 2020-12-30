@@ -1091,7 +1091,17 @@ Je créé donc un module `expose-pouchdbserver` qui lance un serveur `pouchdb-se
 
 Ca me prend 45min
 
-# 42 : pouchdb dans le browser - ???
+# 42 : pouchdb dans le browser - 45min
+
+Etape suivante, revoir le build browser pour utiliser pouchdb au lieu de browserfs et isomorphic-git
+
+Normalement il va y avoir beaucoup de chose à supprimer, c'est une bonne nouvelle :-)
+
+J'en profite au passage pour supprimer les dépendances que je n'utilise plus : isomorphic-git, browserfs...
+
+Ca me prend 45min
+
+# 43 : test de synchro pouchdb - ???
 
 TODO XXmin+
 

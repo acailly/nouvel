@@ -23,11 +23,9 @@
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "browser-express": "^4.6.0",
-    "browserfs": "^1.4.3",
     "ejs": "^3.1.3",
     "express": "^4.17.1",
     "express-pouchdb": "^4.2.0",
-    "isomorphic-git": "^1.7.8",
     "localtunnel": "^2.0.0",
     "make-dir": "^3.1.0",
     "openpgp": "^4.10.9",
@@ -35,7 +33,6 @@
     "pouchdb-upsert": "^2.2.0",
     "rss-parser": "^3.10.0",
     "twitter": "^1.7.1",
-    "util.promisify": "^1.0.1",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
