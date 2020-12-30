@@ -1,8 +1,7 @@
-const PouchDB = require("pouchdb");
-const configuration = require("../@configuration");
+const getDatabase = require("./_db");
 
 module.exports = async function (keyFolder) {
-  const db = new PouchDB(configuration.localDatabaseName);
+  const db = getDatabase();
 
   const keyFolderPrefix = keyFolder ? `${keyFolder}/` : "";
 

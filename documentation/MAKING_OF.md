@@ -1056,7 +1056,7 @@ Bref, ya du mieux, mais je ne peux pas vraiment dire que c'est une solution viab
 
 Total : 1H45min
 
-# 40 : On change de cap, storage-pouchdb - ???
+# 40 : On change de cap, storage-pouchdb - 2H30
 
 Je sens que le fait d'utiliser Git dans une PWA est de moins en moins en phase avec mon idée de faire quelque chose avec des technos matures que l'on peut facilement apprivoiser. D'autant que niveau performance, même si ce n'était pas un critère essentiel, ce n'est vraiment pas terrible.
 
@@ -1081,7 +1081,19 @@ Au bout de 15min j'ai reussi à créer une instance cloudant et je cherche comme
 Il dit qu'il arrive à se connecter à cloudant en précisant simplement une URL et un login/mot de passe.
 Du coup je passe 30min en plus pour trouver où se trouve les crédentials à utiliser, il fallait bien préciser à la création de l'instance qu'on voulait le mode d'authentification legacy.
 
-TODO 2H30+
+Total : 2H30
+
+# 41 : expose-pouchdbserver - 45min
+
+Pour tester la synchronization pouchdb, qui remplacera `synchronization-git`, le plus pratique serait de lancer un serveur en local (j'utiliserai l'instance cloudant pour mon usage réel)
+
+Je créé donc un module `expose-pouchdbserver` qui lance un serveur `pouchdb-server` (https://github.com/pouchdb/pouchdb-server)
+
+Ca me prend 45min
+
+# 42 : pouchdb dans le browser - ???
+
+TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
@@ -1109,6 +1121,7 @@ TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
 TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
 TODO Essayer d'ajouter un déploiement simple via Capacitor (à priori beaucoup plus léger que Cordova) : https://capacitorjs.com/
 TODO Regler les CSP de manière à améliorer la sécurité de l'appli
+TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
 
 # Interrogations :
 

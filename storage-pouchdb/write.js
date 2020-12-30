@@ -1,9 +1,7 @@
-const PouchDB = require("pouchdb");
-const configuration = require("../@configuration");
+const getDatabase = require("./_db");
 
 module.exports = async function (key, value) {
-  const db = new PouchDB(configuration.localDatabaseName);
-  PouchDB.plugin(require("pouchdb-upsert"));
+  const db = getDatabase();
 
   await db.upsert(key, function (doc) {
     return value;

@@ -12,6 +12,7 @@ const localStorageFolder = path.join(os.homedir(), ".zDemocracy2", "data");
 
 // STORAGE POUCHDB
 const localDatabaseName = "storage";
+const localDatabaseFolder = path.join(os.homedir(), ".zDemocracy2", "db");
 
 // APP ZDEMOCRACY
 const zdemocracyServerPort = 8080;
@@ -29,10 +30,13 @@ const gitSyncPeriodInMs = 20000;
 const localSubfoldersToSync = ["news/_deleted_flag", "news/feeds"];
 const repositoriesStorageKey = "repositories";
 
-// PUBLISH GIT DUMB HTTP
+// EXPOSE GIT DUMB HTTP
 const gitDumbHttpPort = 8081;
 
-// PUBLISH LOCALTUNNEL
+// EXPOSE POUCHDB SERVER
+const pouchdbServerPort = 5985;
+
+// EXPOSE LOCALTUNNEL
 // See https://github.com/localtunnel/localtunnel/issues/343
 // See https://github.com/localtunnel/localtunnel/issues/352#issuecomment-707417061
 const tunnellingHost = "http://localtunnel.me";
@@ -46,12 +50,14 @@ const configuration = {
   secretsFile,
   localStorageFolder,
   localDatabaseName,
+  localDatabaseFolder,
   zdemocracyServerPort,
   listServerPort,
   newsServerPort,
   syncEnabled,
   useNativeGit,
   gitSyncPeriodInMs,
+  pouchdbServerPort,
   localSubfoldersToSync,
   repositoriesStorageKey,
   gitDumbHttpPort,

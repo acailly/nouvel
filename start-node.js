@@ -25,3 +25,6 @@ createNodeApp(appNewsPath, appNewsConfig, configuration.newsServerPort);
 
 // const startSynchronizationGit = require("./synchronization-git/start-synchronization-git");
 // startSynchronizationGit();
+
+const startPublishingPouchDBServer = require("./expose-pouchdbserver/start-pouchdbserver");
+startPublishingPouchDBServer();
