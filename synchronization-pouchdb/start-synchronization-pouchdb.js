@@ -15,7 +15,7 @@ module.exports = async function () {
   // TODO ACY Récupérer la liste des remotes dans PouchDB,
   // sous la clé "_local/remotes" qu'on trouvera dans
   //configuration.remoteListKey
-  const remotes = ["http://localhost:5984/db"];
+  const remotes = ["http://localhost:5984/db/storage"];
 
   // TODO ACY Gérer les mots de passe
   // TODO ACY Gérer le chiffrement des mots de passe avec @secrets

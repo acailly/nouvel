@@ -11,7 +11,11 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
 
   // CORS
-  app.use(cors());
+  const corsOptions = {
+    origin: true,
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
 
   const CustomPouchDB = getPouchDBObject();
   app.use("/db", require("express-pouchdb")(CustomPouchDB));

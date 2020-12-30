@@ -1117,9 +1117,17 @@ Je commence le module de synchro avec PouchDB, normalement ca devrait être bien
 
 Au bout de 30 minutes j'ai un truc qui est supposé marcher avec un remote mis en dur dans le code, sauf que j'ai une erreur de CORS sur le expose-pouchdbserver
 
+```
 "The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '\*' when the request's credentials mode is 'include'"
+```
 
-TODO 30min+
+Ce sera corrigé en mettant `{origin: true, credentials: true}` dans les options du middleware express `cors`
+
+15 minutes après j'arrive à me synchroniser \o/
+
+La différence avec la synchro git, c'est que la quasi totalité des données de l'appli va être synchronisée, il faut donc que je fasse attention à bien stocker les infos de remote dans une clé locale (`_local/xxx`) qui n'est pas répliquée
+
+TODO 45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
