@@ -1140,23 +1140,32 @@ L'idée serait de la stocker dans `_local/identity`
 
 Je corrige ca plus quelques autres trucs, ca me prend 30min
 
-# 46 : bouton tout supprimer - ???
+# 46 : bouton tout supprimer - 15min
 
 Pour migrer de Git à PouchDB, je vais :
 
 - me mettre à jour sur la version Git
+- ajouter les flux sur la version PouchDB
 - tout télécharger sur la version PouchDB
 - tout marquer comme lu sur la version PouchDB
 
 Pour faire ca, il faut une fonction "Tout Supprimer"
 
-Je me TODO XXmin+ à la faire
+Je met 15min à la faire
+
+# 47 : migration vers pouchdb - ???
+
+Comme prévu, voici la procédure :
+
+- me mettre à jour sur la version Git
+- ajouter les flux sur la version PouchDB
+- tout télécharger sur la version PouchDB
+- tout marquer comme lu sur la version PouchDB
 
 TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Ajouter un bouton "Tout supprimer"
 TODO Migrer les items lus de git à pouchdb
 TODO Utiliser le remote Cloudant
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/

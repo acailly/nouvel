@@ -3,7 +3,7 @@ const Parser = require("rss-parser");
 const Twitter = require("twitter");
 const { listKeys, read, write, keyExists } = require("../../@storage");
 const { isLocked, decrypt } = require("../../@secrets");
-const deletedFlagPathFromPath = require("../rules/deletedFlagPathFromPath");
+const deletedFlagPathFromPath = require("../domain/deletedFlagPathFromPath");
 
 const parser = new Parser({
   headers: {

@@ -44,5 +44,6 @@ module.exports = async function (req, res) {
     items: itemsSortedByDateDesc,
     folders: foldersNonEmpty,
     currentPath,
+    currentFullPath,
   });
 };

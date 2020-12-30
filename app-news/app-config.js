@@ -26,6 +26,7 @@ module.exports = function (app) {
   const actionNewRemote = require("./actions/newRemote");
   const actionFetchFeeds = require("./actions/fetchFeeds");
   const removeNewsItem = require("./actions/removeNewsItem");
+  const removeAllNewsItem = require("./actions/removeAllNewsItem");
 
   // ROUTES
   app.get("/", viewLogin);
@@ -33,6 +34,7 @@ module.exports = function (app) {
 
   app.get("/news", viewNews);
   app.post("/remove-news-item", removeNewsItem);
+  app.post("/remove-all-news-item", removeAllNewsItem);
 
   app.get("/feeds", viewFeeds);
   app.post("/new-feed", actionNewFeed);
