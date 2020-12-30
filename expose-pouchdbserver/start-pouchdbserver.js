@@ -1,7 +1,7 @@
-const PouchDB = require("pouchdb");
 const express = require("express");
 
 const configuration = require("../@configuration");
+const { getPouchDBObject, getDatabase } = require("../@pouchdb");
 
 module.exports = function () {
   console.log("PouchDB server - Starting");
@@ -9,11 +9,9 @@ module.exports = function () {
   const app = express();
   app.use(express.urlencoded({ extended: true }));
 
-  const LocalPouchDB = PouchDB.defaults({
-    prefix: `${configuration.localDatabaseFolder}/`,
-  });
-  app.use("/db", require("express-pouchdb")(LocalPouchDB));
-  const db = new LocalPouchDB(configuration.localDatabaseName);
+  const CustomPouchDB = getPouchDBObject();
+  app.use("/db", require("express-pouchdb")(CustomPouchDB));
+  const db = getDatabase();
 
   const port = configuration.pouchdbServerPort;
   app.listen(port, () => {

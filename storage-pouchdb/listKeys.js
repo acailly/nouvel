@@ -1,4 +1,4 @@
-const getDatabase = require("./_db");
+const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (keyFolder) {
   const db = getDatabase();

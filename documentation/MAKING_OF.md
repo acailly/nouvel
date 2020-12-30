@@ -1101,7 +1101,17 @@ J'en profite au passage pour supprimer les dépendances que je n'utilise plus : 
 
 Ca me prend 45min
 
-# 43 : test de synchro pouchdb - ???
+# 43 : @pouchdb - 15min
+
+Pour l'instant j'instancie un nouvel object PouchDB à chaque fois que je veux faire une entrée en base
+
+Je fait un fichier `@pouchdb.js` qui pointe vers `pouchdb-default`
+
+Ca laisse de la place pour tester d'autres configurations de pouchdb (plugins différents, adapter sqlite, etc.)
+
+Ca me prend 15min
+
+# 44 : synchronization-pouchdb - ???
 
 TODO XXmin+
 

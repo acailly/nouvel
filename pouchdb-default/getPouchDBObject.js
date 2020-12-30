@@ -8,5 +8,5 @@ const LocalPouchDB = PouchDB.defaults({
 LocalPouchDB.plugin(require("pouchdb-upsert"));
 
 module.exports = function () {
-  return new LocalPouchDB(configuration.localDatabaseName);
+  return LocalPouchDB;
 };
