@@ -1,22 +1,16 @@
-const path = require("path");
-const fs = require("fs");
-const makeDir = require("make-dir");
+const { keyExists, write, read } = require("../@storage");
 const configuration = require("../@configuration");
 const generate = require("./generate");
 
-module.exports = function () {
-  const identityFileDirectoryPath = path.dirname(configuration.identityFile);
-  if (!fs.existsSync(identityFileDirectoryPath)) {
-    console.log("Identity folder doesn't exist, create it");
-    makeDir.sync(identityFileDirectoryPath);
-  }
+module.exports = async function () {
+  const identityAlreadyExists = await keyExists(configuration.identityKey);
 
-  if (!fs.existsSync(configuration.identityFile)) {
+  if (!identityAlreadyExists) {
     console.log("Identity file doesn't exist, generate it");
     const identity = generate();
-    fs.writeFileSync(configuration.identityFile, JSON.stringify(identity));
+    await write(configuration.identityKey, identity);
   }
 
-  const rawValue = fs.readFileSync(configuration.identityFile);
-  return JSON.parse(rawValue);
+  const identity = await read(configuration.identityKey);
+  return identity;
 };

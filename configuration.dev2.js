@@ -4,10 +4,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".zDemocracy");
 
 // IDENTITY UUID
-const identityFile = path.join(homeDirectory, "identity.json");
-
-// SECRETS PLAINTEXT
-const secretsFile = path.join(homeDirectory, "secrets.json");
+const identityKey = "_local/identity";
 
 // STORAGE FILE
 const localStorageFolder = path.join(homeDirectory, "data");
@@ -53,8 +50,7 @@ const tunnellingLocalPort = 8081;
 const deployBaseURL = "/zDemocracy-lowtech";
 
 const configuration = {
-  identityFile,
-  secretsFile,
+  identityKey,
   localStorageFolder,
   localDatabaseName,
   localDatabaseFolder,

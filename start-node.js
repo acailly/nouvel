@@ -2,8 +2,9 @@ const path = require("path");
 const configuration = require("./@configuration");
 
 const { get: getIdentity } = require("./@identity");
-const identity = getIdentity();
-console.log(`Connected as ${identity.id}`);
+getIdentity().then((identity) => {
+  console.log(`Connected as ${identity.id}`);
+});
 
 // const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
 // startZDemocracyExpress();

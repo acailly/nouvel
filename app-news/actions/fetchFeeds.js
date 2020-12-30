@@ -32,17 +32,6 @@ module.exports = async function (req, res) {
 
     const feedFolder = `news/items/${feed.title}`;
 
-    // Get the set of already deleted items
-    const deletedItemsForFeed = [];
-    const deletedFeedFolder = deletedFlagPathFromPath(feedFolder);
-    const deletedItemsLists = await listKeys(deletedFeedFolder);
-    for (const deletedItemsList of deletedItemsLists) {
-      const deletedItems = await read(
-        `${deletedFeedFolder}/${deletedItemsList}`
-      );
-      deletedItemsForFeed.push(...deletedItems);
-    }
-
     // Process each feed item
     for (const item of items) {
       const entryHash = fastHash(item.link);
@@ -55,7 +44,8 @@ module.exports = async function (req, res) {
       }
 
       // Item has already been deleted, skip
-      const itemHasBeenDeleted = deletedItemsForFeed.indexOf(entryHash) !== -1;
+      const deletedFlagItemKey = deletedFlagPathFromPath(itemKey);
+      const itemHasBeenDeleted = await keyExists(deletedFlagItemKey);
       if (itemHasBeenDeleted) {
         continue;
       }

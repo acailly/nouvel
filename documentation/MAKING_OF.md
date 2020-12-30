@@ -1131,22 +1131,41 @@ La différence avec la synchro git, c'est que la quasi totalité des données de
 
 Total : 1H30
 
-# 45 : identity - ???
+# 45 : identity et autres bugs - 30min
 
 Il y a une erreur dans le browser quand j'essaie de marquer un élément comme lu
 Ca semble venir du module identity, qui est toujours basé sur un fichier
 
 L'idée serait de la stocker dans `_local/identity`
 
+Je corrige ca plus quelques autres trucs, ca me prend 30min
+
+# 46 : bouton tout supprimer - ???
+
+Pour migrer de Git à PouchDB, je vais :
+
+- me mettre à jour sur la version Git
+- tout télécharger sur la version PouchDB
+- tout marquer comme lu sur la version PouchDB
+
+Pour faire ca, il faut une fonction "Tout Supprimer"
+
+Je me TODO XXmin+ à la faire
+
 TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Faire une couche de stockage pouchdb
+TODO Ajouter un bouton "Tout supprimer"
+TODO Migrer les items lus de git à pouchdb
+TODO Utiliser le remote Cloudant
+TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
+TODO Activer la replication live
 TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus
 
+TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Faire un bouton pour mettre à jour la PWA
 TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
@@ -1167,6 +1186,8 @@ TODO Essayer d'implémenter un systeme d'authentification à base de certificat 
 TODO Essayer d'ajouter un déploiement simple via Capacitor (à priori beaucoup plus léger que Cordova) : https://capacitorjs.com/
 TODO Regler les CSP de manière à améliorer la sécurité de l'appli
 TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
+TODO Mettre un remote CouchDB sur RaspberryPi
+TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
 
 # Interrogations :
 
