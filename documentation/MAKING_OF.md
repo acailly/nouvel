@@ -1182,11 +1182,23 @@ Encore 15min pour me rendre compte que ca venait d'une erreur de copier coller ^
 
 Total : 2H
 
+# 48 : changement de CORS proxy - 15min
+
+Au lieu d'utiliser le CORS proxy de zserge, j'essaie d'en trouver un autre qui fonctionne mieux, je trouve celui ci : https://allorigins.win/
+
+Ca me prend 15min
+
+# 49 : Faire marcher tout ca dans le browser - ???
+
+Tout a l'air de marcher dans le browser sauf le flux twitter, bizarre
+
+TODO Regler bug twitter
+TODO Tester remote cloudant
+TODO XXmin+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Gérer l'ajout d'un flux twitter
 TODO N'utiliser les CORS que sous le browser
-TODO Migrer les items lus de git à pouchdb
 TODO Utiliser le remote Cloudant
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
 TODO Activer la replication live
