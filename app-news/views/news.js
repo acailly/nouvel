@@ -38,10 +38,10 @@ module.exports = async function (req, res) {
     })
   );
 
-  const itemsSortedByDateDesc = items.sort((a, b) => b.timestamp - a.timestamp);
+  const itemsSortedByDateAsc = items.sort((a, b) => a.timestamp - b.timestamp);
 
   res.render("news.html", {
-    items: itemsSortedByDateDesc,
+    items: itemsSortedByDateAsc,
     folders: foldersNonEmpty,
     currentPath,
     currentFullPath,

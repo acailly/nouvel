@@ -136,7 +136,9 @@ async function fetchRSSFeedContent(feed) {
   const corsProxifiedURL = `https://cors.zserge.com/?u=${encodeURIComponent(
     feed.url
   )}`;
-  const response = await axios.get(corsProxifiedURL);
+  // TODO ACY Désactivé temporairement
+  // const response = await axios.get(corsProxifiedURL);
+  const response = await axios.get(feed.url);
   const feedContent = await parser.parseString(response.data);
 
   const itemsWithTimestamp = feedContent.items.map((item) => {

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>
+        <a href="<%= locals.baseURL || '' %>/dev">Devtools</a>
+        <small><%= currentPath%></small>
+      </h1>
+      <p>
+        <%= folders.length || 0%> dossiers, <%= items.length || 0%> éléments
+      </p>
+      <ul>
+        <% folders.forEach(function(folder){ %>
+        <li>
+          <a href="?path=<%= currentPath%>/<%= folder.name%>"
+            ><%- folder.name%> (<%= folder.count%>)</a
+          >
+        </li>
+        <% }); %>
+      </ul>
+      <ul>
+        <% items.forEach(function(item){ %>
+        <li>
+          <details>
+            <summary>
+              <%= item.key%> <small>(cliquer pour déplier)</small>
+            </summary>
+            <form method="POST" action="/edit-doc">
+              <input type="hidden" name="key" value="<%- item.fullKey%>" />
+              <textarea name="value" style="width: 100%" rows="5">
+<%= JSON.stringify(item.content, null, 2)%>
+              </textarea>
+              <input type="submit" value="Modifier" />
+            </form>
+            <form method="POST" action="/remove-doc">
+              <input type="hidden" name="key" value="<%- item.fullKey%>" />
+              <input type="submit" value="Supprimer" />
+            </form>
+          </details>
+        </li>
+        <% }); %>
+      </ul>
+    </section>
+  </body>
+</html>

@@ -1153,7 +1153,7 @@ Pour faire ca, il faut une fonction "Tout Supprimer"
 
 Je met 15min à la faire
 
-# 47 : migration vers pouchdb - ???
+# 47 : migration vers pouchdb - 2H
 
 Comme prévu, voici la procédure :
 
@@ -1162,10 +1162,30 @@ Comme prévu, voici la procédure :
 - tout télécharger sur la version PouchDB
 - tout marquer comme lu sur la version PouchDB
 
-TODO XXmin+
+Je met 15min pour ajouter tous les flux... sauf le flux twitter !
+Actuellement l'interface ne permet pas d'afficher un fil twitter, et ca ne posait pas de problème quand on pouvait l'ajouter manuellement
+
+Sauf qu'on ne peut plus. Deux options : j'ajoute un formulaire dédié, ou je créé un explorateur de fichier pour éditer le contenu des objets.
+
+Avant de décider je lance la récupération des news des autres fluxs, et ca plante, et je ne vois rien, et contrairement au mode fichier je ne peux pas explorer les entrailles... du coup ca me décide : je prends 15min pour faire un explorateur de fichiers qui me montre qu'il n'y a aucune news qui a été récupérée :-/
+
+Au bout de 15min de plus je me rends compte que le fait de chercher entre "toto/" et "toto/\uffff" ne renvoyait pas les clés qui commencaient par des émojis comme "toto/📢 tata"
+
+15 min me permette de regler ce souci en utilisant `\u{10ffff}` (voir mon commentaire ici : https://github.com/pouchdb/pouchdb/issues/6456#issuecomment-753092061)
+
+15 minutes de plus pour supprimer toutes les news récupérées
+
+Sauf que je ne vois toujours pas le dossier `items` ou `_deleted_flag` dans mon nouvel explorateur
+Encore 15min pour me rendre compte que ca venait d'une erreur de copier coller ^^
+
+30min de plus pour ajouter la possibilité de modifier et de supprimer un item et je peux ajouter mon flux custom twitter \o/
+
+Total : 2H
 
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Gérer l'ajout d'un flux twitter
+TODO N'utiliser les CORS que sous le browser
 TODO Migrer les items lus de git à pouchdb
 TODO Utiliser le remote Cloudant
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
@@ -1174,6 +1194,7 @@ TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus
 
+TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Faire un bouton pour mettre à jour la PWA

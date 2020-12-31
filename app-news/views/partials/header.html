@@ -4,8 +4,11 @@
     <li><a href="<%= locals.baseURL || '' %>/feeds">📡 Abonnements</a></li>
     <li>
       <a href="<%= locals.baseURL || '' %>/remotes">📦 Stockage</a>
-    </ul>
-  </li>
+    </li>
+    <li>
+      <a href="<%= locals.baseURL || '' %>/dev">🔧 Devtools</a>
+    </li>
+  </ul>
   <form method="POST" action="/fetch-feeds">
     <input type="submit" value="Télécharger les news" />
   </form>
