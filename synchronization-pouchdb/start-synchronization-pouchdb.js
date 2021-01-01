@@ -50,22 +50,33 @@ async function nextIteration() {
       const decryptedPassword = await decrypt(encryptedPassword);
 
       remoteDBOptions.auth = {
-        username: login,
+        username: remote.login,
         password: decryptedPassword,
       };
     }
     const remoteDB = new PouchDB(remoteDBOptions);
 
-    localDB
-      .sync(remoteDB)
-      .on("error", function (err) {
-        console.error("[synchronization-pouchdb] -", remote.name, "- ERROR");
-        console.error(err);
-      })
-      .on("complete", function (change) {
-        console.log("[synchronization-pouchdb] -", remote.name, "- Completed");
-      });
+    try {
+      await syncTwoDB(localDB, remoteDB);
+      console.log("[synchronization-pouchdb] -", remote.name, "- Completed");
+    } catch (e) {
+      console.error("[synchronization-pouchdb] -", remote.name, "- ERROR");
+      console.error(e);
+    }
   }
 
   setTimeout(nextIteration, configuration.pouchdbSyncPeriodInMs || 10000);
+}
+
+async function syncTwoDB(firstDB, secondDB) {
+  return new Promise((resolve, reject) => {
+    firstDB
+      .sync(secondDB)
+      .on("error", function (err) {
+        reject(err);
+      })
+      .on("complete", function (change) {
+        resolve(change);
+      });
+  });
 }

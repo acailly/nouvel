@@ -1188,7 +1188,19 @@ Au lieu d'utiliser le CORS proxy de zserge, j'essaie d'en trouver un autre qui f
 
 Ca me prend 15min
 
-# 49 : Faire marcher tout ca dans le browser - ???
+# 49 : Utilisation de l'instance Cloudant - 30min
+
+Maintenant que tout marche plutôt bien sous node (il reste des soucis dans le browser), il ne me reste plus qu'à ajouter un remote qui soit tout le temps online pour pouvoir utiliser l'appli sur mon PC et sur mon téléphone (via node dans termux)
+
+Comme j'ai créé une instance Cloudant et que c'est gratuit en dessous des 1Go utilisé, j'ajoute celle ci dans l'appli. On verra plus tard s'il n'y a pas d'autres meilleures solutions.
+
+Au passage ca permet de valider que l'appli marche 1/ avec un remote "professionnel" 2/ avec un remote avec authentification
+
+C'est l'occasion de regler un bug : la synchronisation n'attend pas que la précédente soit terminée pour se lancer
+
+Ca me prend 30min, ca y est ! L'appli utilise maintenant PouchDB pour la synchronisation et le stockage, et elle fonctionne avec des remotes externes \o/
+
+# 50 : Faire marcher tout ca dans le browser - ???
 
 Tout a l'air de marcher dans le browser sauf le flux twitter, bizarre
 
