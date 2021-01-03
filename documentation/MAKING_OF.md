@@ -1220,10 +1220,23 @@ A priori il y a un événement spécial `foreign-fetch` (https://filipbech.githu
 Après moult essais, j'arrive à faire marcher un feed normal et le feed twitter en utilisant le CORS proxy `https://cors-anywhere.herokuapp.com` \o/
 Ca m'a pris 2H pour corriger ce bug
 
-TODO 2H+
+Je suis confiant, j'ajoute l'instance cloudant et... un problème de CORS !!!
+J'avais testé un remote local et je n'avais pas eu de souci, mais cette fois ci sur un remote distant le sujet des CORS est une nouvelle fois sur la table :-/
+
+Heureusement on peut activer les CORS depuis l'interface de gestion d'IBM, ouf!
+15min après j'ai enfin la totalité de mes feeds et news dans la PWA \o/
+Je teste la récupération des feeds et... ca marche ! mais... je me prend une erreur 429 (Too Many Requests) venant, je pense, du CORS proxy
+
+Il va falloir trouver une solution plus stable, mais c'est très encourageant
+
+Je déplois la PWA pour pouvoir la tester sur smartphone, affaire à suivre
+
+TODO 2H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Trouver une meilleur solution pour le CORS proxy et l'erreur 429 (Too Many Requests)
+TODO Tester la PWA sur smartphone
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
 TODO Activer la replication live
 TODO Faire une app de lecteur RSS
@@ -1254,6 +1267,7 @@ TODO Regler les CSP de manière à améliorer la sécurité de l'appli
 TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
 TODO Mettre un remote CouchDB sur RaspberryPi
 TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
+TODO Entrer en contact avec le gars de https://github.com/lybekk/offPIM pour discuter de son projet
 
 # Interrogations :
 
