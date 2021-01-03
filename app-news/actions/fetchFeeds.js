@@ -131,11 +131,8 @@ async function fetchTwitterFeedContent(feed) {
 }
 
 async function fetchRSSFeedContent(feed) {
-  const corsProxifiedURL = `https://api.allorigins.win/get?url=${encodeURIComponent(
-    feed.url
-  )}`;
-  const response = await axios.get(corsProxifiedURL);
-  const feedContent = await parser.parseString(response.data.contents);
+  const response = await axios.get(feed.url);
+  const feedContent = await parser.parseString(response.data);
 
   const itemsWithTimestamp = feedContent.items.map((item) => {
     const timestamp = new Date(item.pubDate).getTime();

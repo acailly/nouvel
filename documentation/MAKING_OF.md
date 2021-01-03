@@ -1202,16 +1202,28 @@ Ca me prend 30min, ca y est ! L'appli utilise maintenant PouchDB pour la synchro
 
 # 50 : Faire marcher tout ca dans le browser - ???
 
-Tout a l'air de marcher dans le browser sauf le flux twitter, bizarre
+Tout a l'air de marcher dans le browser sauf le flux twitter
 
-TODO Regler bug twitter
-TODO Tester remote cloudant
-TODO XXmin+
+C'est encore un problème de CORS, sauf qu'il n'y a pas de paramètres pour préciser une URL custom pour l'API Twitter (on pourrait mettre une adresse qui passe par corsanywhere)
+
+Je trouve une autre lib JS pour gérer twitter, Twit (https://github.com/ttezel/twit) mais il y a l'air d'y avoir les mêmes soucis
+
+En regardant le code de la lib actuelle, node-twitter, je vois que les URLs utilisée peuvent être données en options, même si ca n'est pas documenté dans le README : https://github.com/desmondmorris/node-twitter/blob/master/lib/twitter.js
+
+J'essaie de passer l'URL avec proxy CORS via l'option `rest_base` et... ca marche pas
+Avec le proxy anyorigins et celui de zserge, j'ai toujours une erreur CORS
+Avec le proxy cors-anywhere j'ai une erreur 401
+
+Je me demande si ca ne vient pas du fait que la lib twitter modifie l'URL en interne avant d'effectuer réellement la requête. Du coup je regarde si je ne pourrais pas intégrer la gestion du proxy CORS directement dans le service worker.
+Ca aurait pour conséquence positive qu'on utiliserait plus de CORS proxy dans node :-)
+A priori il y a un événement spécial `foreign-fetch` (https://filipbech.github.io/2017/02/service-worker-and-caching-from-other-origins) mais ca a l'air d'être un truc expérimental Google only (https://www.chromestatus.com/feature/5684130679357440). Dommage ca aurait pu permettre de se passer totalement du CORS proxy.
+Après moult essais, j'arrive à faire marcher un feed normal et le feed twitter en utilisant le CORS proxy `https://cors-anywhere.herokuapp.com` \o/
+Ca m'a pris 2H pour corriger ce bug
+
+TODO 2H+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO N'utiliser les CORS que sous le browser
-TODO Utiliser le remote Cloudant
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
 TODO Activer la replication live
 TODO Faire une app de lecteur RSS
