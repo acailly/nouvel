@@ -32,6 +32,10 @@
         </li>
         <% }); %>
       </ul>
+      <form method="POST" action="/remove-all-news-item">
+        <input type="hidden" name="folder" value="<%- currentFullPath%>" />
+        <input type="submit" value="Supprimer tout" />
+      </form>
     </section>
   </body>
 </html>

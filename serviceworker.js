@@ -37,7 +37,27 @@ self.addEventListener("fetch", async function (event) {
       })
       //... else fallback to the network
       .then((response) => {
-        return response || fetch(event.request);
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
+      .catch((e) => {
+        //... if this is an error in cors mode, retry with a CORS proxy
+        if (event.request.mode === "cors") {
+          const corsProxifiedURL = `https://cors-anywhere.herokuapp.com/${event.request.url}`;
+          // From https://stackoverflow.com/a/35421858
+          const proxifiedRequest = new Request(corsProxifiedURL, {
+            method: event.request.method,
+            headers: event.request.headers,
+            mode: event.request.mode,
+            credentials: event.request.credentials,
+            redirect: event.request.redirect,
+          });
+          return fetch(proxifiedRequest);
+        }
+
+        throw e;
       })
   );
 });
