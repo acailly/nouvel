@@ -13,7 +13,7 @@ function createWindow() {
     },
   });
 
-  win.loadURL(`http://localhost:${configuration.appServerPort}`);
+  win.loadURL(`http://localhost:${configuration.nodeServerPort}`);
 }
 
 app.whenReady().then(createWindow);

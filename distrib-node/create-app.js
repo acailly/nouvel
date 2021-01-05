@@ -2,11 +2,11 @@ const path = require("path");
 const express = require("express");
 const ejs = require("ejs");
 const configuration = require("../@configuration");
+const application = require("../@application");
 
 module.exports = function () {
-  const folder = configuration.appPath;
-  const appConfig = require(configuration.appConfigPath);
-  const port = configuration.appServerPort;
+  const appConfig = application.getConfig();
+  const port = configuration.nodeServerPort;
 
   const app = express();
 
@@ -17,9 +17,9 @@ module.exports = function () {
     cb(null, html);
   });
 
-  app.set("views", path.join(folder, "views"));
+  app.set("views", application.viewsPath);
 
-  app.use(express.static(path.join(folder, "public")));
+  app.use(express.static(application.publicPath));
 
   appConfig(app);
 

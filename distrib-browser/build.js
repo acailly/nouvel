@@ -4,8 +4,8 @@ const browserify = require("browserify");
 const glob = require("glob");
 const makeDir = require("make-dir");
 const configuration = require("../@configuration");
+const application = require("../@application");
 
-const appFolder = configuration.appPath;
 const baseUrlPath = configuration.deployBaseURL || "";
 const outputPath = path.join(
   __dirname,
@@ -39,7 +39,7 @@ function exportAssets(callback) {
   }
 
   // List app assets to cache
-  const appAssetsPath = path.join(__dirname, "..", appFolder);
+  const appAssetsPath = application.rootPath;
   const filesFromAppAssets = glob.sync("!(public)/**/*.!(js)", {
     cwd: appAssetsPath,
   });
@@ -55,7 +55,7 @@ function exportAssets(callback) {
   }
 
   // List app public assets to cache
-  const appPublicAssetsPath = path.join(__dirname, "..", appFolder, "public");
+  const appPublicAssetsPath = application.publicPath;
   const filesFromAppPublicAssets = glob.sync("**/*.!(js)", {
     cwd: appPublicAssetsPath,
   });
@@ -103,7 +103,7 @@ function exportBundle() {
     }),
   };
 
-  browserify(path.join(__dirname, "..", "start-browser.js"), browserifyConfig)
+  browserify(path.join(__dirname, "start.js"), browserifyConfig)
     // .plugin('tinyify') // TODO ACY
     .bundle()
     .pipe(fs.createWriteStream(path.join(outputPath, bundleFile)));

@@ -1,6 +1,10 @@
+const path = require("path");
 const configuration = require("../@configuration");
+const application = require("../@application");
 
-module.exports = function (appConfig) {
+module.exports = function () {
+  const appConfig = application.getConfig();
+
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./serviceworker.js");
   }

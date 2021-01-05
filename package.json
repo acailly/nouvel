@@ -6,7 +6,6 @@
   "scripts": {
     "start": "npm run start:node",
     "start:node": "node start-node.js",
-    "start:browser": "node start-browser.js",
     "nexe": "nexe",
     "exe:build": "npm run exe:build-linux && npm run exe:build-win && npm run exe:build-mac",
     "exe:build-linux": "nexe server.js -r \"views/**/*\" -t linux-x64-12.9.1 -o server-linux",

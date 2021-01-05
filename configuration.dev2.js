@@ -14,9 +14,6 @@ const localDatabaseName = "storage";
 const localDatabaseFolder = path.join(homeDirectory, "db");
 
 // APP - NEWS
-const appPath = path.join(__dirname, "app-news");
-const appConfigPath = path.join(appPath, "app-config");
-const appServerPort = 8093;
 
 // SYNCHRONIZATION GIT
 const syncGitEnabled = true;
@@ -42,6 +39,9 @@ const pouchdbServerPort = 5985;
 const tunnellingHost = "http://localtunnel.me";
 const tunnellingLocalPort = 8081;
 
+// DISTRIB NODE
+const nodeServerPort = 8093;
+
 // DISTRIB BROWSER
 const deployBaseURL = "/zDemocracy-lowtech";
 
@@ -50,9 +50,7 @@ const configuration = {
   localStorageFolder,
   localDatabaseName,
   localDatabaseFolder,
-  appPath,
-  appConfigPath,
-  appServerPort,
+  nodeServerPort,
   syncGitEnabled,
   useNativeGit,
   gitSyncPeriodInMs,

@@ -1252,7 +1252,11 @@ Ca m'inquiète car d'autres outils utilisent ce champ...
 
 Total 2H
 
-# 52 : Deploiement sur capacitor - ???
+# 52 : Nettoyage de la configuration - 30min
+
+Je prends 30min pour revoir certains mecanismes de config et essayer d'isoler au maximum les différents modules
+
+# 53 : Deploiement sur capacitor - ???
 
 TODO XXmin+
 
