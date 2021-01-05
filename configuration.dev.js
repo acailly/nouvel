@@ -13,14 +13,10 @@ const localStorageFolder = path.join(homeDirectory, "data");
 const localDatabaseName = "storage";
 const localDatabaseFolder = path.join(homeDirectory, "db");
 
-// APP ZDEMOCRACY
-const zdemocracyServerPort = 8080;
-
-// APP LIST
-const listServerPort = 8082;
-
-// APP NEWS
-const newsServerPort = 8092;
+// APP - NEWS
+const appPath = path.join(__dirname, "app-news");
+const appConfigPath = path.join(appPath, "app-config");
+const appServerPort = 8092;
 
 // SYNCHRONIZATION GIT
 const syncGitEnabled = true;
@@ -54,9 +50,9 @@ const configuration = {
   localStorageFolder,
   localDatabaseName,
   localDatabaseFolder,
-  zdemocracyServerPort,
-  listServerPort,
-  newsServerPort,
+  appPath,
+  appConfigPath,
+  appServerPort,
   syncGitEnabled,
   useNativeGit,
   gitSyncPeriodInMs,

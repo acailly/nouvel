@@ -1200,7 +1200,7 @@ C'est l'occasion de regler un bug : la synchronisation n'attend pas que la préc
 
 Ca me prend 30min, ca y est ! L'appli utilise maintenant PouchDB pour la synchronisation et le stockage, et elle fonctionne avec des remotes externes \o/
 
-# 50 : Faire marcher tout ca dans le browser - ???
+# 50 : Faire marcher tout ca dans le browser - 2H15
 
 Tout a l'air de marcher dans le browser sauf le flux twitter
 
@@ -1229,14 +1229,33 @@ Je teste la récupération des feeds et... ca marche ! mais... je me prend une e
 
 Il va falloir trouver une solution plus stable, mais c'est très encourageant
 
-Je déplois la PWA pour pouvoir la tester sur smartphone, affaire à suivre
+Je déplois la PWA pour pouvoir la tester sur smartphone, ca marche :-)
 
-TODO 2H15min+
+Par contre je me rend compte que ca ne passe pas en local quand on est connecté via un VPN + proxy (je ne sais pas lequel des deux pose problème)
+
+Total : 2H15min
+
+# 51 : Deploiement sur electron - ???
+
+Il reste des soucis en cours (limite sur CORS proxy, VPN+proxy, etc.)
+mais après avoir parlé du projet autour de moi il me semble qu'un des
+points qui peut faire un effet wahou est de pouvoir déployer une appli
+sur serveur + web (pwa) + desktop + mobile en peu de temps
+
+Du coup je commence à regarder côté déploiement electron,
+c'est parti pour `distrib-electron`
+
+Après 30 minutes j'arrive à lancer une fenêtre Electron qui ouvre l'URL de l'appli node lancée en tâche de fond... et voila !
+
+Reste la génération des executables, TODO
+
+TODO 30min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
+TODO Déployer sur Electron
 TODO Trouver une meilleur solution pour le CORS proxy et l'erreur 429 (Too Many Requests)
-TODO Tester la PWA sur smartphone
+TODO Essayer de faire marcher l'appli locale via VPN+proxy
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
 TODO Activer la replication live
 TODO Faire une app de lecteur RSS

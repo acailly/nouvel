@@ -1,6 +1,3 @@
-const path = require("path");
-const configuration = require("./@configuration");
-
 const { get: getIdentity } = require("./@identity");
 getIdentity().then((identity) => {
   console.log(`Connected as ${identity.id}`);
@@ -10,13 +7,7 @@ getIdentity().then((identity) => {
 // startZDemocracyExpress();
 
 const createNodeApp = require("./distrib-node/create-app");
-// const appListPath = path.join(__dirname, "app-list");
-// const appListConfig = require("./app-list/app-config");
-// const createNodeApp = require("./distrib-node/create-app");
-// createNodeApp(appListPath, appListConfig, configuration.listServerPort);
-const appNewsPath = path.join(__dirname, "app-news");
-const appNewsConfig = require("./app-news/app-config");
-createNodeApp(appNewsPath, appNewsConfig, configuration.newsServerPort);
+createNodeApp();
 
 // const startPublishingGitDumbHttp = require("./expose-gitdumbhttp/start-gitdumbhttp");
 // startPublishingGitDumbHttp();

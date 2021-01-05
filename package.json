@@ -14,7 +14,8 @@
     "exe:build-mac": "nexe server.js -r \"views/**/*\" -t mac-x64-8.9.4 -o server-mac",
     "browser:build": "node ./distrib-browser/build.js",
     "browser:serve": "node ./distrib-browser/serve.js",
-    "browser:deploy": "node ./distrib-browser/deploy.js"
+    "browser:deploy": "node ./distrib-browser/deploy.js",
+    "electron:build": "electron ./distrib-electron/main.js"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "browserify": "^16.5.2",
+    "electron": "^11.1.1",
     "gh-pages": "^3.1.0",
     "glob": "^7.1.6",
     "nexe": "^3.3.3",

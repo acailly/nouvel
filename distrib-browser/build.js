@@ -5,12 +5,7 @@ const glob = require("glob");
 const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 
-const args = process.argv.slice(2);
-const appFolder = args[0];
-if (!appFolder) {
-  throw new Error("Error: No arguments");
-}
-
+const appFolder = configuration.appPath;
 const baseUrlPath = configuration.deployBaseURL || "";
 const outputPath = path.join(
   __dirname,

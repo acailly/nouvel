@@ -1,8 +1,13 @@
 const path = require("path");
 const express = require("express");
 const ejs = require("ejs");
+const configuration = require("../@configuration");
 
-module.exports = function (folder, appConfig, port) {
+module.exports = function () {
+  const folder = configuration.appPath;
+  const appConfig = require(configuration.appConfigPath);
+  const port = configuration.appServerPort;
+
   const app = express();
 
   // from https://github.com/mde/ejs/wiki/Using-EJS-with-Express#custom-render-function
