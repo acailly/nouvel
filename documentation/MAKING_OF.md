@@ -1235,7 +1235,7 @@ Par contre je me rend compte que ca ne passe pas en local quand on est connecté
 
 Total : 2H15min
 
-# 51 : Deploiement sur electron - ???
+# 51 : Deploiement sur electron - 2H
 
 Il reste des soucis en cours (limite sur CORS proxy, VPN+proxy, etc.)
 mais après avoir parlé du projet autour de moi il me semble qu'un des
@@ -1247,13 +1247,17 @@ c'est parti pour `distrib-electron`
 
 Après 30 minutes j'arrive à lancer une fenêtre Electron qui ouvre l'URL de l'appli node lancée en tâche de fond... et voila !
 
-Reste la génération des executables, TODO
+Reste la génération des executables, ca me prend 1H30 à configurer electron-forge (https://www.electronforge.io/), et il y a un truc qui ne me plait pas : electron-forge se base sur le champ `main` de `package.json`, ce qui fait que je suis obligé d'y mettre une valeur spécifique à electron (`distrib-electron.index.js`)
+Ca m'inquiète car d'autres outils utilisent ce champ...
 
-TODO 30min+
+Total 2H
+
+# 52 : Deploiement sur capacitor - ???
+
+TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Déployer sur Electron
 TODO Trouver une meilleur solution pour le CORS proxy et l'erreur 429 (Too Many Requests)
 TODO Essayer de faire marcher l'appli locale via VPN+proxy
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
@@ -1262,6 +1266,7 @@ TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus
 
+TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Pouvoir ajouter un feed twitter directement dans l'UI

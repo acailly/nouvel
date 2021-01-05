@@ -1,8 +1,8 @@
 {
   "name": "zDemocracy-lowtech",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Low tech experiment",
+  "main": "distrib-electron/index.js",
   "scripts": {
     "start": "npm run start:node",
     "start:node": "node start-node.js",
@@ -15,10 +15,13 @@
     "browser:build": "node ./distrib-browser/build.js",
     "browser:serve": "node ./distrib-browser/serve.js",
     "browser:deploy": "node ./distrib-browser/deploy.js",
-    "electron:build": "electron ./distrib-electron/main.js"
+    "electron:serve": "electron ./distrib-electron/index.js",
+    "electron:forge:start": "electron-forge start",
+    "electron:forge:package": "electron-forge package",
+    "electron:forge:make": "electron-forge make"
   },
   "keywords": [],
-  "author": "",
+  "author": "Antoine Cailly",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.0",
@@ -26,6 +29,7 @@
     "browser-express": "^4.6.0",
     "cors": "^2.8.5",
     "ejs": "^3.1.3",
+    "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
     "express-pouchdb": "^4.2.0",
     "localtunnel": "^2.0.0",
@@ -38,11 +42,19 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "browserify": "^16.5.2",
     "electron": "^11.1.1",
     "gh-pages": "^3.1.0",
     "glob": "^7.1.6",
     "nexe": "^3.3.3",
     "tinyify": "^3.0.0"
+  },
+  "config": {
+    "forge": "./distrib-electron/forge.config.js"
   }
 }
