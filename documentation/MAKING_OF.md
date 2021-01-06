@@ -1258,12 +1258,13 @@ Je prends 30min pour revoir certains mecanismes de config et essayer d'isoler au
 
 # 53 : Deploiement sur capacitor - ???
 
+TODO Ou sur expo ???
+
 TODO XXmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Trouver une meilleur solution pour le CORS proxy et l'erreur 429 (Too Many Requests)
-TODO Essayer de faire marcher l'appli locale via VPN+proxy
 TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
 TODO Activer la replication live
