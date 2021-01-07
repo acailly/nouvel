@@ -779,7 +779,7 @@ Je patch la fonction redirect pour prendre en comtpe la base URL dans le browser
 
 Et ca marche !!! L'appli est maintenant accessible sur le net !
 
-# 33 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 10m
+# 33 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 15m
 
 A l'étape 16 on était à 33H
 
@@ -1256,7 +1256,33 @@ Total 2H
 
 Je prends 30min pour revoir certains mecanismes de config et essayer d'isoler au maximum les différents modules
 
-# 53 : Deploiement sur capacitor - ???
+# 53 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 15m
+
+A l'étape 33 on était à 52H15
+
+- 8H30 = 60H45
+- 6H15 = 67H
+- 1H30 = 68H30
+- 13H30 = 82H
+- 30 = 82H30
+- 1H45 = 84H15
+- 2H30 = 86H45
+- 45min = 87H30
+- 45min = 88H15
+- 15min = 88H30
+- 1H30 = 90H
+- 30min = 90H30
+- 15min = 90H45
+- 2H = 92H45
+- 15min = 93H
+- 30min = 93H30
+- 2H15 = 95H45
+- 2H = 97H45
+- 30min = 98H15
+
+98H15, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
+
+# 54 : Deploiement sur capacitor - ???
 
 Je me lance dans l'ajout d'un module `distrib-capacitor`
 
