@@ -27,7 +27,6 @@ A tester :
 - capacitor : Bundle de la PWA avec Capacitor (Cordova mais en mieux) (https://capacitorjs.com/)
 - electron : Bundle de l'application avec Electron (https://www.electronjs.org/)
 - native-webview : Bundle de l'application dans un exe (avec nexe par exemple, https://github.com/nexe/nexe) qui ouvre l'application dans la WebView native de l'OS (avec webopen par exemple, https://github.com/acailly/webopen)
-- expo : Bundle en React Native sans XCode ou Android Studio
 - webextension : Extension Chrome et Firefox
 - ...
 

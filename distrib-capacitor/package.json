@@ -1,0 +1,18 @@
+{
+  "name": "distrib-capacitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^2.4.5",
+    "@capacitor/core": "^2.4.5"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^2.4.5"
+  }
+}

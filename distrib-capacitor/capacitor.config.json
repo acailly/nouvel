@@ -1,0 +1,13 @@
+{
+  "appId": "distrib.capacitor",
+  "appName": "application",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "../output/distrib-browser/zDemocracy-lowtech",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}

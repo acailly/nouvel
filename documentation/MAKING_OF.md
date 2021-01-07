@@ -1258,9 +1258,20 @@ Je prends 30min pour revoir certains mecanismes de config et essayer d'isoler au
 
 # 53 : Deploiement sur capacitor - ???
 
-TODO Ou sur expo ???
+Je me lance dans l'ajout d'un module `distrib-capacitor`
 
-TODO XXmin+
+Première difficulté, la configuration n'est pas très flexible et je n'arrive pas à bien isoler le module sans avoir à créer un autre `package.json` directement dans le dossier `distrib-capacitor`
+Mais pour l'instant ca ne pose pas de problèmes
+
+J'arrive à lancer un hello world, le workflow est plutôt simple
+
+Deuxième difficulté, j'essaie d'embarquer la version PWA de l'appli, or le service worker ne marche pas sur Android
+Et quand l'appli cherche à charger http://localhost/zDemocracy-lowtech/views/login.html, elle ne trouve rien
+
+Est ce que ca va remettre en cause tout mon système avec le service worker ? je n'espère pas
+En tout cas j'ai déjà passé 2H30 dessus
+
+TODO 2H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
