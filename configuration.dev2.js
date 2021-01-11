@@ -45,6 +45,9 @@ const nodeServerPort = 8093;
 // DISTRIB BROWSER
 const deployBaseURL = "/zDemocracy-lowtech";
 
+// DISTRIB CAPACITOR
+const capacitorBaseURL = "";
+
 const configuration = {
   identityKey,
   localStorageFolder,
@@ -64,6 +67,7 @@ const configuration = {
   tunnellingHost,
   tunnellingLocalPort,
   deployBaseURL,
+  capacitorBaseURL,
 };
 
 module.exports = configuration;

@@ -6,7 +6,9 @@ const makeDir = require("make-dir");
 const configuration = require("../@configuration");
 const application = require("../@application");
 
-const baseUrlPath = configuration.deployBaseURL || "";
+const baseUrlPath = configuration.deployBaseURL || "no-base-url";
+console.log("DEBUG", baseUrlPath);
+console.error("DEBUG", baseUrlPath);
 const outputPath = path.join(
   __dirname,
   "..",

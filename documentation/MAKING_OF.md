@@ -1297,7 +1297,10 @@ Et quand l'appli cherche à charger http://localhost/zDemocracy-lowtech/views/lo
 Est ce que ca va remettre en cause tout mon système avec le service worker ? je n'espère pas
 En tout cas j'ai déjà passé 2H30 dessus
 
-TODO 2H30+
+Je passe 1H à trouver un moyen de modifier la base URL utilisée au moment du build
+J'arrive à lancer l'appli mobile et à naviguer, en revanche la synchronisation avec cloudant échoue sans plus d'information dans l'exception remontée :-/
+
+TODO 3H30+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

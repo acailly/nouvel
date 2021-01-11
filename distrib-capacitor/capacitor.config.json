@@ -3,11 +3,12 @@
   "appName": "application",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "../output/distrib-browser/zDemocracy-lowtech",
+  "webDir": "../output/distrib-browser/no-base-url",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0
     }
   },
-  "cordova": {}
+  "cordova": {},
+  "linuxAndroidStudioPath": "studio.sh"
 }
