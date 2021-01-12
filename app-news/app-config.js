@@ -25,6 +25,7 @@ module.exports = function (app) {
   const actionUnlock = require("./actions/unlock");
   const actionNewFeed = require("./actions/newFeed");
   const actionNewRemote = require("./actions/newRemote");
+  const actionRemoveRemote = require("./actions/removeRemote");
   const actionFetchFeeds = require("./actions/fetchFeeds");
   const removeNewsItem = require("./actions/removeNewsItem");
   const removeAllNewsItem = require("./actions/removeAllNewsItem");
@@ -45,6 +46,7 @@ module.exports = function (app) {
 
   app.get("/remotes", viewRemotes);
   app.post("/new-remote", actionNewRemote);
+  app.post("/remove-remote", actionRemoveRemote);
 
   app.get("/dev", viewDev);
   app.post("/edit-doc", actionEditDoc);

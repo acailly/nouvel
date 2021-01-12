@@ -3,19 +3,16 @@ const fs = require("fs");
 const browserify = require("browserify");
 const glob = require("glob");
 const makeDir = require("make-dir");
+const rimraf = require("rimraf");
 const configuration = require("../@configuration");
 const application = require("../@application");
 
-const baseUrlPath = configuration.deployBaseURL || "no-base-url";
-console.log("DEBUG", baseUrlPath);
-console.error("DEBUG", baseUrlPath);
-const outputPath = path.join(
-  __dirname,
-  "..",
-  "output",
-  "distrib-browser",
-  baseUrlPath
-);
+const outputPathRoot = path.join(__dirname, "..", "output", "distrib-browser");
+rimraf.sync(outputPathRoot);
+makeDir.sync(outputPathRoot);
+
+const baseUrlPath = configuration.deployBaseURL || "";
+const outputPath = path.join(outputPathRoot, baseUrlPath);
 if (!fs.existsSync(outputPath)) {
   makeDir.sync(outputPath);
 }

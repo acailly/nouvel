@@ -35,6 +35,10 @@
         <% remotes.forEach(function(remote){ %>
         <li>
           <a href="<%= remote.url%>"><%= remote.name%> (<%= remote.url%>)</a>
+          <form method="POST" action="/remove-remote">
+            <input type="hidden" name="name" value="<%- remote.name%>" />
+            <input type="submit" value="Supprimer" />
+          </form>
         </li>
         <% }); %>
       </ul>

@@ -1282,7 +1282,7 @@ A l'étape 33 on était à 52H15
 
 98H15, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
 
-# 54 : Deploiement sur capacitor - ???
+# 54 : Deploiement sur capacitor - 5H
 
 Je me lance dans l'ajout d'un module `distrib-capacitor`
 
@@ -1297,10 +1297,11 @@ Et quand l'appli cherche à charger http://localhost/zDemocracy-lowtech/views/lo
 Est ce que ca va remettre en cause tout mon système avec le service worker ? je n'espère pas
 En tout cas j'ai déjà passé 2H30 dessus
 
-Je passe 1H à trouver un moyen de modifier la base URL utilisée au moment du build
-J'arrive à lancer l'appli mobile et à naviguer, en revanche la synchronisation avec cloudant échoue sans plus d'information dans l'exception remontée :-/
+Je passe 2H30 à trouver un moyen de modifier la base URL utilisée au moment du build plus des bugs à résoudre
 
-TODO 3H30+
+Au final, j'arrive à lancer l'appli mobile et à synchroniser mes données \o/
+
+Total : 5H
 
 # Next pour avoir un exemple représentatif de l'approche :
 
