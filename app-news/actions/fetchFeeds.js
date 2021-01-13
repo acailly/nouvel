@@ -1,6 +1,6 @@
 const axios = require("axios");
 const Parser = require("rss-parser");
-const Twitter = require("twitter");
+const Twitter = require("twitter-lite");
 const { listKeys, read, write, keyExists } = require("../../@storage");
 const { isLocked, decrypt } = require("../../@secrets");
 const deletedFlagPathFromPath = require("../domain/deletedFlagPathFromPath");
@@ -27,6 +27,8 @@ module.exports = async function (req, res) {
       items = await fetchFeedContent(feed);
     } catch (e) {
       console.error("[ERROR] Error with feed", feed.title);
+      // DEBUG
+      console.error(e);
       continue;
     }
 
@@ -85,6 +87,8 @@ async function fetchFeedContent(feed) {
 }
 
 async function fetchTwitterFeedContent(feed) {
+  // TODO ACY
+  // return Promise.resolve([]);
   let consumerKey = feed.consumer_key;
   let consumerSecret = feed.consumer_secret;
   let accessTokenKey = feed.access_token_key;
@@ -99,6 +103,11 @@ async function fetchTwitterFeedContent(feed) {
 
   //From https://apps.twitter.com/
   const client = new Twitter({
+    // TODO Activer quand il y a besoin de CORS
+    // From https://github.com/draftbit/twitter-lite/issues/41#issuecomment-467403918
+    subdomain: "acailly-cors-anywhere.herokuapp.com/https://api",
+    // subdomain: "api",
+    version: "1.1",
     consumer_key: consumerKey,
     consumer_secret: consumerSecret,
     access_token_key: accessTokenKey,
@@ -111,26 +120,27 @@ async function fetchTwitterFeedContent(feed) {
     tweet_mode: "extended",
   };
 
-  const fetchPromise = new Promise((resolve, reject) => {
-    // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
-    client.get("statuses/home_timeline", params, function (error, tweets) {
-      if (error) {
-        reject(error);
-      }
-      const items = tweets.map((tweet) => {
-        return {
-          title: `${tweet.user.name} - ${tweet.full_text}`,
-          link: `https://twitter.com/i/web/status/${tweet.id_str}`,
-          timestamp: new Date(tweet.created_at).getTime(),
-        };
-      });
-      resolve(items);
-    });
+  // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
+  const tweets = await client.get("statuses/home_timeline", params);
+
+  console.log("DEBUG", tweets);
+
+  const items = tweets.map((tweet) => {
+    return {
+      title: `${tweet.user.name} - ${tweet.full_text}`,
+      link: `https://twitter.com/i/web/status/${tweet.id_str}`,
+      timestamp: new Date(tweet.created_at).getTime(),
+    };
   });
-  return await fetchPromise;
+
+  return items;
 }
 
 async function fetchRSSFeedContent(feed) {
+  // TODO ACY
+  return [];
+  // TODO Activer quand il y a besoin de CORS
+  // const corsProxifiedURL = `https://acailly-cors-anywhere.herokuapp.com/${feed.url}`;
   const response = await axios.get(feed.url);
   const feedContent = await parser.parseString(response.data);
 

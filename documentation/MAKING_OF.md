@@ -1307,7 +1307,14 @@ J'avais reglé ce problème en appelant un CORS proxy directement dans le Servic
 Avant de me repencher sur ce problème, je prends 15min pour déployer une instance perso de cors-anywhere sur heroku : https://acailly-cors-anywhere.herokuapp.com/
 Ca évitera peut être les erreurs 429 et ca pourrira moins l'instance publique
 
-Total : 5H15min+
+Bon donc on a encore un problème avec les CORS et si on utilise simplement un cors proxy sur l'URL du feed ca ne va pas suffir parce que le flux twitter est récupéré de manière différente, par la lib `node-twitter` (voir étape 50). Comment faire ?
+
+Après 30min de recherche, je tombe sur cette issue : https://github.com/draftbit/twitter-lite/issues/41
+Du coup je me lance dans le remplacement de la lib `twitter` par `twitter-lite`
+
+30min après j'ai un proto qui donne les mêmes résultats que `twitter`...
+
+Total : 6H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
