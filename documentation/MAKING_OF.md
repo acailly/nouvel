@@ -1282,7 +1282,7 @@ A l'étape 33 on était à 52H15
 
 98H15, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
 
-# 54 : Deploiement sur capacitor - 5H
+# 54 : Deploiement sur capacitor - ???
 
 Je me lance dans l'ajout d'un module `distrib-capacitor`
 
@@ -1299,9 +1299,15 @@ En tout cas j'ai déjà passé 2H30 dessus
 
 Je passe 2H30 à trouver un moyen de modifier la base URL utilisée au moment du build plus des bugs à résoudre
 
-Au final, j'arrive à lancer l'appli mobile et à synchroniser mes données \o/
+Au final, j'arrive à lancer l'appli mobile et à parler avec cloudant \o/
 
-Total : 5H
+Par contre je n'arrive pas à récupérer les news, et c'est encore un problème de CORS !
+J'avais reglé ce problème en appelant un CORS proxy directement dans le Service Worker, sauf que capacitor ne lance pas le service worker :-)
+
+Avant de me repencher sur ce problème, je prends 15min pour déployer une instance perso de cors-anywhere sur heroku : https://acailly-cors-anywhere.herokuapp.com/
+Ca évitera peut être les erreurs 429 et ca pourrira moins l'instance publique
+
+Total : 5H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

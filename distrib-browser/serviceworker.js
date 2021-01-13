@@ -45,7 +45,7 @@ self.addEventListener("fetch", async function (event) {
       .catch((e) => {
         //... if this is an error in cors mode, retry with a CORS proxy
         if (event.request.mode === "cors") {
-          const corsProxifiedURL = `https://cors-anywhere.herokuapp.com/${event.request.url}`;
+          const corsProxifiedURL = `https://acailly-cors-anywhere.herokuapp.com/${event.request.url}`;
           // From https://stackoverflow.com/a/35421858
           const proxifiedRequest = new Request(corsProxifiedURL, {
             method: event.request.method,
