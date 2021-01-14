@@ -1313,8 +1313,9 @@ Après 30min de recherche, je tombe sur cette issue : https://github.com/draftbi
 Du coup je me lance dans le remplacement de la lib `twitter` par `twitter-lite`
 
 30min après j'ai un proto qui donne les mêmes résultats que `twitter`...
+au bout de 45min de recherche je me demande si ca ne donnerait pas de meilleurs résultats en essayant d'utiliser l'authentification App au lieu de User : https://github.com/draftbit/twitter-lite#app-authentication-example
 
-Total : 6H15min+
+Total : 7Hmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -87,8 +87,6 @@ async function fetchFeedContent(feed) {
 }
 
 async function fetchTwitterFeedContent(feed) {
-  // TODO ACY
-  // return Promise.resolve([]);
   let consumerKey = feed.consumer_key;
   let consumerSecret = feed.consumer_secret;
   let accessTokenKey = feed.access_token_key;
@@ -105,8 +103,8 @@ async function fetchTwitterFeedContent(feed) {
   const client = new Twitter({
     // TODO Activer quand il y a besoin de CORS
     // From https://github.com/draftbit/twitter-lite/issues/41#issuecomment-467403918
-    subdomain: "acailly-cors-anywhere.herokuapp.com/https://api",
-    // subdomain: "api",
+    // subdomain: "acailly-cors-anywhere.herokuapp.com/https://api",
+    subdomain: "api",
     version: "1.1",
     consumer_key: consumerKey,
     consumer_secret: consumerSecret,
@@ -137,8 +135,6 @@ async function fetchTwitterFeedContent(feed) {
 }
 
 async function fetchRSSFeedContent(feed) {
-  // TODO ACY
-  return [];
   // TODO Activer quand il y a besoin de CORS
   // const corsProxifiedURL = `https://acailly-cors-anywhere.herokuapp.com/${feed.url}`;
   const response = await axios.get(feed.url);
