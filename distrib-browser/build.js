@@ -77,12 +77,30 @@ function exportAssets(callback) {
   ];
 
   // Generate file filesToCache.js
-  const generatedScript = `var filesToCache = ${JSON.stringify(
+  const generatedCacheScript = `var filesToCache = ${JSON.stringify(
     filesToCache,
     null,
     2
   )}`;
-  fs.writeFileSync(path.join(outputPath, "filesToCache.js"), generatedScript);
+  fs.writeFileSync(
+    path.join(outputPath, "filesToCache.js"),
+    generatedCacheScript
+  );
+
+  // Generate file serviceworker-configuration.js
+  const serviceWorkerConfiguration = {
+    baseURL: configuration.deployBaseURL,
+    corsProxyURL: configuration.corsProxyURL,
+  };
+  const generatedConfigScript = `var serviceWorkerConfiguration = ${JSON.stringify(
+    serviceWorkerConfiguration,
+    null,
+    2
+  )}`;
+  fs.writeFileSync(
+    path.join(outputPath, "serviceworker-configuration.js"),
+    generatedConfigScript
+  );
 
   // Copy Service Worker
   fs.copyFileSync(

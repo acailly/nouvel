@@ -1,10 +1,13 @@
 const version = "v1";
 
-const baseUrl = location.href.slice(0, -"serviceworker.js".length);
-console.log("[service-worker] Base URL is", baseUrl);
-
 // Declare filesToCache variable
 self.importScripts("./filesToCache.js");
+
+// Declare serviceWorkerConfiguration variable
+self.importScripts("./serviceworker-configuration.js");
+
+const baseUrl = serviceWorkerConfiguration.baseUrl;
+console.log("[service-worker] Base URL is", baseUrl);
 
 self.addEventListener("install", function (event) {
   // Add all the ressources in the cache
@@ -45,7 +48,7 @@ self.addEventListener("fetch", async function (event) {
       .catch((e) => {
         //... if this is an error in cors mode, retry with a CORS proxy
         if (event.request.mode === "cors") {
-          const corsProxifiedURL = `https://acailly-cors-anywhere.herokuapp.com/${event.request.url}`;
+          const corsProxifiedURL = `${serviceWorkerConfiguration.corsProxyURL}${event.request.url}`;
           // From https://stackoverflow.com/a/35421858
           const proxifiedRequest = new Request(corsProxifiedURL, {
             method: event.request.method,

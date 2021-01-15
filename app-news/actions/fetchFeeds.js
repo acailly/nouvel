@@ -3,7 +3,11 @@ const Parser = require("rss-parser");
 const Twitter = require("twitter-lite");
 const { listKeys, read, write, keyExists } = require("../../@storage");
 const { isLocked, decrypt } = require("../../@secrets");
+const configuration = require("../../@configuration");
 const deletedFlagPathFromPath = require("../domain/deletedFlagPathFromPath");
+
+const isBrowser =
+  typeof window !== "undefined" && typeof window.document !== "undefined";
 
 const parser = new Parser({
   headers: {
@@ -99,18 +103,39 @@ async function fetchTwitterFeedContent(feed) {
     accessTokenSecret = await decrypt(accessTokenSecret);
   }
 
+  // In browser, use a CORS proxy
+  // From https://github.com/draftbit/twitter-lite/issues/41#issuecomment-467403918
+  const subdomain = isBrowser
+    ? `${configuration.corsProxyURL.slice("https://".length)}https://api`
+    : "api";
+
   //From https://apps.twitter.com/
   const client = new Twitter({
-    // TODO Activer quand il y a besoin de CORS
-    // From https://github.com/draftbit/twitter-lite/issues/41#issuecomment-467403918
-    // subdomain: "acailly-cors-anywhere.herokuapp.com/https://api",
-    subdomain: "api",
+    subdomain,
     version: "1.1",
     consumer_key: consumerKey,
     consumer_secret: consumerSecret,
     access_token_key: accessTokenKey,
     access_token_secret: accessTokenSecret,
   });
+
+  // Monkey patch oauth client used by twitter-lite in order to
+  // ignore cors proxy url when generating authentication headers
+  const originalAuthorizeFunction = client.client.authorize;
+  client.client.authorize = function (request, token) {
+    let requestWihoutCorsProxy = request;
+    if (request.url.startsWith(configuration.corsProxyURL)) {
+      const requestUrlNotProxyfied = request.url.slice(
+        configuration.corsProxyURL.length
+      );
+      requestWihoutCorsProxy = { ...request, url: requestUrlNotProxyfied };
+    }
+    return originalAuthorizeFunction.call(
+      client.client,
+      requestWihoutCorsProxy,
+      token
+    );
+  };
 
   const params = {
     count: 200,
@@ -120,8 +145,6 @@ async function fetchTwitterFeedContent(feed) {
 
   // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
   const tweets = await client.get("statuses/home_timeline", params);
-
-  console.log("DEBUG", tweets);
 
   const items = tweets.map((tweet) => {
     return {
@@ -135,9 +158,13 @@ async function fetchTwitterFeedContent(feed) {
 }
 
 async function fetchRSSFeedContent(feed) {
-  // TODO Activer quand il y a besoin de CORS
-  // const corsProxifiedURL = `https://acailly-cors-anywhere.herokuapp.com/${feed.url}`;
-  const response = await axios.get(feed.url);
+  // In browser, use a CORS proxy
+  // From https://github.com/draftbit/twitter-lite/issues/41#issuecomment-467403918
+  const feedUrl = isBrowser
+    ? `${configuration.corsProxyURL}${feed.url}`
+    : feed.url;
+
+  const response = await axios.get(feedUrl);
   const feedContent = await parser.parseString(response.data);
 
   const itemsWithTimestamp = feedContent.items.map((item) => {

@@ -44,6 +44,7 @@ const nodeServerPort = 8093;
 
 // DISTRIB BROWSER
 const deployBaseURL = "/zDemocracy-lowtech";
+const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
@@ -67,6 +68,7 @@ const configuration = {
   tunnellingHost,
   tunnellingLocalPort,
   deployBaseURL,
+  corsProxyURL,
   capacitorBaseURL,
 };
 
