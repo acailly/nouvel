@@ -1316,7 +1316,11 @@ Du coup je me lance dans le remplacement de la lib `twitter` par `twitter-lite`
 au bout de 45min de recherche je me demande si ca ne donnerait pas de meilleurs résultats en essayant d'utiliser l'authentification App au lieu de User : https://github.com/draftbit/twitter-lite#app-authentication-example
 15 minutes de plus pour invalider cette piste, apparement cette méthode de connexion ne peux pas accéder à l'endpoint que j'utilise (statuses/home_timeline)
 
-Total : 7H15min+
+45min de recherche plus tard je remarque deux choses. La première c'est que si je fait en sorte d'utiliser le subdomain avec cors-anywhere sur l'url oauth et sans cors-anywhere sur l'url de l'api (https://github.com/draftbit/twitter-lite/blob/8c016a3f9a09a447b92a7d7fb271dc097963c47b/twitter.js#L77), alors ca marche
+La deuxième, c'est que je note que je ne passe pas de callbackUrl, or j'ai l'impression que l'API en demande une (https://developer.twitter.com/en/docs/authentication/api-reference/request_token). Est ce que la lib en met une part defaut ? dans ce cas la doc dit que `We require that any callback URL used with this endpoint will have to be configured within the App’s settings on developer.twitter.com*`, il y a donc peut être un truc à configurer ?
+En cherchant un peu plus j'ai l'impression que quand on met pas de callback on peut utiliser l'endpoint `/authorize` à la place (https://github.com/draftbit/twitter-lite/issues/112 qui pointe vers https://developer.twitter.com/en/docs/authentication/api-reference/authorize)
+
+Total : 8Hmin+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
@@ -1354,6 +1358,7 @@ TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltrac
 TODO Mettre un remote CouchDB sur RaspberryPi
 TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
 TODO Entrer en contact avec le gars de https://github.com/lybekk/offPIM pour discuter de son projet
+TPDP Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor)
 
 # Interrogations :
 

@@ -20,12 +20,12 @@ Existants :
 
 - node : application serveur node classique à laquelle on accède par le navigateur
 - browser : PWA pouvant fonctionner en local
+- capacitor : Bundle de la PWA avec Capacitor (Cordova mais en mieux) (https://capacitorjs.com/)
+- electron : Bundle de l'application avec Electron (https://www.electronjs.org/)
 
 A tester :
 
 - twa : Trusted Web Activity, manière d'encapsuler une PWA dans un APK sans pour autant embarquer une webview (https://developers.google.com/web/android/trusted-web-activity)
-- capacitor : Bundle de la PWA avec Capacitor (Cordova mais en mieux) (https://capacitorjs.com/)
-- electron : Bundle de l'application avec Electron (https://www.electronjs.org/)
 - native-webview : Bundle de l'application dans un exe (avec nexe par exemple, https://github.com/nexe/nexe) qui ouvre l'application dans la WebView native de l'OS (avec webopen par exemple, https://github.com/acailly/webopen)
 - webextension : Extension Chrome et Firefox
 - ...
@@ -34,8 +34,12 @@ A tester :
 
 Existants :
 
-- gitdumbhttp : Lance un serveur Git dumb local (https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols)
+- pouchdbserver : Utilise un serveur local PouchDB (https://github.com/pouchdb/pouchdb-server)
 - localtunnel : Utilise un tunnel SSH via localtunnel (https://github.com/localtunnel/localtunnel)
+
+Deprecated :
+
+- gitdumbhttp : Lance un serveur Git dumb local (https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols)
 
 A tester :
 
@@ -43,7 +47,18 @@ A tester :
 - tor : utiliser Tor pour créer un Onion Service qui jouera le même rôle que le tunneling classique, avec l'avantage de ne pas reposer sur quelques serveurs précis, et l'inconvénient d'être plus lent. La technique est utilisée par Briar (https://briarproject.org/)
 - ...
 
-## git-xxx : implémentation de Git
+## pouchdb-xxx : implémentation de pouchdb
+
+Existants :
+
+- default : implémentation par défaut (https://github.com/pouchdb/pouchdb)
+
+A tester :
+
+- git : une implémentation qui utiliserait Git comme base de données clé-valeur, une custom merge stratégy qui copierai celle de CouchDB et ajouterait une interface HTTP compatible CouchDB par dessus tout ca
+- ...
+
+## (DEPRECATED) git-xxx : implémentation de Git
 
 Existants :
 
@@ -82,23 +97,26 @@ A tester :
 
 Existants :
 
+- pouchdb : stocke les données dans une base pouchdb (https://pouchdb.com/)
 - file : stocke les données dans des fichiers
 
 A tester :
 
 - sqlite : stocke les données dans une base sqlite (https://www.sqlite.org/index.html)
-- pouchdb : stocke les données dans une base pouchdb (https://pouchdb.com/)
 - ...
 
 ## synchronization-xxx : synchronisation des données
 
 Existants :
 
+- pouchdb : utilise pouchdb ((https://pouchdb.com/)) pour synchroniser les données d'une base pouchdb
+
+Deprecated :
+
 - git : utilise Git pour synchroniser les données fichier
 
 A tester :
 
-- pouchdb : utilise pouchdb ((https://pouchdb.com/)) pour synchroniser les données d'une base pouchdb
 - webdav : utilise Webdav (https://fr.wikipedia.org/wiki/WebDAV) pour synchroniser les données fichier
 - ftp : utilise FTP (https://fr.wikipedia.org/wiki/File_Transfer_Protocol) pour synchroniser les données fichier
 - hyper : utilise la suite Hypercore-protocol (https://hypercore-protocol.org/) pour synchroniser les données fichier
