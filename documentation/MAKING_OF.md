@@ -1314,8 +1314,9 @@ Du coup je me lance dans le remplacement de la lib `twitter` par `twitter-lite`
 
 30min après j'ai un proto qui donne les mêmes résultats que `twitter`...
 au bout de 45min de recherche je me demande si ca ne donnerait pas de meilleurs résultats en essayant d'utiliser l'authentification App au lieu de User : https://github.com/draftbit/twitter-lite#app-authentication-example
+15 minutes de plus pour invalider cette piste, apparement cette méthode de connexion ne peux pas accéder à l'endpoint que j'utilise (statuses/home_timeline)
 
-Total : 7Hmin+
+Total : 7H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
