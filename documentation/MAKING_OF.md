@@ -1333,7 +1333,19 @@ Il reste :
 
 Alors que sur node ces feeds ont l'air de fonctionner. Encore un point à éclaircir...
 
-Total : 11Hmin+
+Au bout de 30min j'y vois plus clair sur certaines erreur. Sur certains feeds, même s'il n'y a pas d'erreur de CORS, je recoit la réponse "localhost is not an allowed domain". J'imagine que le site distant se base sur le header `Referer` ou quelque chose du genre, or je ne peux pas le modifier dans le browser et celui ci sera donc toujours localhost pour une appli capacitor par exemple...
+La seule piste que je vois serait que le CORS proxy réécrive ces headers peut être ?
+
+Je passe 45min à essayer de configurer le CORS proxy que j'héberge (https://github.com/acailly/cors-anywhere) pour réécrire les headers `Referer` et `Origin`, sans succès :-((((
+
+Pour résumer :
+
+- certains sites bloquent donc leur contenu si la requête est émise depuis localhost
+- je suis obligé de fonctionner sur localhost dans certains cas
+
+Je suis bloqué !?
+
+Total : 12H15min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 

@@ -4,3 +4,4 @@ server-*
 output/
 out/
 log.txt
+debug-sandbox/
