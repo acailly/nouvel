@@ -1345,7 +1345,9 @@ Pour résumer :
 
 Je suis bloqué !?
 
-Total : 12H15min+
+Je continue de jouer avec cors-anywhere pendant 30min et j'arrive à faire marcher une des requêtes qui échouait quand je lui indique de supprimer (et non réécrire) les headers `Referer` et `Origin`
+
+Total : 12H45min+
 
 # Next pour avoir un exemple représentatif de l'approche :
 
