@@ -35,10 +35,6 @@ Existants :
 - pouchdbserver : Utilise un serveur local PouchDB (https://github.com/pouchdb/pouchdb-server)
 - localtunnel : Utilise un tunnel SSH via localtunnel (https://github.com/localtunnel/localtunnel)
 
-Deprecated :
-
-- gitdumbhttp : Lance un serveur Git dumb local (https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols)
-
 A tester :
 
 - d'autres services de tunneling comme ngrok ou autres
@@ -54,18 +50,6 @@ Existants :
 A tester :
 
 - git : une implémentation qui utiliserait Git comme base de données clé-valeur, une custom merge stratégy qui copierai celle de CouchDB et ajouterait une interface HTTP compatible CouchDB par dessus tout ca
-- ...
-
-## (DEPRECATED) git-xxx : implémentation de Git
-
-Existants :
-
-- native : utilise le Git installé sur l'OS et accessible via la commande `git`
-- isomorphic : utilise le projet `isomorphi-git` qui fonctionne sous Node et dans le Browser (https://isomorphic-git.org/)
-
-A tester :
-
-- wasm : utilise libgit2 compilé en WebAssembly (https://github.com/petersalomonsen/wasm-git)
 - ...
 
 ## identity-xxx : Gestion de l'identité
@@ -108,10 +92,6 @@ A tester :
 Existants :
 
 - pouchdb : utilise pouchdb ((https://pouchdb.com/)) pour synchroniser les données d'une base pouchdb
-
-Deprecated :
-
-- git : utilise Git pour synchroniser les données fichier
 
 A tester :
 

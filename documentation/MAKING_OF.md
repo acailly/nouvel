@@ -1351,6 +1351,21 @@ Encore 30min et ca y est ! J'arrive à lancer l'appli sur Android, à synchronis
 
 Total : 13H15min
 
+# 55 : Nettoyage, doc et ajustements - ???
+
+Je passe 45min+ à :
+
+- modifier un peu le style pour l'adapter au mobile
+- supprimer le code lié aux apps list et zdemocracy
+- supprimer le code lié à git
+
+TODO Changer le nom du repo et la base URL associée
+TODO Faire le tri dans les TODOS ci dessous
+TODO Faire le tri dans les dépendances
+TODO Mettre à jour le README
+
+TODO 45min+
+
 # Next pour avoir un exemple représentatif de l'approche :
 
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
@@ -1360,17 +1375,16 @@ TODO Faire une app de lecteur RSS
 
 TODO Activer la replication live
 TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
-
 TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Faire un bouton pour mettre à jour la PWA
+TODO Faire un bouton pour installer la PWA
 TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
 TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???
 TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
-TODO Utiliser isomorphic git au lieu du git sur le pc ?
 TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
 TODO Peaufiner le style sous mobile (il n'y a pas de marge à gauche)
 TODO Ajouter une favicon
