@@ -8,10 +8,14 @@
     <section>
       <h1>Abonnements</h1>
       <form method="POST" action="/new-feed">
-        <label for="title">Nom</label>
-        <input type="text" id="title" name="title" />
-        <label for="url">Adresse</label>
-        <input type="text" id="url" name="url" />
+        <fieldset>
+          <label for="title">Nom</label>
+          <input type="text" id="title" name="title" />
+        </fieldset>
+        <fieldset>
+          <label for="url">Adresse</label>
+          <input type="text" id="url" name="url" />
+        </fieldset>
         <input type="submit" value="Ajouter cet abonnement" />
       </form>
       <ul>
