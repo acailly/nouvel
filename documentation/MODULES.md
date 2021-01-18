@@ -6,9 +6,7 @@ Liste des différents modules, leurs implémentation existantes et à tester
 
 Existants :
 
-- app-list : todo list simple pour tester le concept
 - app-news : lecteur de flux rss, pour valider le concept sur un cas d'usage réel (le mien)
-- app-zdemocracy : cas d'usage de départ, une application de vote liquide, pour l'instant laissée de coté
 
 A tester :
 

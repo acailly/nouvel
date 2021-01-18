@@ -3,9 +3,6 @@ getIdentity().then((identity) => {
   console.log(`Connected as ${identity.id}`);
 });
 
-// const startZDemocracyExpress = require("./app-zdemocracy/start-zdemocracy-express");
-// startZDemocracyExpress();
-
 const createNodeApp = require("./distrib-node/create-app");
 createNodeApp();
 
