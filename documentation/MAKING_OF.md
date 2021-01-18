@@ -1282,7 +1282,7 @@ A l'étape 33 on était à 52H15
 
 98H15, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
 
-# 54 : Deploiement sur capacitor - ???
+# 54 : Deploiement sur capacitor - 13H15
 
 Je me lance dans l'ajout d'un module `distrib-capacitor`
 
@@ -1347,17 +1347,19 @@ Je suis bloqué !?
 
 Je continue de jouer avec cors-anywhere pendant 30min et j'arrive à faire marcher une des requêtes qui échouait quand je lui indique de supprimer (et non réécrire) les headers `Referer` et `Origin`
 
-Total : 12H45min+
+Encore 30min et ca y est ! J'arrive à lancer l'appli sur Android, à synchroniser et à récupérer les news \o/
+
+Total : 13H15min
 
 # Next pour avoir un exemple représentatif de l'approche :
 
-TODO Trouver une meilleur solution pour le CORS proxy et l'erreur 429 (Too Many Requests)
-TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
-TODO Activer la replication live
 TODO Faire une app de lecteur RSS
 
 # Refacto et fonctions bonus
+
+TODO Activer la replication live
+TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 
 TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
