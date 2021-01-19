@@ -1,7 +1,7 @@
 const path = require("path");
 const os = require("os");
 
-const homeDirectory = path.join(os.homedir(), ".zDemocracy");
+const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
@@ -33,7 +33,7 @@ const tunnellingLocalPort = 8081;
 const nodeServerPort = 8093;
 
 // DISTRIB BROWSER
-const deployBaseURL = "/zDemocracy-lowtech";
+const deployBaseURL = "/nouvel";
 const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
 
 // DISTRIB CAPACITOR

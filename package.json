@@ -1,7 +1,7 @@
 {
-  "name": "zDemocracy-lowtech",
+  "name": "nouvel",
   "version": "1.0.0",
-  "description": "Low tech experiment",
+  "description": "News reader",
   "main": "distrib-electron/index.js",
   "scripts": {
     "start": "npm run start:node",

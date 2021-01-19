@@ -1,8 +1,10 @@
-# zDemocracy-lowtech
+# Nouvèl
 
-This is a simple RSS feed reader
+This is a simple news reader (RSS, twitter, etc.)
 
 This is also an example for a simpler and opinionated way of building apps
+
+(And it means "Nouvelles" in Gallo, which means "News" in French)
 
 ## Why?
 
@@ -29,8 +31,8 @@ Nothing is set, things will probably change
 ## Getting started
 
 ```bash
-git clone https://github.com/acailly/zDemocracy-lowtech.git
-cd zDemocracy-lowtech
+git clone https://github.com/acailly/nouvel.git
+cd nouvel
 npm install
 npm start
 ```

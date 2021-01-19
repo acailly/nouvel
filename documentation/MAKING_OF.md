@@ -1351,9 +1351,9 @@ Encore 30min et ca y est ! J'arrive à lancer l'appli sur Android, à synchronis
 
 Total : 13H15min
 
-# 55 : Nettoyage, doc et ajustements - ???
+# 55 : Nettoyage, doc et ajustements - 2H15min
 
-Je passe 1H45min+ à :
+Je passe 2H15min à :
 
 - modifier un peu le style pour l'adapter au mobile
 - supprimer le code lié aux apps list et zdemocracy
@@ -1361,10 +1361,12 @@ Je passe 1H45min+ à :
 - faire le tri dans les TODOS ci dessous
 - faire le tri dans les dépendances
 - mettre à jour le README
+- mettre à jour les dépendances avec des alertes de sécurité
+- changer le nom du repo et la base URL associée (nouveau nom : nouvèl, nouvelles en Gallo)
 
-TODO Changer le nom du repo et la base URL associée
+# 56 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - ???
 
-TODO 1H45min+
+TODO
 
 # NEXT
 
@@ -1385,6 +1387,8 @@ TODO Faire une commande qui génère d'un coup tous les artefacts :
 
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
+TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
+TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
 TODO Ajouter une favicon
 TODO Faire un design system classless pour remplacer Tacit
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
