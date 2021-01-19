@@ -1,61 +1,63 @@
 # zDemocracy-lowtech
 
-## Publicly available address
+This is a simple RSS feed reader
 
-https://zdemocracy.serverless.social/
-
-... only if someone has started the application somewhere 
+This is also an example for a simpler and opinionated way of building apps
 
 ## Why?
 
-I wanted an app that is simple to use, simple to understand, simple to maintain
+I wanted an app that is simple to use, simple to understand, simple to develop, simple to maintain
+
+## But why?
+
+To spend less time developping the app, and spend more time with the user
+
+## And how ?
+
+/!\ Disclaimer: this is not a silver bullet, simplicity is achived by limiting possibilities
 
 Here are the current choices that have been done:
 
-- no authentication
-- no JS
-- only a classless CSS framework, no custom CSS
-- old school server side rendered app with old school express.js
-- no Database, everything is stored in files
-- no fixed hosting, use tunelling to expose local machine hosting
-- simple backup with git running in background 
+- the app is a Node/express.js app so you only have to know HTML, CSS and JS to make it
+- there is a classless CSS framework so you don't have to do much (any?) styling
+- there is not much (any?) JS client side so the road to accessibility is shorter
+- data is stored locally with PouchDB so it can work offline or when network is unpredictable
+- data is synced with other peers or with CouchDB/Cloudant/Couchbase remotes, there is not much (any?) logic on the remote side
 
 Nothing is set, things will probably change
+
+## Getting started
+
+```bash
+git clone https://github.com/acailly/zDemocracy-lowtech.git
+cd zDemocracy-lowtech
+npm install
+npm start
+```
+
+## Run the PWA
+
+```bash
+npm run browser:build
+npm run browser:serve
+```
+
+## Run the desktop app
+
+```bash
+npm run electron:serve
+```
+
+## Run the android app
+
+```bash
+npm run capacitor:build
+
+# The android IDE opens,
+# you build the app on your emulator or device
+```
 
 ## Documentation (in French)
 
 - `documentation/MAKING_OF.txt`: Dev diary of the app, plus some TODOs for the future
-- `documentation/CHOICES.txt`: Justifications for the technical choices 
-
-
-## Run locally
-
-### Get the example data
-
-Clone the following repository: https://github.com/acailly/zDemocracy-lowtech-data.git
-
-### Configure data path
-
-Edit configuration.js and make `rootDataFolder` point to you data folder
-
-### Start the application
-
-```
-npm install
-```
-
-```
-npm run start
-```
-
-### Generate executable files (optional)
-
-```
-npm run exe:build
-```
-
-
-
-
-
-
+- `documentation/MODULES.txt`: List of the modules

@@ -1353,60 +1353,82 @@ Total : 13H15min
 
 # 55 : Nettoyage, doc et ajustements - ???
 
-Je passe 45min+ à :
+Je passe 1H45min+ à :
 
 - modifier un peu le style pour l'adapter au mobile
 - supprimer le code lié aux apps list et zdemocracy
 - supprimer le code lié à git
+- faire le tri dans les TODOS ci dessous
+- faire le tri dans les dépendances
+- mettre à jour le README
 
 TODO Changer le nom du repo et la base URL associée
-TODO Faire le tri dans les TODOS ci dessous
-TODO Faire le tri dans les dépendances
-TODO Mettre à jour le README
 
-TODO 45min+
+TODO 1H45min+
 
-# Next pour avoir un exemple représentatif de l'approche :
+# NEXT
 
-TODO Supprimer tout ce qui a trait à Git et au stockage fichier \o/
-TODO Faire une app de lecteur RSS
+## Nettoyage
 
-# Refacto et fonctions bonus
+Sortir l'export exe dans `distrib-nexe`
 
-TODO Activer la replication live
-TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
-TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
+## Général
+
+TODO Faire une commande qui génère d'un coup tous les artefacts :
+
+- lance l'appli node
+- lance l'appli PWA
+- lance l'appli electron
+- ouvre l'IDE android
+
+## app-news
+
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
-TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
+TODO Ajouter une favicon
+TODO Faire un design system classless pour remplacer Tacit
+TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
+TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation se fait
+
+## distrib-browser
+
+TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 TODO Faire un bouton pour mettre à jour la PWA
 TODO Faire un bouton pour installer la PWA
-TODO Gérer les modifications concurrentes d'un même élément dans la liste (par ex: chaque modif entraine une copie avec un timestamp plus récent, et l'appli affiche la copie avec le dernier timestamp en date ?)
-TODO L'identité est aujourd'hui dans `identity.json`, est ce qu'on la stocke dans les données à la place ???
-TODO Ajouter une commande pour lancer l'appli via webopen
-TODO Ajouter une interface d'admin permettant de naviguer dans les dossiers, lire les fichiers et les supprimer si besoin
-TODO Embarquer le serveur node dans un service worker pour faire une appli 100% front
-TODO Peaufiner le style sous mobile (il n'y a pas de marge à gauche)
-TODO Ajouter une favicon
-TODO Valider la logique de jugement majoritaire avec un framework de test maison
-TODO Gérer les cas d'égalité dans les résultats
-TODO Ajouter la delegation à un autre utilisateur (démocratie liquide)
-TODO Tester Turbolinks pour ajouter un côté plus réactif ?
-TODO Ajouter des fichier \*.schema.json qui contiennent un JSON schema pour valider les différentes valeurs de la persistance fichier
-TODO Essayer d'ajouter des exemples exécutables dans la doc comme avec Elixir ?
-TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
-TODO Essayer d'ajouter un déploiement simple via Capacitor (à priori beaucoup plus léger que Cordova) : https://capacitorjs.com/
-TODO Regler les CSP de manière à améliorer la sécurité de l'appli
-TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
-TODO Mettre un remote CouchDB sur RaspberryPi
+TODO Pouvoir configurer l'icône et autres paramètres PWA (manifest & co)
+
+## distrib-capacitor
+
+TODO Pouvoir configurer l'icone et autres paramètres d'une app mobile
+TODO Pouvoir générer l'APK Android sans avoir à ouvrir l'IDE
+
+## distrib-electron
+
+TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
+
+## storage-file
+
+TODO Se servir du reliquat de persistence fichier `storage-file` pour faire une fonction d'export (et d'import) des données
+
+## synchronization-pouchdb
+
+TODO Activer la replication live
+TODO Etudier la gestion des droits côté serveur (CouchDB, PouchDB server, Cloudant, etc.) : https://github.com/pouchdb-community/pouchdb-authentication/blob/master/docs/recipes.md
+
+## expose-localtunnel
+
 TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
-TODO Entrer en contact avec le gars de https://github.com/lybekk/offPIM pour discuter de son projet
-TPDP Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor)
 
-# Interrogations :
+## Sécurité
 
-TODO Quel genre de déploiement/hebergement adopter : centralisé ou non, client lourd ou pas, serveur fixe ou tunneling, via Tor comme Briar...
-TODO La persistence fichier est verbeuse, est ce qu'une couche d'abstraction doit être ajoutée par dessus ?
-TODO Les status n'ont pas de nom d'affichage comme les options ou les grades, en ajouter ?
-TODO Les templates doivent ils être dans le repo de code ou dans le repo de data ?
-TODO Est ce qu'on pourrait utiliser les mêmes clés ssh pour l'identité et pour la connexion git ?
+TODO Regarder le reglage des CSP
+
+## Autres expérimentations
+
+TODO Ajouter une commande pour lancer l'appli via webopen
+TODO Tester Turbolinks (ou autre techno dans le même style) pour ajouter un côté plus réactif ?
+TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
+TODO Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor)
+TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
+TODO Tester une implémentation compatible PouchDB qui utiliserait Git comme base de données clé-valeur, une custom merge stratégy qui copierai celle de CouchDB et ajouterait une interface HTTP compatible CouchDB par dessus tout ca
+TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)

@@ -121,7 +121,7 @@ function exportBundle() {
   };
 
   browserify(path.join(__dirname, "start.js"), browserifyConfig)
-    // .plugin('tinyify') // TODO ACY
+    // .plugin('tinyify') // TODO désactivé pour le debug
     .bundle()
     .pipe(fs.createWriteStream(path.join(outputPath, bundleFile)));
 }

@@ -8,7 +8,6 @@ if (fs.existsSync && !fs.existsSync(configuration.localDatabaseFolder)) {
   makeDir.sync(configuration.localDatabaseFolder);
 }
 
-// TODO ACY Tester si le prefix marche toujours dans le browser
 const LocalPouchDB = PouchDB.defaults({
   prefix: `${configuration.localDatabaseFolder}/`,
 });

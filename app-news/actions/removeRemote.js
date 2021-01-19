@@ -1,8 +1,6 @@
 const { write, read } = require("../../@storage");
 const configuration = require("../../@configuration");
 
-// TODO ACY
-
 module.exports = async function (req, res) {
   const remoteName = req.body.name;
 
