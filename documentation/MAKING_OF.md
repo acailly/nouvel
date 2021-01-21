@@ -1427,6 +1427,15 @@ TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
 
 TODO Regarder le reglage des CSP
 
+## Audit, benchmark et autres outils
+
+TODO Ajouter un check accessibility avec axe
+TODO Ajouter un check lighthouse
+
+## Tests
+
+TODO Tester d'ajouter des tests dans l'appli sans passer par un framework (https://twitter.com/ryanflorence/status/1162792430422200320?s=20)
+
 ## Autres expérimentations
 
 TODO Ajouter une commande pour lancer l'appli via webopen
@@ -1436,3 +1445,5 @@ TODO Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
 TODO Tester une implémentation compatible PouchDB qui utiliserait Git comme base de données clé-valeur, une custom merge stratégy qui copierai celle de CouchDB et ajouterait une interface HTTP compatible CouchDB par dessus tout ca
 TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
+TODO Tester d'ajouter de la reactivité avec des techniques old school type COMET (https://en.wikipedia.org/wiki/Comet_(programming), https://github.com/kkuchta/css-only-chat/blob/master/README.md, ) ou des experimentations type coherence (https://github.com/dominictarr/coherence)
+TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
