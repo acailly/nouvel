@@ -1447,3 +1447,11 @@ TODO Tester une implémentation compatible PouchDB qui utiliserait Git comme bas
 TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
 TODO Tester d'ajouter de la reactivité avec des techniques old school type COMET (https://en.wikipedia.org/wiki/Comet_(programming), https://github.com/kkuchta/css-only-chat/blob/master/README.md, ) ou des experimentations type coherence (https://github.com/dominictarr/coherence)
 TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
+
+## Idées d'autres apps qui pourraient être compatibles avec cette approche
+
+TODO Une appli pour scanner les livres que l'on a et les partager sur un catalogue partagé afin de se les échanger plus facilement
+TODO Une appli type Anki pour mémoriser facilement des choses
+TODO Une appli de vote par scrutin majoritaire permettant également la délégation (démocratie liquide)
+TODO Des alternatives minimalistes aux outils de tous les jours (office, prise de note, etc.)
+TODO Un gestionnaire de favoris
