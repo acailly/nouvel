@@ -1279,8 +1279,9 @@ A l'étape 33 on était à 52H15
 - 2H15 = 95H45
 - 2H = 97H45
 - 30min = 98H15
+- 15min = 98H30
 
-98H15, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
+98H30, presque 100H, soit l'équivalent d'un peu plus de 12j de 8H de travail non stop
 
 # 54 : Deploiement sur capacitor - 13H15
 
@@ -1366,7 +1367,13 @@ Je passe 2H15min à :
 
 # 56 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - ???
 
-TODO
+A l'étape 53 on était à 98H30
+
+- 13H15 = 111H45
+- 2H15 = 114H
+- 15min = 114H15
+
+114H15, soit l'équivalent d'environ 18j de 8H de travail non stop
 
 # NEXT
 
