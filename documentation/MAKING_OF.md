@@ -1431,6 +1431,7 @@ TODO Regarder le reglage des CSP
 
 TODO Ajouter un check accessibility avec axe
 TODO Ajouter un check lighthouse
+TODO Ajouter un test W3C validator (https://validator.w3.org/)
 
 ## Tests
 
