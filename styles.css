@@ -1,0 +1,13 @@
+section h1 {
+  margin-top: 0px;
+}
+
+@media (max-width: 767px) {
+  body {
+    padding: 18px;
+  }
+}
+
+form fieldset {
+  margin-bottom: 0px;
+}

@@ -8,6 +8,7 @@ var filesToCache = [
   "views/partials/head.html",
   "views/partials/header.html",
   "views/remotes.html",
+  "styles.css",
   "tacit-css.min.css",
   "bundle.js"
 ]
