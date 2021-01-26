@@ -6,7 +6,16 @@ module.exports = function () {
   const appConfig = application.getConfig();
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./serviceworker.js");
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./serviceworker.js")
+        .then((registration) => {
+          console.log("[service-worker] registered!");
+        })
+        .catch((error) => {
+          console.error("[service-worker] error during registration", error);
+        });
+    });
   }
 
   const browserExpress = require("browser-express");
