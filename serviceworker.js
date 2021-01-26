@@ -10,6 +10,8 @@ const baseUrl = serviceWorkerConfiguration.baseUrl;
 console.log("[service-worker] Base URL is", baseUrl);
 
 self.addEventListener("install", function (event) {
+  console.log("[service-worker] installation");
+
   // Add all the ressources in the cache
   event.waitUntil(
     caches.open(version).then(function (cache) {
@@ -19,6 +21,10 @@ self.addEventListener("install", function (event) {
 
   // Force this service worker to become the active service worker
   event.waitUntil(self.skipWaiting());
+});
+
+self.addEventListener("activate", (event) => {
+  console.log("[service-worker] activation");
 });
 
 self.addEventListener("fetch", async function (event) {
