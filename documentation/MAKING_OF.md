@@ -1375,6 +1375,14 @@ A l'étape 53 on était à 98H30
 
 114H15, soit l'équivalent d'environ 18j de 8H de travail non stop
 
+# 57 : Peaufinement de la PWA - ??
+
+Je me base sur l'article "Développer sa première PWA" de mon collègue Yann Bertrand paru dans le numéro 243 du magazine Programmez pour peaufiner l'export PWA
+
+Je commence par prendre 1H pour générer les icônes et favicon sur le site https://realfavicongenerator.net/ à partir de l'icone que j'ai trouvé ici : https://www.iconfinder.com/icons/2528135/blog_dailynews_information_news_newspaper_paper_survey_icon
+
+TODO 1H+
+
 # NEXT
 
 ## Nettoyage
@@ -1403,10 +1411,11 @@ TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation 
 
 ## distrib-browser
 
+TODO Continuer d'appliquer le tuto de Yann
 TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 TODO Faire un bouton pour mettre à jour la PWA
 TODO Faire un bouton pour installer la PWA
-TODO Pouvoir configurer l'icône et autres paramètres PWA (manifest & co)
+TODO Rendre configurable la config PWA (manifest, icones, etc.)
 
 ## distrib-capacitor
 
