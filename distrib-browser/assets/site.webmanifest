@@ -5,8 +5,8 @@
     "background_color": "#ffffff",
     "display": "standalone",
     "lang": "French",
-    "scope": "/",
-    "start_url": "/",
+    "scope": "/nouvel/",
+    "start_url": "/nouvel/",
     "icons": [
         {
             "src": "icons/android-chrome-192x192.png",

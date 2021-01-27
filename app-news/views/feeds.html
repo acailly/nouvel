@@ -7,7 +7,7 @@
     <header><%- await include('partials/header.html'); %></header>
     <section>
       <h1>Abonnements</h1>
-      <form method="POST" action="/new-feed">
+      <form method="POST" action="<%= locals.baseURL || '' %>/new-feed">
         <fieldset>
           <label for="title">Nom</label>
           <input type="text" id="title" name="title" />

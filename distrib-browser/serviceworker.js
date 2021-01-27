@@ -6,8 +6,8 @@ self.importScripts("./filesToCache.js");
 // Declare serviceWorkerConfiguration variable
 self.importScripts("./serviceworker-configuration.js");
 
-const baseUrl = serviceWorkerConfiguration.baseUrl;
-console.log("[service-worker] base URL is", baseUrl);
+const baseURL = serviceWorkerConfiguration.baseURL;
+console.log("[service-worker] base URL is", baseURL);
 
 self.addEventListener("install", function (event) {
   console.log("[service-worker] installation");
@@ -67,8 +67,8 @@ self.addEventListener("fetch", async function (event) {
         }
 
         //... if not found, look if it is an URL of an app page
-        if (event.request.url.startsWith(baseUrl)) {
-          return caches.match(`${baseUrl}index.html`);
+        if (event.request.url.startsWith(baseURL)) {
+          return caches.match(`${baseURL}index.html`);
         }
       })
       //... else fallback to the network
