@@ -1383,7 +1383,34 @@ Je commence par prendre 1H pour générer les icônes et favicon sur le site htt
 
 Je continue en réorganisant le code du serviceworker et en ajoutant des logs, pendant 30min
 
-TODO 1H30+
+Je prend 1H à corriger des problèmes d'icône et à essayer de rendre la PWA installable.
+A priori j'y arrive car je vois le log "pwa can be installed" dans la console, mais je ne vois pas mon bouton "Install" qui devrait apparaître.
+Et en regardant le source je me rends compte que le header de l'app normale (qui contient le title par exemple) se retrouve dans le body de la page !?
+Ca a toujours été comme ca ???
+Gros stress : est ce que ca pourrait remettre en cause la viabilité du projet ???
+
+La raison de ca est que `browser-express` remplace le body de la page avec le résultat de la requête : https://github.com/williamcotton/browser-express/blob/master/src/response.js#L55
+Si je remplace ca par `document.write(content)` ca a l'air de fonctionner, sauf que faire ca enlève les listeners placés par `browser-express` pour intercepter les submits des formulaires, et casse tout le mécanisme :-/
+
+Après 1H30min de recherche et de bidouille, j'ai trouvé deux pistes.
+
+Piste 1 - modification de browser-express :
+
+- dans `browser-express`, au lieu de faire `document.body.innerHTML = content;`, on fait `document.documentElement.innerHTML = content;`
+- dans `browser-express`, au lieu de faire `document.body.addEventListener`, on fait `window.addEventListener`
+
+Piste 2 - suppression de "<head>" :
+
+- dans mon renderer cutom `universal-render-middleware.js`, tronquer la balise `head` avec `html.replaceAll(/<head>[\s\S]*<\/head>/gim, "");`
+
+La deuxième piste est séduisante parce qu'elle ne nécessite pas beaucoup de modif. Sauf que si on l'applique, on doit copier les CSS qui sont ajouté par l'appli express dans le head du fichier index.html de la PWA, car tout le head renvoyé par express est ignoré. Ca me paraît ajouter du couplage entre l'appli et distrib-browser alors qu'à l'origine j'esperais que ce module reste plus ou moins générique.
+
+La première piste pourrait aller dans ce sens. On pourrait alors définir toutes les icônes, favicon et manifeste directement dans l'app et alléger ainsi le index.html de distrib-browser
+Mais ca veut dire forker `browser-express`. Après tout j'ai déjà tellement épluché ses sources que ca ne sera pas difficile.
+
+Prochaine étape : Récuperer le code de `browser-express` directement dans le projet et faire les modifs nécessaires. Et ensuite valider que mon bouton "Installer" fonctionne bien.
+
+TODO 4H+
 
 # NEXT
 
@@ -1399,6 +1426,8 @@ TODO Faire une commande qui génère d'un coup tous les artefacts :
 - lance l'appli PWA
 - lance l'appli electron
 - ouvre l'IDE android
+
+TODO Rendre les logs plus lisible en ajoutant de la couleur
 
 ## app-news
 
