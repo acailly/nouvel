@@ -18,7 +18,7 @@ module.exports = function () {
     });
   }
 
-  const browserExpress = require("browser-express");
+  const browserExpress = require("../browser-express");
   const app = browserExpress({
     // See https://github.com/wesleytodd/nighthawk/blob/9bd0f8f94649f648d09886a79a96b5cdec0d132f/README.md#listen-options
     popstate: true,
