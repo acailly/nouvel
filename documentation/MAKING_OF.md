@@ -1410,7 +1410,9 @@ Mais ca veut dire forker `browser-express`. Après tout j'ai déjà tellement é
 
 Prochaine étape : Récuperer le code de `browser-express` directement dans le projet et faire les modifs nécessaires. Et ensuite valider que mon bouton "Installer" fonctionne bien.
 
-TODO 4H+
+15min de plus pour télécharger le code depuis https://github.com/williamcotton/browser-express, le copier dans le projet, et changer le code qui l'utilise
+
+TODO 4H15+
 
 # NEXT
 
