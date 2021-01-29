@@ -1,19 +1,50 @@
 /* global window, document */
 
-const EventEmitter = require('events');
-const inherits = require('inherits');
-const url = require('url');
+const EventEmitter = require("events");
+const inherits = require("inherits");
+const url = require("url");
 
-const supported = require('./supports-push-state');
+const supported = require("./supports-push-state");
 
 const noop = function noop() {};
+
+// EDITED CODE
+// From https://stackoverflow.com/a/20584396
+function nodeScriptReplace(node) {
+  if (nodeScriptIs(node) === true) {
+    node.parentNode.replaceChild(nodeScriptClone(node), node);
+  } else {
+    var i = -1,
+      children = node.childNodes;
+    while (++i < children.length) {
+      nodeScriptReplace(children[i]);
+    }
+  }
+
+  return node;
+}
+function nodeScriptClone(node) {
+  var script = document.createElement("script");
+  script.text = node.innerHTML;
+
+  var i = -1,
+    attrs = node.attributes,
+    attr;
+  while (++i < attrs.length) {
+    script.setAttribute((attr = attrs[i]).name, attr.value);
+  }
+  return script;
+}
+function nodeScriptIs(node) {
+  return node.tagName === "SCRIPT";
+}
 
 function Response() {
   this.app = null;
   this.locals = Object.create(null);
   this.headersSent = false;
   this.statusCode = null;
-  this.statusMessage = '';
+  this.statusMessage = "";
   this.finished = false;
   this.headersSent = false;
   this.sendDate = false;
@@ -25,8 +56,8 @@ Response.prototype.redirect = function redirect(arg1, arg2) {
   let path;
   let status;
   let replace = false;
-  if (typeof arg1 === 'string') {
-    if (arg1 === 'back') {
+  if (typeof arg1 === "string") {
+    if (arg1 === "back") {
       path = this.prevLocation;
       replace = true;
     } else {
@@ -42,7 +73,7 @@ Response.prototype.redirect = function redirect(arg1, arg2) {
 
   this.app.processRequest(url.parse(path), replace);
 
-  this.emit('finish');
+  this.emit("finish");
 };
 
 Response.prototype.status = function status(code) {
@@ -52,15 +83,27 @@ Response.prototype.status = function status(code) {
 
 Response.prototype.send = function send(content) {
   if (content) {
-    document.body.innerHTML = content;
+    // ORIGINAL CODE
+    // document.body.innerHTML = content;
+    // EDITED CODE
+    document.documentElement.innerHTML = content;
+    // EDITED CODE
+    // The property innerHTML does not execute <script> tags
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
+    // This is a workarounde from https://stackoverflow.com/a/20584396
+    nodeScriptReplace(document.getElementsByTagName("body")[0]);
   }
   if (supported) {
     const history = this.app.historyStack.pop();
     const [locationState, title, URL, replace] = history;
-    window.history[replace ? 'replaceState' : 'pushState'](locationState, title, URL);
+    window.history[replace ? "replaceState" : "pushState"](
+      locationState,
+      title,
+      URL
+    );
     // TODO: https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
     if (!replace) window.scrollTo(0, 0);
-    this.emit('finish');
+    this.emit("finish");
   }
 };
 

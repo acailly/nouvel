@@ -12,4 +12,5 @@
   <form method="POST" action="<%= locals.baseURL || '' %>/fetch-feeds">
     <input type="submit" value="Télécharger les news" />
   </form>
+  <%- await include('customInstallButton.html'); %>
 </nav>

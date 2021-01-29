@@ -27,11 +27,16 @@ async function renderView(view, data) {
   const response = await fetch(`${baseURL}/views/${view}`);
   const template = await response.text();
 
-  const html = await compileTemplate(template, data, globalData);
+  const html = await compileTemplate(template, data, globalData, "");
   this.send(html);
 }
 
-async function compileTemplate(template, data, globalData) {
+async function compileTemplate(
+  template,
+  data,
+  globalData,
+  relativeIncludePath
+) {
   const templateData = { ...data, ...globalData };
   const compiledTemplate = ejs.compile(template, {
     client: true,
@@ -42,13 +47,20 @@ async function compileTemplate(template, data, globalData) {
     null,
     async (includedTemplatePath, includedTemplateData) => {
       const includeResponse = await fetch(
-        `${globalData.baseURL}/views/${includedTemplatePath}`
+        `${globalData.baseURL}/views/${relativeIncludePath}${includedTemplatePath}`
       );
       const includedTemplate = await includeResponse.text();
+      let childRelativeIncludePath = relativeIncludePath || "";
+      if (includedTemplatePath && includedTemplatePath.indexOf("/") !== -1) {
+        const splittedPath = includedTemplatePath.split("/");
+        const childDirectory = splittedPath.slice(0, -1).join("/");
+        childRelativeIncludePath = `${childRelativeIncludePath}${childDirectory}/`;
+      }
       return await compileTemplate(
         includedTemplate,
         includedTemplateData,
-        globalData
+        globalData,
+        childRelativeIncludePath
       );
     }
   );

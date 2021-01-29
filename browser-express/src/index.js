@@ -1,15 +1,15 @@
 /* global window, document */
 
-const BaseRouter = require('router');
-const inherits = require('inherits');
-const url = require('url');
-const qs = require('qs');
-const catchLinks = require('catch-links');
-const serialize = require('form-serialize');
+const BaseRouter = require("router");
+const inherits = require("inherits");
+const url = require("url");
+const qs = require("qs");
+const catchLinks = require("catch-links");
+const serialize = require("form-serialize");
 
-const Request = require('./request');
-const Response = require('./response');
-const supported = require('./supports-push-state');
+const Request = require("./request");
+const Response = require("./response");
+const supported = require("./supports-push-state");
 
 function Router(options) {
   if (!(this instanceof Router)) {
@@ -44,15 +44,18 @@ function Router(options) {
   this.reloadOnUnhandled = !!opts.reloadOnUnhandled;
 
   if (opts.interceptLinks) {
-    catchLinks(window, href => {
+    catchLinks(window, (href) => {
       r.navigate(href);
     });
   }
 
   if (opts.interceptFormSubmit) {
-    document.body.addEventListener(
-      'submit',
-      e => {
+    // ORIGINAL CODE
+    // document.body.addEventListener(
+    // EDITED CODE
+    window.addEventListener(
+      "submit",
+      (e) => {
         e.preventDefault();
         const body = serialize(e.target, { hash: true });
         r.submit(e.target.action, e.target.method, body);
@@ -67,7 +70,7 @@ function Router(options) {
 inherits(Router, BaseRouter);
 
 Router.prototype.base = function base(path) {
-  if (typeof path === 'undefined') {
+  if (typeof path === "undefined") {
     return this.base;
   }
   this.base = path;
@@ -84,7 +87,7 @@ Router.prototype.listen = function listen(options, callback) {
     this.onPopstate = this.onPopstate.bind(this);
 
     // Bind the event
-    window.addEventListener('popstate', this.onPopstate, false);
+    window.addEventListener("popstate", this.onPopstate, false);
   }
 
   // Dispatch at start?
@@ -93,7 +96,7 @@ Router.prototype.listen = function listen(options, callback) {
       {
         pathname: window.location.pathname,
         search: window.location.search,
-        hash: window.location.hash
+        hash: window.location.hash,
       },
       true
     );
@@ -102,7 +105,7 @@ Router.prototype.listen = function listen(options, callback) {
   callback();
 
   return {
-    close: this.close
+    close: this.close,
   };
 };
 
@@ -111,7 +114,7 @@ Router.prototype.onPopstate = function onPopstate(e) {
     e.state || {
       pathname: window.location.pathname,
       search: window.location.search,
-      hash: window.location.hash
+      hash: window.location.hash,
     },
     true
   );
@@ -128,25 +131,31 @@ Router.prototype.submit = function submit(action, method, body) {
   this.processRequest(locationState, false);
 };
 
-Router.prototype.processRequest = function processRequest(locationState, replace) {
+Router.prototype.processRequest = function processRequest(
+  locationState,
+  replace
+) {
   // Normalize the url object
   const nextLocationState = Object.assign({}, locationState);
-  nextLocationState.search = locationState.search || '';
-  nextLocationState.hash = locationState.hash || '';
-  nextLocationState.method = locationState.method || 'GET';
+  nextLocationState.search = locationState.search || "";
+  nextLocationState.hash = locationState.hash || "";
+  nextLocationState.method = locationState.method || "GET";
   nextLocationState.body = locationState.body;
 
   // Strip the base off before routing
   let path = nextLocationState.pathname;
   if (this.base) {
-    path = path.replace(this.base, '');
+    path = path.replace(this.base, "");
   }
 
   // Build next url
-  const nextLocation = (path === '' ? '/' : path) + nextLocationState.search;
+  const nextLocation = (path === "" ? "/" : path) + nextLocationState.search;
 
   // If processing to the same url and it's a GET method, just return
-  if (this.currentLocation === nextLocation && nextLocationState.method === 'GET') {
+  if (
+    this.currentLocation === nextLocation &&
+    nextLocationState.method === "GET"
+  ) {
     return;
   }
 
@@ -165,11 +174,16 @@ Router.prototype.processRequest = function processRequest(locationState, replace
   const req = new Request();
   req.app = this;
   req.method = nextLocationState.method;
-  req.originalUrl = nextLocationState.pathname + nextLocationState.search + nextLocationState.hash;
+  req.originalUrl =
+    nextLocationState.pathname +
+    nextLocationState.search +
+    nextLocationState.hash;
   req.baseUrl = this.base;
   req.path = path;
   req.url = this.currentLocation + nextLocationState.hash;
-  req.headers.referer = `${req.protocol}://${req.hostname}${req.port ? `:${req.port}` : ''}${prevLocation}`;
+  req.headers.referer = `${req.protocol}://${req.hostname}${
+    req.port ? `:${req.port}` : ""
+  }${prevLocation}`;
   if (nextLocationState.body) req.body = nextLocationState.body;
 
   // Create the response object
@@ -198,7 +212,7 @@ Router.prototype.processRequest = function processRequest(locationState, replace
 };
 
 Router.prototype.close = function close() {
-  window.removeEventListener('popstate', this.onPopstate, false);
+  window.removeEventListener("popstate", this.onPopstate, false);
 };
 
 module.exports = Router;

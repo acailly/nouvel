@@ -1412,7 +1412,25 @@ Prochaine étape : Récuperer le code de `browser-express` directement dans le p
 
 15min de plus pour télécharger le code depuis https://github.com/williamcotton/browser-express, le copier dans le projet, et changer le code qui l'utilise
 
-TODO 4H15+
+Encore 15min pour appliquer les correctifs de la piste 1 (voir ci dessus) et copier tout le code HTML et les assets (icônes, manifest, etc.) spécifiques à la PWA directement dans l'app, laissant uniquement dans `distrib-browser` un fichier `index.html` qui ne fait que charger le bundle
+
+Bilan : toute la configuration de la PWA se fait directement dans l'app, pas besoin d'ajouter une couche d'abstraction et de configuration pour gérer ca de manière bancale, ca me plait :-)
+
+J'essaie ensuite de faire marcher le bouton d'installation. Etant donné que ce code peut maintenant se trouver dans l'app (ce qui est une bonne chose car toutes les apps ne veulent pas forcément ajouter un bouton d'install custom), je peux ajouter ce bouton et le code javascript associé (qui se trouve dans une balise `script` pour être executée coté client) dans directement dans un partial.
+
+C'est trop beau pour être vrai, les scripts ne sont pas exécutés quand on utilise `innerHTML=mon_contenu`, ce que fait `browser-express`
+(voir https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML)
+
+Je trouve un contournement ici, https://stackoverflow.com/a/20584396, que j'ajoute directement dans browser-express. Ca marche, cool.
+
+1H de plus d'écoulée.
+
+Mais je me rends compte que l'import d'un partial depuis un partial ne se comporte pas de la même façon sur node ou sur PWA.
+Sur node je dois importer `customInstallButton.html` alors que sur PWA je dois importer `partials/customInstallButton.html`
+En me basant sur le code de `ejs` (https://github.com/mde/ejs/blob/main/lib/ejs.js#L118) j'arrive à corriger mon `universal-render-middleware` pour qu'il fonctionne de la même façon que `ejs`
+Ca me prend 45min
+
+TODO 6H15+
 
 # NEXT
 
