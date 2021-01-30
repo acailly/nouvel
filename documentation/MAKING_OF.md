@@ -1436,9 +1436,12 @@ Au bout de 1H de tests et de recherches, j'ai l'impression que ce bouton n'est p
 Par contre durant ces tests je me suis rendu compte que les `script` étaient réexécutés à chaque fois qu'on changeait de page. En y reflechissant c'est plutôt logique, en revanche, comme la page n'est pas totalement rechargée, les variables globales, les variables `window.xxx` et les listeners sur windows restent.
 On peut facilement vérifier les leaks du coté des listeners en tapant `getEventListeners(window)` dans la console
 Il faut donc prêter une attention particulière dans les `script` embarqués afin de ne pas causer d'erreurs ou de fuites mémoires.
-Je prend 30min pour refactorer le script du bouton d'install custom afin qu'il ne cause pas d'erreur et ne laisse pas trainer des listeners
+Je prend 45min pour refactorer le script du bouton d'install custom afin qu'il ne cause pas d'erreur et ne laisse pas trainer des listeners
 
-TODO 7H45+
+Il y a encore un point qui me chiffone, si je vais sur l'adresse `http://localhost:9999/nouvel/` quand la PWA n'est pas servie depuis mon PC, rien ne s'affiche. Le service worker ne devrait il pas s'activer et charger depuis le cache ???
+TODO Vérifier que la PWA est offline ready dès que le premier chargement est terminé
+
+TODO 8H+
 
 # NEXT
 
@@ -1463,7 +1466,6 @@ TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent t
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
-TODO Ajouter une favicon
 TODO Faire un design system classless pour remplacer Tacit
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation se fait
@@ -1471,9 +1473,8 @@ TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation 
 ## distrib-browser
 
 TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
+TODO Vérifier que la PWA est offline ready dès que le premier chargement est terminé
 TODO Faire un bouton pour mettre à jour la PWA (https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#updates)
-TODO Faire un bouton pour installer la PWA
-TODO Rendre configurable la config PWA (manifest, icones, etc.)
 
 ## distrib-capacitor
 
