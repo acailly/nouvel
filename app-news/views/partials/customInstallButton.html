@@ -5,38 +5,54 @@
   // From https://web.dev/customize-install/
   // and https://developer.mozilla.org/fr/docs/Web/Progressive_web_apps/ajouter_a_lecran_daccueil_a2hs
 
-  // Hide install button by default
-  const buttonInstall = document.getElementById("buttonInstall");
-  const buttonInstallDisplay = buttonInstall.style.display;
-  buttonInstall.style.display = "none";
+  // I use window.xxx variables instead of 'const xxx = '
+  // because scripts are loaded several times in PWA mode
+  // and can cause errors and memory leaks if we don't care
 
-  let deferredPrompt;
-  window.addEventListener("beforeinstallprompt", (e) => {
+  // Hide install button by default
+  window.buttonInstall = document.getElementById("buttonInstall");
+  window.buttonInstallDisplay = window.buttonInstall.style.display;
+  window.buttonInstall.style.display = "none";
+
+  if (window.canBeInstalledListener) {
+    window.removeEventListener(
+      "beforeinstallprompt",
+      window.canBeInstalledListener
+    );
+  }
+  window.canBeInstalledListener = (e) => {
     console.log("[pwa] app can be installed");
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
     // Stash the event so it can be triggered later.
-    deferredPrompt = e;
+    window.deferredInstallPrompt = e;
     // Update UI notify the user they can install the PWA
-    buttonInstall.style.display = buttonInstallDisplay;
-  });
-  buttonInstall.addEventListener("click", (e) => {
+    window.buttonInstall.style.display = buttonInstallDisplay; // TODO ACY
+  };
+  window.addEventListener("beforeinstallprompt", window.canBeInstalledListener);
+
+  window.buttonInstall.addEventListener("click", (e) => {
     console.log("[pwa] install button clicked");
     // Hide the app provided install promotion
-    buttonInstall.style.display = "none";
+    window.buttonInstall.style.display = "none";
     // Show the install prompt
-    deferredPrompt.prompt();
+    window.deferredInstallPrompt.prompt();
     // Wait for the user to respond to the prompt
-    deferredPrompt.userChoice.then((choiceResult) => {
+    window.deferredInstallPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === "accepted") {
         console.log("[pwa] user accepted to install");
       } else {
         console.log("[pwa] user refused to install");
       }
-      deferredPrompt = null;
+      window.deferredInstallPrompt = null;
     });
   });
-  window.addEventListener("appinstalled", (evt) => {
+
+  if (window.appInstalledListener) {
+    window.removeEventListener("appinstalled", window.appInstalledListener);
+  }
+  window.appInstalledListener = (evt) => {
     console.log("[pwa] app is installed");
-  });
+  };
+  window.addEventListener("appinstalled", window.appInstalledListener);
 </script>

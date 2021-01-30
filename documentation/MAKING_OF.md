@@ -1433,9 +1433,12 @@ Ca me prend 45min
 Je me lance dans le fait d'ajouter un bouton de mise à jour à partir de quelques liens d'exemple (https://medium.com/progressive-web-apps/pwa-create-a-new-update-available-notification-using-service-workers-18be9168d717 et https://deanhume.com/displaying-a-new-version-available-progressive-web-app/ et https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle)
 Au bout de 1H de tests et de recherches, j'ai l'impression que ce bouton n'est pas très utile si on active automatiquement le nouveau service worker avec skipWaiting. Je me trompe peut être (j'ai l'impression que je passe à côté de quelque chose) mais pour l'instant je ne poursuit pas dans cette direction.
 
-TODO BUG les scripts sont réexécutés à chaque refresh...
+Par contre durant ces tests je me suis rendu compte que les `script` étaient réexécutés à chaque fois qu'on changeait de page. En y reflechissant c'est plutôt logique, en revanche, comme la page n'est pas totalement rechargée, les variables globales, les variables `window.xxx` et les listeners sur windows restent.
+On peut facilement vérifier les leaks du coté des listeners en tapant `getEventListeners(window)` dans la console
+Il faut donc prêter une attention particulière dans les `script` embarqués afin de ne pas causer d'erreurs ou de fuites mémoires.
+Je prend 30min pour refactorer le script du bouton d'install custom afin qu'il ne cause pas d'erreur et ne laisse pas trainer des listeners
 
-TODO 7H15+
+TODO 7H45+
 
 # NEXT
 
