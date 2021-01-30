@@ -1,4 +1,3 @@
-const path = require("path");
 const configuration = require("../@configuration");
 const application = require("../@application");
 
@@ -15,6 +14,13 @@ module.exports = function () {
         .catch((error) => {
           console.error("[service-worker] error during registration", error);
         });
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        // This fires when the service worker controlling this page
+        // changes, eg a new worker has skipped waiting and become
+        // the new active worker.
+        console.log("[service-worker] service worker has been updated!");
+      });
     });
   }
 

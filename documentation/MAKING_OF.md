@@ -1430,7 +1430,12 @@ Sur node je dois importer `customInstallButton.html` alors que sur PWA je dois i
 En me basant sur le code de `ejs` (https://github.com/mde/ejs/blob/main/lib/ejs.js#L118) j'arrive à corriger mon `universal-render-middleware` pour qu'il fonctionne de la même façon que `ejs`
 Ca me prend 45min
 
-TODO 6H15+
+Je me lance dans le fait d'ajouter un bouton de mise à jour à partir de quelques liens d'exemple (https://medium.com/progressive-web-apps/pwa-create-a-new-update-available-notification-using-service-workers-18be9168d717 et https://deanhume.com/displaying-a-new-version-available-progressive-web-app/ et https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle)
+Au bout de 1H de tests et de recherches, j'ai l'impression que ce bouton n'est pas très utile si on active automatiquement le nouveau service worker avec skipWaiting. Je me trompe peut être (j'ai l'impression que je passe à côté de quelque chose) mais pour l'instant je ne poursuit pas dans cette direction.
+
+TODO BUG les scripts sont réexécutés à chaque refresh...
+
+TODO 7H15+
 
 # NEXT
 
