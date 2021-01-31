@@ -1,4 +1,5 @@
 const version = "v1";
+const OFFLINE_URL = "index.html";
 
 // Declare filesToCache variable
 self.importScripts("./filesToCache.js");
@@ -53,54 +54,44 @@ self.addEventListener("fetch", async function (event) {
   console.log("[service-worker]", event.request.url, " - intercepted");
 
   event.respondWith(
-    // Start searching in the cache...
-    caches
-      .match(event.request)
-      .then(function (response) {
-        if (response) {
-          console.log(
-            "[service-worker]",
-            event.request.url,
-            " - return from cache"
-          );
-          return response;
-        }
+    Promise.resolve(true)
+      // Start searching in the cache...
+      .then(() => {
+        console.log(
+          "[service-worker]",
+          event.request.url,
+          "- try to load from cache"
+        );
 
-        //... if not found, look if it is an URL of an app page
-        if (event.request.url.startsWith(baseURL)) {
-          return caches.match(`${baseURL}index.html`);
-        }
+        return caches.match(event.request);
       })
-      //... else fallback to the network
       .then((response) => {
         if (response) {
           console.log(
             "[service-worker]",
             event.request.url,
-            " - append base URL"
-          );
-          console.log(
-            "[service-worker]",
-            event.request.url,
-            " - return from cache"
+            "- loaded from cache!"
           );
           return response;
         }
 
+        //... else fallback to the network
         console.log(
           "[service-worker]",
           event.request.url,
-          " - falback to network"
+          "- fallback to network"
         );
         return fetch(event.request);
       })
       .catch((e) => {
+        console.log("[service-worker]", event.request.url, "- failed!");
+
         //... if this is an error in cors mode, retry with a CORS proxy
         if (event.request.mode === "cors") {
           console.log(
             "[service-worker]",
             event.request.url,
-            " - failed, retry with CORS proxy"
+            " - retry with CORS proxy"
           );
 
           const corsProxifiedURL = `${serviceWorkerConfiguration.corsProxyURL}${event.request.url}`;
@@ -123,6 +114,19 @@ self.addEventListener("fetch", async function (event) {
           return fetch(proxifiedRequest);
         }
 
+        //... if this is an error in navigate mode, this is likely due to
+        // a network failure, so we load the app landing page from the cache
+        // (inspired from https://web.dev/offline-fallback-page/)
+        if (event.request.mode === "navigate") {
+          console.log(
+            "[service-worker]",
+            event.request.url,
+            "- try to fallback to app offline landing page"
+          );
+          return caches.match(`${OFFLINE_URL}`);
+        }
+
+        //... else, just log error :-/
         console.error("[service-worker]", event.request.url, " - error:", e);
         throw e;
       })
