@@ -1460,6 +1460,8 @@ TODO Faire une commande qui génère d'un coup tous les artefacts :
 
 TODO Rendre les logs plus lisible en ajoutant de la couleur
 
+TODO Tester les différents modes de distribution sur mon vieux HTC Desire
+
 ## app-news
 
 TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
@@ -1469,12 +1471,14 @@ TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les
 TODO Faire un design system classless pour remplacer Tacit
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation se fait
+TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
 
 ## distrib-browser
 
 TODO Mieux gérer les requêtes de navigation dans la PWA (type app shell) pour autoriser les rafraichissements sur une sous route
 TODO Vérifier que la PWA est offline ready dès que le premier chargement est terminé
 TODO Faire un bouton pour mettre à jour la PWA (https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#updates)
+TODO Faire en sorte que `browser-express` utilise `morphdom` pour mettre à jour le DOM au lieu de `innerHTML=xxx` (exemple ici : https://htmx.org/extensions/morphdom-swap/)
 
 ## distrib-capacitor
 
@@ -1515,7 +1519,7 @@ TODO Tester d'ajouter des tests dans l'appli sans passer par un framework (https
 ## Autres expérimentations
 
 TODO Ajouter une commande pour lancer l'appli via webopen
-TODO Tester Turbolinks (ou autre techno dans le même style) pour ajouter un côté plus réactif ?
+TODO Tester Turbolinks (ou autre techno dans le même style) pour ajouter un côté plus réactif ? (par exemple HTMX boost semble faire ca : https://htmx.org/docs/#boosting)
 TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
 TODO Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor)
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)
