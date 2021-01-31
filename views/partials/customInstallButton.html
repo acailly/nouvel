@@ -1,0 +1,58 @@
+<button id="buttonInstall">Installer</button>
+
+<script>
+  // --- Custom Install Button ---
+  // From https://web.dev/customize-install/
+  // and https://developer.mozilla.org/fr/docs/Web/Progressive_web_apps/ajouter_a_lecran_daccueil_a2hs
+
+  // I use window.xxx variables instead of 'const xxx = '
+  // because scripts are loaded several times in PWA mode
+  // and can cause errors and memory leaks if we don't care
+
+  // Hide install button by default
+  window.buttonInstall = document.getElementById("buttonInstall");
+  window.buttonInstallDisplay = window.buttonInstall.style.display;
+  window.buttonInstall.style.display = "none";
+
+  if (window.canBeInstalledListener) {
+    window.removeEventListener(
+      "beforeinstallprompt",
+      window.canBeInstalledListener
+    );
+  }
+  window.canBeInstalledListener = (e) => {
+    console.log("[pwa] app can be installed");
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    window.deferredInstallPrompt = e;
+    // Update UI notify the user they can install the PWA
+    window.buttonInstall.style.display = buttonInstallDisplay;
+  };
+  window.addEventListener("beforeinstallprompt", window.canBeInstalledListener);
+
+  window.buttonInstall.addEventListener("click", (e) => {
+    console.log("[pwa] install button clicked");
+    // Hide the app provided install promotion
+    window.buttonInstall.style.display = "none";
+    // Show the install prompt
+    window.deferredInstallPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    window.deferredInstallPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("[pwa] user accepted to install");
+      } else {
+        console.log("[pwa] user refused to install");
+      }
+      window.deferredInstallPrompt = null;
+    });
+  });
+
+  if (window.appInstalledListener) {
+    window.removeEventListener("appinstalled", window.appInstalledListener);
+  }
+  window.appInstalledListener = (evt) => {
+    console.log("[pwa] app is installed");
+  };
+  window.addEventListener("appinstalled", window.appInstalledListener);
+</script>

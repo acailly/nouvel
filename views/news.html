@@ -24,7 +24,10 @@
         <% items.forEach(function(item){ %>
         <li>
           <a href="<%= item.url%>" target="_blank"><%- item.title%></a>
-          <form method="POST" action="/remove-news-item">
+          <form
+            method="POST"
+            action="<%= locals.baseURL || '' %>/remove-news-item"
+          >
             <input type="hidden" name="key" value="<%- item.key%>" />
             <input type="submit" value="Supprimer" />
             <label><%= item.date%></label>
@@ -32,7 +35,10 @@
         </li>
         <% }); %>
       </ul>
-      <form method="POST" action="/remove-all-news-item">
+      <form
+        method="POST"
+        action="<%= locals.baseURL || '' %>/remove-all-news-item"
+      >
         <input type="hidden" name="folder" value="<%- currentFullPath%>" />
         <input type="submit" value="Supprimer tout" />
       </form>

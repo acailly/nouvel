@@ -6,7 +6,7 @@
   <body>
     <section>
       <h1>Dévérouiller l'application</h1>
-      <form method="POST" action="/unlock">
+      <form method="POST" action="<%= locals.baseURL || '' %>/unlock">
         <fieldset>
           <label for="password">Mot de passe</label>
           <input type="password" name="password" id="password" value="" />

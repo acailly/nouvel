@@ -7,7 +7,7 @@
     <header><%- await include('partials/header.html'); %></header>
     <section>
       <h1>Remotes</h1>
-      <form method="POST" action="/new-remote">
+      <form method="POST" action="<%= locals.baseURL || '' %>/new-remote">
         <fieldset>
           <label for="name">Nom</label>
           <input type="text" id="name" name="name" />
@@ -35,7 +35,10 @@
         <% remotes.forEach(function(remote){ %>
         <li>
           <a href="<%= remote.url%>"><%= remote.name%> (<%= remote.url%>)</a>
-          <form method="POST" action="/remove-remote">
+          <form
+            method="POST"
+            action="<%= locals.baseURL || '' %>/remove-remote"
+          >
             <input type="hidden" name="name" value="<%- remote.name%>" />
             <input type="submit" value="Supprimer" />
           </form>
