@@ -5,7 +5,7 @@ const configuration = require("../../@configuration");
 module.exports = async function (req, res) {
   const encryptedPassword = await encrypt(req.body.password);
 
-  let remotesInfo = await read(configuration.remoteListKey);
+  let remotesInfo = await read(configuration.distrib.pouchdb.remoteListKey);
   if (!remotesInfo) {
     remotesInfo = {};
   }
@@ -19,7 +19,7 @@ module.exports = async function (req, res) {
     password: encryptedPassword,
   });
 
-  await write(configuration.remoteListKey, remotesInfo);
+  await write(configuration.distrib.pouchdb.remoteListKey, remotesInfo);
 
   res.redirect(302, `/remotes`);
 };

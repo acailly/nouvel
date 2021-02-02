@@ -1,13 +1,13 @@
 const PouchDB = require("pouchdb");
 const configuration = require("../@configuration");
 const { getDatabase } = require("../@pouchdb");
-const { read } = require("../@storage");
+const { read, write } = require("../@storage");
 const { decrypt, isLocked } = require("../@secrets");
 
 // PouchDB guide about replication: https://pouchdb.com/guides/replication.html
 
 module.exports = async function () {
-  if (!configuration.syncPouchDBEnabled) {
+  if (!configuration.distrib.pouchdb.syncPouchDBEnabled) {
     console.log("[synchronization-pouchdb] Synchronization is disabled");
     return;
   }
@@ -21,9 +21,14 @@ module.exports = async function () {
 };
 
 async function nextIteration() {
+  console.log("[synchronization-pouchdb] Start!");
+  await write(configuration.distrib.pouchdb.synchronizationStatusKey, {
+    lastSync: 0,
+  });
+
   const localDB = getDatabase();
 
-  const remotesInfo = await read(configuration.remoteListKey);
+  const remotesInfo = await read(configuration.distrib.pouchdb.remoteListKey);
   const remotes = remotesInfo ? remotesInfo.remotes : [];
   // FOR DEBUG ONLY
   // const remotes = ["http://localhost:5984/db/storage"];
@@ -65,7 +70,15 @@ async function nextIteration() {
     }
   }
 
-  setTimeout(nextIteration, configuration.pouchdbSyncPeriodInMs || 10000);
+  console.log("[synchronization-pouchdb] Ended!");
+  await write(configuration.distrib.pouchdb.synchronizationStatusKey, {
+    lastSync: Date.now(),
+  });
+
+  setTimeout(
+    nextIteration,
+    configuration.distrib.pouchdb.pouchdbSyncPeriodInMs || 10000
+  );
 }
 
 async function syncTwoDB(firstDB, secondDB) {

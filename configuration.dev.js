@@ -17,6 +17,7 @@ const localDatabaseFolder = path.join(homeDirectory, "db");
 const syncPouchDBEnabled = true;
 const remoteListKey = "_local/remotes";
 const pouchdbSyncPeriodInMs = 20000;
+const synchronizationStatusKey = "_local/sync_status_pouchdb";
 
 // EXPOSE POUCHDB SERVER
 const pouchdbServerPort = 5984;
@@ -43,9 +44,14 @@ const configuration = {
   localDatabaseName,
   localDatabaseFolder,
   nodeServerPort,
-  syncPouchDBEnabled,
-  remoteListKey,
-  pouchdbSyncPeriodInMs,
+  distrib: {
+    pouchdb: {
+      syncPouchDBEnabled,
+      remoteListKey,
+      pouchdbSyncPeriodInMs,
+      synchronizationStatusKey,
+    },
+  },
   pouchdbServerPort,
   tunnellingHost,
   tunnellingLocalPort,

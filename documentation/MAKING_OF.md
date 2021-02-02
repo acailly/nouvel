@@ -1480,17 +1480,13 @@ Je ne sais pas trop quelle est la solution qui sera le meilleur compromis entre 
 Du coup je me lance sur le plus simple : le polling
 
 Au bout d'1H30 de reflexion (principalement) et de bidouillage (un peu), j'ai un poc de polling qui fonctionne dans le footer
+1H30 après j'ai un footer qui affiche la synchronisation en cours ou la date de dernière synchronisation \o/
 
-TODO récupérer l'info de synchronisation en cours et l'afficher dans le status dans le footer
-TODO Désactiver le bouton de téléchargement des feeds quand il est en cours et afficher à la place un bouton proposant de rafraichir la page
+TODO Gérer le feedback pendant le téléchargement des feeds (Désactiver le bouton , afficher à la place un bouton proposant de rafraichir la page, ...)
 
-TODO 1H30min+
+TODO 3Hmin+
 
 # NEXT
-
-## Nettoyage
-
-Sortir l'export exe dans `distrib-nexe`
 
 ## Général
 
@@ -1507,15 +1503,21 @@ TODO Tester les différents modes de distribution sur mon vieux HTC Desire
 
 ## app-news
 
-TODO Trouver comment corriger l'erreur "Cannot set headers after they are sent to the client"
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
 TODO Faire un design system classless pour remplacer Tacit
-TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
-TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation se fait
+TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies (si la récupération des news est terminée par exemple)
 TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
 TODO Faire une page affichant en live l'avancement de la récupération des feeds, en utilisant une iframe qui affiche les données que renvoie le serveur progressivement avec res.write
+
+## configuration
+
+TODO Faire en sorte qu'on puisse plus facilement distinguer à quel module appartiennent les clés de configuration (utilisation d'un prefixe, séparation en sous objets...)
+
+## distrib-browser
+
+TODO Sortir l'export exe dans un module `distrib-nexe`
 
 ## distrib-browser
 
@@ -1567,6 +1569,7 @@ TODO Tester une implémentation compatible PouchDB qui utiliserait Git comme bas
 TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltraco/level-fsdown)
 TODO Tester d'ajouter de la reactivité avec des techniques old school type COMET (https://en.wikipedia.org/wiki/Comet_(programming), https://github.com/kkuchta/css-only-chat/blob/master/README.md, ) ou des experimentations type coherence (https://github.com/dominictarr/coherence)
 TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
+TODO Ajouter un menu accessible via TAB destiné à l'accessibilité comme sur https://www.pole-emploi.fr/accueil/
 
 ## Idées d'autres apps qui pourraient être compatibles avec cette approche
 

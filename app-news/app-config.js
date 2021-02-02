@@ -9,6 +9,7 @@ module.exports = function (app) {
   app.use((req, res, next) => {
     if (unsecuredRoutes.indexOf(req.path) === -1 && isLocked()) {
       res.redirect(302, "/");
+      return;
     }
     next();
   });
