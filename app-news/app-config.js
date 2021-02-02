@@ -19,6 +19,7 @@ module.exports = function (app) {
   const viewFeeds = require("./views/feeds");
   const viewRemotes = require("./views/remotes");
   const viewDev = require("./views/dev");
+  const viewStatus = require("./views/status");
   const view404 = require("./views/404");
 
   // ACTIONS
@@ -51,6 +52,8 @@ module.exports = function (app) {
   app.get("/dev", viewDev);
   app.post("/edit-doc", actionEditDoc);
   app.post("/remove-doc", actionRemoveDoc);
+
+  app.get("/status", viewStatus);
 
   app.use(view404);
 };

@@ -1448,6 +1448,44 @@ Pour faire ca je m'aide de ce lien pour remettre au clair ma gestion du cas offl
 
 Au bout d'1H30, les deux scénarios semblent fonctionner. Et en plus le rafraichissement depuis une page autre que la page d'accueil semble fonctionner aussi.
 
+# 58 : Affichage d'un status - ???
+
+L'idée est de trouver un moyen d'afficher du contenu de manière dynamique avec un minimum de JS (sans aucun JS ?)
+
+Dans l'appli de news, je vois deux choses sur lesquelles il manque un retour visuel :
+
+- indiquer quand la synchronisation PouchDB se fait
+- indiquer l'état d'avancement de la récupération des feeds
+
+Je cherche du côté de l'approche COMET (https://en.wikipedia.org/wiki/Comet_(programming)).
+
+Mon premier test est la technique de la Forever Frame (https://www.infoworld.com/article/2077843/java-se-asynchronous-http-comet-architectures.html?page=6)
+Je me rend compte que, même si c'est assez minimaliste, il y a un gros problème : le handler côté serveur ne sait pas quand s'arrêter.
+Et si on appelle le handler à chaque fois qu'on rafraichit la page ou qu'on navigue sur une autre page, alors on se retrouve avec beaucoup de handler inutile qui consomment des ressources.
+Il est peut être envisageable de gerer côté serveur le fait qu'une nouvelle connexion soit etablie et de fermer les précédentes, mais j'ai peur que cela s'avère fastidieux.
+
+Une autre option est de basculer sur du Server Sent Event, mécanisme intégré à la plupart des navigateurs mais pas sur IE
+Il y a une limite qu'il est bon a connaitre également sur le nombre de connection simultané par browser (https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) :
+
+```
+When not used over HTTP/2, SSE suffers from a limitation to the maximum number of open connections, which can be especially painful when opening multiple tabs, as the limit is per browser and is set to a very low number (6). The issue has been marked as "Won't fix" in Chrome and Firefox. This limit is per browser + domain, which means that you can open 6 SSE connections across all of the tabs to www.example1.com and another 6 SSE connections to www.example2.com (per Stackoverflow). When using HTTP/2, the maximum number of simultaneous HTTP streams is negotiated between the server and the client (defaults to 100).
+```
+
+Une troisième option serait d'utiliser Coherence (https://github.com/dominictarr/coherence) ou HTMX Load polling (https://htmx.org/docs/#load_polling). Mais ca rajoute du développement custom ou un framework...
+
+Une quatrième option serait carément de faire du polling à interval régulier, on perdrait le côté reactif immédiat mais c'est probablement la solution qui serait supportée partout
+
+Je ne sais pas trop quelle est la solution qui sera le meilleur compromis entre compatibilité étendue, simplicité de la solution et performances mémoire/cpu
+
+Du coup je me lance sur le plus simple : le polling
+
+Au bout d'1H30 de reflexion (principalement) et de bidouillage (un peu), j'ai un poc de polling qui fonctionne dans le footer
+
+TODO récupérer l'info de synchronisation en cours et l'afficher dans le status dans le footer
+TODO Désactiver le bouton de téléchargement des feeds quand il est en cours et afficher à la place un bouton proposant de rafraichir la page
+
+TODO 1H30min+
+
 # NEXT
 
 ## Nettoyage
@@ -1477,6 +1515,7 @@ TODO Faire un design system classless pour remplacer Tacit
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand la synchronisation se fait
 TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
+TODO Faire une page affichant en live l'avancement de la récupération des feeds, en utilisant une iframe qui affiche les données que renvoie le serveur progressivement avec res.write
 
 ## distrib-browser
 
