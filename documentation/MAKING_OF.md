@@ -1503,6 +1503,7 @@ TODO Tester les différents modes de distribution sur mon vieux HTC Desire
 
 ## app-news
 
+TODO Ajouter un lien rafraichir la page dans le footer, en dessous du message de synchronisation
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
@@ -1557,6 +1558,10 @@ TODO Ajouter un test W3C validator (https://validator.w3.org/)
 
 TODO Tester d'ajouter des tests dans l'appli sans passer par un framework (https://twitter.com/ryanflorence/status/1162792430422200320?s=20)
 
+## Onboarding, developper experience
+
+TODO Ajouter un tutorial sous forme de fichiers `TUTORIAL-STEP-3-Sync_with_pouchdb.md` disposés à différents endroits dans l'arborescence de code (et liés entre eux par des liens dans les fichiers .md qui pointent vers le suivant)
+
 ## Autres expérimentations
 
 TODO Ajouter une commande pour lancer l'appli via webopen
@@ -1578,3 +1583,18 @@ TODO Une appli type Anki pour mémoriser facilement des choses
 TODO Une appli de vote par scrutin majoritaire permettant également la délégation (démocratie liquide)
 TODO Des alternatives minimalistes aux outils de tous les jours (office, prise de note, etc.)
 TODO Un gestionnaire de favoris
+
+## Une approche de conception, différentes histoires
+
+TODO Une approche pour développer plus facilement et rapidement des nouvelles idées d'applis
+TODO Une approche pour aller voir plus vite les utilisateur et les embarquer dans le developpement de l'appli
+TODO Une approche pour ne pas reposer sur une elite de développeurs, seule capable de maitriser tous les rouages d'une technologie
+TODO Une approche pour augmenter la durée de vie des applications, en se basant sur des technos matures et standard
+TODO Une approche pour faire des applications plus accessibles (HTML semantique, peu de JS, classless)
+TODO Une approche pour faire des applications plus sobres (offline-first)
+TODO Une approche utilisables par tous (accessibilité, diversité des plateformes, pas de stockage obligatoire)
+TODO Une approche pour faciliter la qualité logicielle (stack plus simple, outils de tests plus visuels si j'arrive à faire un truc à base d'event modeling)
+TODO Une approche pour limiter l'obésité logicielle (limites assez fortes en terme de perfs et mémoire)
+TODO Une approche pour rendre le développement d'application plus accessible aux non experts
+TODO Une approche pour relocaliser le développement d'application plus proche des utilisateurs (accessible aux non experts, pas de stockage obligatoire, etc.)
+TODO Une approche pour ...
