@@ -1483,9 +1483,23 @@ Au bout d'1H30 de reflexion (principalement) et de bidouillage (un peu), j'ai un
 1H30 après j'ai un footer qui affiche la synchronisation en cours ou la date de dernière synchronisation \o/
 J'ajoute un bouton de rechargement de la page en dessous du status (15min)
 
-TODO Gérer le feedback pendant le téléchargement des feeds (Désactiver le bouton , afficher à la place un bouton proposant de rafraichir la page, ...)
+Je teste ce nouveau status dans la PWA... et ca ne marche pas ! (pour changer)
+La requête GET vers `/status` est toujours en 404
+Cela doit venir du fait que c'est la première requête AJAX de l'appli (via fetch)
 
-TODO 3H15min+
+Comment faire ?
+
+Dans angular, il y a les http interceptors. J'ai l'impression que leur fonctionnement consiste à surcharger la méthode fetch. Il y a un exemple ici : https://github.com/werk85/fetch-intercept/blob/develop/src/attach.js
+
+Une piste serait donc d'ajouter une option `interceptFetch` à `browser-express` qui surcharge fetch et le redirige vers le routeur
+J'ai l'impression que d'ajouter un paramètre `noHistoryUpdate` dans `Router.prototype.processRequest` suffirait à pouvoir utiliser cette méthode sans opur autant à rafraichir la page
+(15min de reflexion pour trouver ca)
+
+TODO Faire en sorte que les fetch passent par le routeur
+
+TODO Gérer le feedback pendant le téléchargement des feeds : navigue vers une page qui affiche en temps réel les feeds qui sont terminés (via une iframe ?) avec en haut un bouton "Retourner aux news") + dans news.html, quand le téléchargement de news est en cours, remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
+
+TODO 3H30min+
 
 # NEXT
 
