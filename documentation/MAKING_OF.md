@@ -1562,6 +1562,10 @@ TODO Tester d'ajouter des tests dans l'appli sans passer par un framework (https
 
 TODO Ajouter un tutorial sous forme de fichiers `TUTORIAL-STEP-3-Sync_with_pouchdb.md` disposés à différents endroits dans l'arborescence de code (et liés entre eux par des liens dans les fichiers .md qui pointent vers le suivant)
 
+## Documentation
+
+TODO Documenter les différents choix techniques, s'inspirer des ADR (Architecture Decision Record) : https://engineering.atspotify.com/2020/04/14/when-should-i-write-an-architecture-decision-record/
+
 ## Autres expérimentations
 
 TODO Ajouter une commande pour lancer l'appli via webopen
