@@ -1481,10 +1481,11 @@ Du coup je me lance sur le plus simple : le polling
 
 Au bout d'1H30 de reflexion (principalement) et de bidouillage (un peu), j'ai un poc de polling qui fonctionne dans le footer
 1H30 après j'ai un footer qui affiche la synchronisation en cours ou la date de dernière synchronisation \o/
+J'ajoute un bouton de rechargement de la page en dessous du status (15min)
 
 TODO Gérer le feedback pendant le téléchargement des feeds (Désactiver le bouton , afficher à la place un bouton proposant de rafraichir la page, ...)
 
-TODO 3Hmin+
+TODO 3H15min+
 
 # NEXT
 

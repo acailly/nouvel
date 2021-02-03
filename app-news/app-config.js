@@ -33,6 +33,7 @@ module.exports = function (app) {
   const removeAllNewsItem = require("./actions/removeAllNewsItem");
   const actionEditDoc = require("./actions/editDoc");
   const actionRemoveDoc = require("./actions/removeDoc");
+  const actionReloadPage = require("./actions/reloadPage");
 
   // ROUTES
   app.get("/", viewLogin);
@@ -55,6 +56,7 @@ module.exports = function (app) {
   app.post("/remove-doc", actionRemoveDoc);
 
   app.get("/status", viewStatus);
+  app.post("/reload-page", actionReloadPage);
 
   app.use(view404);
 };

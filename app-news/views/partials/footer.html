@@ -14,3 +14,12 @@
   }
   refresh();
 </script>
+<nav>
+  <ul>
+    <li>
+      <form method="POST" action="<%= locals.baseURL || '' %>/reload-page">
+        <input type="submit" value="Recharger la page" />
+      </form>
+    </li>
+  </ul>
+</nav>
