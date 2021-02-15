@@ -1594,6 +1594,7 @@ TODO Tester la persistence fichier avec level-fsdown (https://github.com/voltrac
 TODO Tester d'ajouter de la reactivité avec des techniques old school type COMET (https://en.wikipedia.org/wiki/Comet_(programming), https://github.com/kkuchta/css-only-chat/blob/master/README.md, ) ou des experimentations type coherence (https://github.com/dominictarr/coherence)
 TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
 TODO Ajouter un menu accessible via TAB destiné à l'accessibilité comme sur https://www.pole-emploi.fr/accueil/
+TODO Tester de connecter les personnes entre elles via les réseaux mesh Yggdrasil (https://yggdrasil-network.github.io/) ou cjdns (https://github.com/cjdelisle/cjdns)
 
 ## Idées d'autres apps qui pourraient être compatibles avec cette approche
 
