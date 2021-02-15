@@ -1,0 +1,28 @@
+<div id="status">...</div>
+<script>
+  function refresh() {
+    fetch("<%= locals.baseURL || '' %>/fetch-status", {
+      method: "POST",
+      body: JSON.stringify({}),
+    })
+      .then((response) => response.text())
+      .then((html) => {
+        document.getElementById("status").innerHTML = html;
+        setTimeout(refresh, 1000);
+      })
+      .catch((error) => {
+        document.getElementById("status").innerHTML = error;
+        setTimeout(refresh, 1000);
+      });
+  }
+  refresh();
+</script>
+<nav>
+  <ul>
+    <li>
+      <form method="POST" action="<%= locals.baseURL || '' %>/reload-page">
+        <input type="submit" value="Recharger la page" />
+      </form>
+    </li>
+  </ul>
+</nav>
