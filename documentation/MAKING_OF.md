@@ -1485,7 +1485,7 @@ J'ajoute un bouton de rechargement de la page en dessous du status (15min)
 
 Je teste ce nouveau status dans la PWA... et ca ne marche pas ! (pour changer)
 La requête GET vers `/status` est toujours en 404
-Cela doit venir du fait que c'est la première requête AJAX de l'appli (via fetch)
+Cela doit venir du fait que c'est la première requête AJAX de l'appli (via fetch) qui est émise depuis le code et non suite à la soumission du formulaire
 
 Comment faire ?
 
@@ -1495,11 +1495,22 @@ Une piste serait donc d'ajouter une option `interceptFetch` à `browser-express`
 J'ai l'impression que d'ajouter un paramètre `noHistoryUpdate` dans `Router.prototype.processRequest` suffirait à pouvoir utiliser cette méthode sans opur autant à rafraichir la page
 (15min de reflexion pour trouver ca)
 
-TODO Faire en sorte que les fetch passent par le routeur
+J'essaie de tester cette piste en incluant directement le projet `fetch-intercept` (https://github.com/werk85/fetch-intercept) dans mon fork local de `browser-express` puis en modifiant celui ci pour intercepter les bons fetch de la bonne façon, en particulier en évitant de recharger la page quand on essaie de récupérer le status de synchronisation
+
+Au bout de 30 min je sens que je vais devoir revoir pas mal de trucs dans browser-express si je veux que ca marche, et je ne suis pas trop confiant dans le fait de réussir.
+Je passe 45min de plus à tester une solution à base d'iframe mais je réalise que ca ne marchera pas tant qu'il n'y aura pas quelque chose qui redirigera la requête vers le routeur, comme on redirige le formulaire actuellement
+
+Je crois qu'il faut que je me résoude à l'évidence, je vais devoir revoir une bonne partie du code de browser-express
+J'ai trouvé deux commits d'un fork de nighthawk (dont browser-express est issu) qui devraient m'aider à mieux découper le code avant de le modifier :
+
+- https://github.com/rob-marr/nighthawk/commit/6821db322a7607a66aee781ceac3c96b1f2ce364
+- https://github.com/rob-marr/nighthawk/commit/7ff0216691c30e01ba8df408fa860d91af6429f2
+
+TODO Faire en sorte que l'affichage de la synchro fonctionne dans la PWA
 
 TODO Gérer le feedback pendant le téléchargement des feeds : navigue vers une page qui affiche en temps réel les feeds qui sont terminés (via une iframe ?) avec en haut un bouton "Retourner aux news") + dans news.html, quand le téléchargement de news est en cours, remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
 
-TODO 3H30min+
+TODO 4H45min+
 
 # NEXT
 

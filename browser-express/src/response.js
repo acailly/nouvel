@@ -90,7 +90,7 @@ Response.prototype.send = function send(content) {
     // EDITED CODE
     // The property innerHTML does not execute <script> tags
     // See https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
-    // This is a workarounde from https://stackoverflow.com/a/20584396
+    // This is a workaround from https://stackoverflow.com/a/20584396
     nodeScriptReplace(document.getElementsByTagName("body")[0]);
   }
   if (supported) {
