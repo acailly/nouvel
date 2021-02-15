@@ -64,6 +64,33 @@ function Router(options) {
     );
   }
 
+  // EDITED CODE : add interceptPostFetch feature
+  if (opts.interceptPostFetch) {
+    const isBrowser =
+      typeof window !== "undefined" && typeof window.document !== "undefined";
+    const isServiceWorker = typeof importScripts === "function";
+    let env;
+    if (isBrowser) {
+      env = window;
+    } else if (isServiceWorker) {
+      env = self;
+    } else {
+      env = global;
+    }
+    const originalFetch = env.fetch;
+    env.fetch = (function (fetch) {
+      return function (url, config) {
+        // POST fetch are redirected to the router
+        // TODO ACY Ne pas activer les redirection vers le router pour
+        // les URLs extérieures à l'appli
+        if (config && config.method === "POST") {
+          return r.fetch(url, config);
+        }
+        return originalFetch(url, config);
+      };
+    })(env.fetch);
+  }
+
   return r;
 }
 
@@ -131,10 +158,30 @@ Router.prototype.submit = function submit(action, method, body) {
   this.processRequest(locationState, false);
 };
 
+// EDITED CODE : handle fetch mode
+Router.prototype.fetch = function fetch(path, config) {
+  const locationState = url.parse(path);
+  locationState.method = config && config.method ? config.method : "GET";
+  locationState.body = config && config.body ? config.body : undefined;
+  const promise = new Promise((resolve, reject) => {
+    this.processRequest(locationState, false, (result) => {
+      // TODO ACY : gérer les cas d'erreur
+      resolve(result);
+    });
+  });
+  return promise;
+};
+
 Router.prototype.processRequest = function processRequest(
   locationState,
-  replace
+  replace,
+  // EDITED CODE : handle fetch mode
+  fetchCallback
 ) {
+  // EDITED CODE : handle fetch mode
+  // If a callback is passed, don't touch the history
+  const updateLocation = !fetchCallback;
+
   // Normalize the url object
   const nextLocationState = Object.assign({}, locationState);
   nextLocationState.search = locationState.search || "";
@@ -153,6 +200,8 @@ Router.prototype.processRequest = function processRequest(
 
   // If processing to the same url and it's a GET method, just return
   if (
+    // EDITED CODE : handle fetch mode
+    updateLocation &&
     this.currentLocation === nextLocation &&
     nextLocationState.method === "GET"
   ) {
@@ -162,13 +211,17 @@ Router.prototype.processRequest = function processRequest(
   // Keep previous location for if we dont match
   let prevLocation;
   let prevLocationState;
-  if (supported) {
+  // EDITED CODE : handle fetch mode
+  if (updateLocation && supported) {
     prevLocation = this.currentLocation;
     prevLocationState = window.history.state;
   }
 
   // Update current location value
-  this.currentLocation = nextLocation;
+  // EDITED CODE : handle fetch mode
+  if (updateLocation) {
+    this.currentLocation = nextLocation;
+  }
 
   // Create the request object
   const req = new Request();
@@ -180,7 +233,10 @@ Router.prototype.processRequest = function processRequest(
     nextLocationState.hash;
   req.baseUrl = this.base;
   req.path = path;
-  req.url = this.currentLocation + nextLocationState.hash;
+  // ORIGINAL CODE
+  // req.url = this.currentLocation + nextLocationState.hash;
+  // EDITED CODE : handle fetch mode
+  req.url = nextLocation + nextLocationState.hash;
   req.headers.referer = `${req.protocol}://${req.hostname}${
     req.port ? `:${req.port}` : ""
   }${prevLocation}`;
@@ -190,8 +246,13 @@ Router.prototype.processRequest = function processRequest(
   const res = new Response();
   res.app = this;
   res.prevLocation = prevLocation;
+  // EDITED CODE : handle fetch mode
+  res.fetchCallback = fetchCallback;
 
-  this.historyStack.push([nextLocationState, null, req.originalUrl, replace]);
+  // EDITED CODE : handle fetch mode
+  if (updateLocation) {
+    this.historyStack.push([nextLocationState, null, req.originalUrl, replace]);
+  }
 
   // Run the route matching
   const that = this;
@@ -200,7 +261,8 @@ Router.prototype.processRequest = function processRequest(
     if (e) {
       throw e;
     }
-    if (that.reloadOnUnhandled) {
+    // EDITED CODE : handle fetch mode
+    if (updateLocation && that.reloadOnUnhandled) {
       // Replace the state that we had just pushed to maintain the
       // proper back button behavior, then reload the location
       if (supported) {

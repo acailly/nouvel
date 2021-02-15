@@ -1,7 +1,10 @@
 <div id="status">...</div>
 <script>
   function refresh() {
-    fetch("status")
+    fetch("<%= locals.baseURL || '' %>/fetch-status", {
+      method: "POST",
+      body: JSON.stringify({}),
+    })
       .then((response) => response.text())
       .then((html) => {
         document.getElementById("status").innerHTML = html;

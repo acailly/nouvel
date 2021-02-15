@@ -1,6 +1,7 @@
 const ejs = require("ejs");
 const configuration = require("../@configuration");
 
+// TODO ACY Réintégrer dans browser-express ?
 function redirectWithBaseURLMiddleware() {
   return (req, res, next) => {
     const isBrowser = res.get === res.set; // both set to noop by nighthawk (https://github.com/wesleytodd/nighthawk/blob/master/lib/response.js#L63)

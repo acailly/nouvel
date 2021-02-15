@@ -20,7 +20,6 @@ module.exports = function (app) {
   const viewFeeds = require("./views/feeds");
   const viewRemotes = require("./views/remotes");
   const viewDev = require("./views/dev");
-  const viewStatus = require("./views/status");
   const view404 = require("./views/404");
 
   // ACTIONS
@@ -33,6 +32,7 @@ module.exports = function (app) {
   const removeAllNewsItem = require("./actions/removeAllNewsItem");
   const actionEditDoc = require("./actions/editDoc");
   const actionRemoveDoc = require("./actions/removeDoc");
+  const actionFetchStatus = require("./actions/fetchStatus");
   const actionReloadPage = require("./actions/reloadPage");
 
   // ROUTES
@@ -55,7 +55,7 @@ module.exports = function (app) {
   app.post("/edit-doc", actionEditDoc);
   app.post("/remove-doc", actionRemoveDoc);
 
-  app.get("/status", viewStatus);
+  app.post("/fetch-status", actionFetchStatus);
   app.post("/reload-page", actionReloadPage);
 
   app.use(view404);

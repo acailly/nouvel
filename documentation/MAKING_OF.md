@@ -1448,7 +1448,7 @@ Pour faire ca je m'aide de ce lien pour remettre au clair ma gestion du cas offl
 
 Au bout d'1H30, les deux scénarios semblent fonctionner. Et en plus le rafraichissement depuis une page autre que la page d'accueil semble fonctionner aussi.
 
-# 58 : Affichage d'un status - ???
+# 58 : Affichage d'un status - 8H
 
 L'idée est de trouver un moyen d'afficher du contenu de manière dynamique avec un minimum de JS (sans aucun JS ?)
 
@@ -1506,11 +1506,19 @@ J'ai trouvé deux commits d'un fork de nighthawk (dont browser-express est issu)
 - https://github.com/rob-marr/nighthawk/commit/6821db322a7607a66aee781ceac3c96b1f2ce364
 - https://github.com/rob-marr/nighthawk/commit/7ff0216691c30e01ba8df408fa860d91af6429f2
 
-TODO Faire en sorte que l'affichage de la synchro fonctionne dans la PWA
+Ca y est \o/\o/\o/\o/\o/\o/\o/ !!!
+Au bout de 3H15 de refacto j'arrive enfin à afficher le status dans la PWA.
+La solution n'est pas trop dégueulasse et reste en phase avec le fonctionnement existant, en gros un nouveau paramètre `interceptPostFetch` est ajouté et active la redirection des fetchs avec la méthode POST vers le routeur
+
+Ouf! maintenant place à la page de suivi du téléchargement des feeds :-p
+
+TOTAL : 8H+
+
+# 59 : Affichage du suivi du téléchargement des feeds - ???
 
 TODO Gérer le feedback pendant le téléchargement des feeds : navigue vers une page qui affiche en temps réel les feeds qui sont terminés (via une iframe ?) avec en haut un bouton "Retourner aux news") + dans news.html, quand le téléchargement de news est en cours, remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
 
-TODO 4H45min+
+TODO XXmin+
 
 # NEXT
 

@@ -31,6 +31,8 @@ module.exports = function () {
     // dispatch: true,
     interceptLinks: true,
     interceptFormSubmit: true,
+    // EDITED CODE : add interceptPostFetch feature
+    interceptPostFetch: true,
     // Set base path for deploy
     base: configuration.deployBaseURL,
   });

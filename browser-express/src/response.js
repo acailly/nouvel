@@ -82,6 +82,15 @@ Response.prototype.status = function status(code) {
 };
 
 Response.prototype.send = function send(content) {
+  // EDITED CODE : handle fetch mode
+  if (this.fetchCallback) {
+    const blob = new Blob([content], {
+      type: "text/html",
+    });
+    this.fetchCallback(blob);
+    return;
+  }
+
   if (content) {
     // ORIGINAL CODE
     // document.body.innerHTML = content;
