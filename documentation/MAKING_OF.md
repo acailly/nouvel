@@ -1537,11 +1537,11 @@ TODO Tester les différents modes de distribution sur mon vieux HTC Desire
 
 ## app-news
 
-TODO Ajouter un lien rafraichir la page dans le footer, en dessous du message de synchronisation
 TODO Pouvoir ajouter un feed twitter directement dans l'UI
 TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
 TODO Faire un design system classless pour remplacer Tacit
+TODO Ajouter une vague en SVG parce que c'est joli (avec https://getwaves.io/)
 TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies (si la récupération des news est terminée par exemple)
 TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
 TODO Faire une page affichant en live l'avancement de la récupération des feeds, en utilisant une iframe qui affiche les données que renvoie le serveur progressivement avec res.write
