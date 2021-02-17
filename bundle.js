@@ -237,9 +237,9 @@ module.exports = async function (req, res) {
     message = `Dernière synchronisation le ${lastSyncHumanReadable}`;
 
     if (failedRemotes.length) {
-      message += `(erreurs avec : ${failedRemotes.join(",")})`;
+      message += ` (erreurs avec : ${failedRemotes.join(",")})`;
     } else {
-      message += `(ok)`;
+      message += ` (ok)`;
     }
   } else {
     message = `Les données n'ont pas été synchronisées`;
