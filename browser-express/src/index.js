@@ -77,16 +77,16 @@ function Router(options) {
     } else {
       env = global;
     }
-    const originalFetch = env.fetch;
     env.fetch = (function (fetch) {
-      return function (url, config) {
-        // POST fetch are redirected to the router
-        // TODO ACY Ne pas activer les redirection vers le router pour
-        // les URLs extérieures à l'appli
+      return function (path, config) {
+        // Local POST fetch are redirected to the router
         if (config && config.method === "POST") {
-          return r.fetch(url, config);
+          const parsedURL = url.parse(path);
+          if (!parsedURL.host || parsedURL.host === window.location.host) {
+            return r.fetch(path, config);
+          }
         }
-        return originalFetch(url, config);
+        return fetch(path, config);
       };
     })(env.fetch);
   }
