@@ -1,3 +1,5 @@
+// TODO ACY Il serait bon de pouvoir modifier cette version
+// quand l'app change afin que le cache soit mis à jour
 const version = "v1";
 const OFFLINE_URL = "index.html";
 
