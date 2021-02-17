@@ -33,6 +33,8 @@ async function nextIteration() {
   // FOR DEBUG ONLY
   // const remotes = ["http://localhost:5984/db/storage"];
 
+  let failedRemotes = [];
+
   for (const remote of remotes) {
     console.log(
       "[synchronization-pouchdb] Starting to sync with:",
@@ -65,6 +67,7 @@ async function nextIteration() {
       await syncTwoDB(localDB, remoteDB);
       console.log("[synchronization-pouchdb] -", remote.name, "- Completed");
     } catch (e) {
+      failedRemotes.push(remote.name);
       console.error("[synchronization-pouchdb] -", remote.name, "- ERROR");
       console.error(e);
     }
@@ -73,6 +76,7 @@ async function nextIteration() {
   console.log("[synchronization-pouchdb] Ended!");
   await write(configuration.distrib.pouchdb.synchronizationStatusKey, {
     lastSync: Date.now(),
+    failedRemotes,
   });
 
   setTimeout(

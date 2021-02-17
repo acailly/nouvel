@@ -1448,7 +1448,7 @@ Pour faire ca je m'aide de ce lien pour remettre au clair ma gestion du cas offl
 
 Au bout d'1H30, les deux scénarios semblent fonctionner. Et en plus le rafraichissement depuis une page autre que la page d'accueil semble fonctionner aussi.
 
-# 58 : Affichage d'un status - 8H15
+# 58 : Affichage d'un status - 8H30
 
 L'idée est de trouver un moyen d'afficher du contenu de manière dynamique avec un minimum de JS (sans aucun JS ?)
 
@@ -1512,7 +1512,7 @@ La solution n'est pas trop dégueulasse et reste en phase avec le fonctionnement
 
 Ouf! maintenant place à la page de suivi du téléchargement des feeds :-p
 
-TOTAL : 8H15
+TOTAL : 8H30
 
 # 59 : Affichage du suivi du téléchargement des feeds - ???
 

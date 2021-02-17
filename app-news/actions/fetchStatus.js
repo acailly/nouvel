@@ -6,6 +6,7 @@ module.exports = async function (req, res) {
     configuration.distrib.pouchdb.synchronizationStatusKey
   );
   const lastSync = syncInfo ? syncInfo.lastSync : null;
+  const failedRemotes = syncInfo ? syncInfo.failedRemotes : [];
 
   let message = "";
   if (lastSync === 0) {
@@ -26,6 +27,12 @@ module.exports = async function (req, res) {
       options
     );
     message = `Dernière synchronisation le ${lastSyncHumanReadable}`;
+
+    if (failedRemotes.length) {
+      message += ` (erreurs avec : ${failedRemotes.join(",")})`;
+    } else {
+      message += ` (ok)`;
+    }
   } else {
     message = `Les données n'ont pas été synchronisées`;
   }
