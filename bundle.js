@@ -49,6 +49,17 @@ const removeArrayItem = (arr, value) => {
 };
 
 module.exports = async function (req, res) {
+  const fetchFeedStatus = await read("_local/feed_status");
+  if (
+    fetchFeedStatus &&
+    fetchFeedStatus.queued &&
+    fetchFeedStatus.queued.length
+  ) {
+    console.log("Already fetching feed, redirect to status page");
+    res.redirect(302, "/fetch-feeds-status");
+    return;
+  }
+
   const feedIds = await listKeys(`news/feeds`);
 
   const feeds = await Promise.all(
@@ -4530,7 +4541,7 @@ const nodeServerPort = 8092;
 // DISTRIB BROWSER
 const deployBaseURL = "/nouvel";
 const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
-const serviceWorkerVersion = "v1-alpha02";
+const serviceWorkerVersion = "v1-alpha03";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
@@ -29342,7 +29353,7 @@ module.exports={
   "_args": [
     [
       "ejs@3.1.3",
-      "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech"
+      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
     ]
   ],
   "_from": "ejs@3.1.3",
@@ -29366,7 +29377,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-3.1.3.tgz",
   "_spec": "3.1.3",
-  "_where": "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech",
+  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -33305,7 +33316,7 @@ module.exports={
   "_args": [
     [
       "elliptic@6.5.3",
-      "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech"
+      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
     ]
   ],
   "_development": true,
@@ -33331,7 +33342,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.3.tgz",
   "_spec": "6.5.3",
-  "_where": "/home/Antoine.Cailly/_Projets/perso/zDemocracy-lowtech",
+  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -79476,7 +79487,7 @@ var t=require("events");module.exports=function(t){function e(){t.call(this),thi
 
 },{"events":222}],423:[function(require,module,exports){
 (function (Buffer){
-var e=require("crypto"),t=require("oauth-1.0a"),r=require("cross-fetch"),n=require("querystring"),s=require("./stream"),o=function(e,t){return void 0===t&&(t="1.1"),"https://"+e+".twitter.com/"+t},a={subdomain:"api",consumer_key:null,consumer_secret:null,access_token_key:null,access_token_secret:null,bearer_token:null,version:"1.1"},i=["direct_messages/events/new","direct_messages/welcome_messages/new","direct_messages/welcome_messages/rules/new","media/metadata/create","collections/entries/curate"],u={"Content-Type":"application/json",Accept:"application/json"};function c(e){return e.replace(/!/g,"%21").replace(/\*/g,"%2A").replace(/'/g,"%27").replace(/\(/g,"%28").replace(/\)/g,"%29")}var h=function(r){var n,s=Object.assign({},a,r);this.authType=s.bearer_token?"App":"User",this.client=t({consumer:{key:(n={key:s.consumer_key,secret:s.consumer_secret}).key,secret:n.secret},signature_method:"HMAC-SHA1",hash_function:function(t,r){return e.createHmac("sha1",r).update(t).digest("base64")}}),this.token={key:s.access_token_key,secret:s.access_token_secret},this.url=o(/*TODO ACY s.subdomain*/s.subdomain,s.version),this.oauth=o(/*TODO ACY s.subdomain*/s.subdomain,"oauth"),this.config=s};h._handleResponse=function(e){try{var t=e.headers;return e.ok?204===e.status||"0"===e.headers.get("content-length")?Promise.resolve({_headers:t}):Promise.resolve(e.json().then(function(e){return e._headers=t,e})):Promise.resolve(e.json()).then(function(e){throw Object.assign({},{_headers:t},e)})}catch(e){return Promise.reject(e)}},h._handleResponseTextOrJson=function(e){try{return Promise.resolve(e.text()).then(function(t){if(e.ok)return n.parse(t);var r;try{r=JSON.parse(t)}catch(e){r=t}return Promise.reject(r)})}catch(e){return Promise.reject(e)}},h.prototype.getBearerToken=function(){try{var e={Authorization:"Basic "+Buffer.from(this.config.consumer_key+":"+this.config.consumer_secret).toString("base64"),"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"};return Promise.resolve(r("https://api.twitter.com/oauth2/token",{method:"POST",body:"grant_type=client_credentials",headers:e}).then(h._handleResponse))}catch(e){return Promise.reject(e)}},h.prototype.getRequestToken=function(e){try{var t={url:this.oauth+"/request_token",method:"POST"},s={};e&&(s={oauth_callback:e}),s&&(t.url+="?"+n.stringify(s));var o=this.client.toHeader(this.client.authorize(t,{}));return Promise.resolve(r(t.url,{method:"POST",headers:Object.assign({},u,o)}).then(h._handleResponseTextOrJson))}catch(e){return Promise.reject(e)}},h.prototype.getAccessToken=function(e){try{var t={url:this.oauth+"/access_token",method:"POST"},s={oauth_verifier:e.oauth_verifier,oauth_token:e.oauth_token};s.oauth_verifier&&s.oauth_token&&(t.url+="?"+n.stringify(s));var o=this.client.toHeader(this.client.authorize(t));return Promise.resolve(r(t.url,{method:"POST",headers:Object.assign({},u,o)}).then(h._handleResponseTextOrJson))}catch(e){return Promise.reject(e)}},h.prototype._makeRequest=function(e,t,r){var s={url:this.url+"/"+t+".json",method:e};return r&&("POST"===e?s.data=r:s.url+="?"+n.stringify(r)),{requestData:s,headers:"User"===this.authType?this.client.toHeader(this.client.authorize(s,this.token)):{Authorization:"Bearer "+this.config.bearer_token}}},h.prototype.get=function(e,t){var n=this._makeRequest("GET",e,t);return r(n.requestData.url,{headers:n.headers}).then(h._handleResponse)},h.prototype.post=function(e,t){var s=this._makeRequest("POST",e,i.includes(e)?null:t),o=s.requestData,a=Object.assign({},u,s.headers);return i.includes(e)?t=JSON.stringify(t):(t=c(n.stringify(t)),a["Content-Type"]="application/x-www-form-urlencoded"),r(o.url,{method:"POST",headers:a,body:t}).then(h._handleResponse)},h.prototype.put=function(e,t,n){var s=this._makeRequest("PUT",e,t),o=s.requestData,a=Object.assign({},u,s.headers);return n=JSON.stringify(n),r(o.url,{method:"PUT",headers:a,body:n}).then(h._handleResponse)},h.prototype.stream=function(e,t){var a=this;if("User"!==this.authType)throw new Error("Streams require user context authentication");var i=new s,u={url:o("stream")+"/"+e+".json",method:"POST"};t&&(u.data=t);var h=this.client.toHeader(this.client.authorize(u,this.token));return r(u.url,{method:"POST",headers:Object.assign({},h,{"Content-Type":"application/x-www-form-urlencoded"}),body:c(n.stringify(t))}).then(function(e){i.destroy=a.stream.destroy=function(){return e.body.destroy()},e.ok?i.emit("start",e):(e._headers=e.headers,i.emit("error",e)),e.body.on("data",function(e){return i.parse(e)}).on("error",function(e){return i.emit("error",e)}).on("end",function(){return i.emit("end",e)})}).catch(function(e){return i.emit("error",e)}),i},module.exports=h;
+var e=require("crypto"),t=require("oauth-1.0a"),r=require("cross-fetch"),n=require("querystring"),s=require("./stream"),o=function(e,t){return void 0===t&&(t="1.1"),"https://"+e+".twitter.com/"+t},a={subdomain:"api",consumer_key:null,consumer_secret:null,access_token_key:null,access_token_secret:null,bearer_token:null,version:"1.1"},i=["direct_messages/events/new","direct_messages/welcome_messages/new","direct_messages/welcome_messages/rules/new","media/metadata/create","collections/entries/curate"],u={"Content-Type":"application/json",Accept:"application/json"};function c(e){return e.replace(/!/g,"%21").replace(/\*/g,"%2A").replace(/'/g,"%27").replace(/\(/g,"%28").replace(/\)/g,"%29")}var h=function(r){var n,s=Object.assign({},a,r);this.authType=s.bearer_token?"App":"User",this.client=t({consumer:{key:(n={key:s.consumer_key,secret:s.consumer_secret}).key,secret:n.secret},signature_method:"HMAC-SHA1",hash_function:function(t,r){return e.createHmac("sha1",r).update(t).digest("base64")}}),this.token={key:s.access_token_key,secret:s.access_token_secret},this.url=o(s.subdomain,s.version),this.oauth=o(s.subdomain,"oauth"),this.config=s};h._handleResponse=function(e){try{var t=e.headers;return e.ok?204===e.status||"0"===e.headers.get("content-length")?Promise.resolve({_headers:t}):Promise.resolve(e.json().then(function(e){return e._headers=t,e})):Promise.resolve(e.json()).then(function(e){throw Object.assign({},{_headers:t},e)})}catch(e){return Promise.reject(e)}},h._handleResponseTextOrJson=function(e){try{return Promise.resolve(e.text()).then(function(t){if(e.ok)return n.parse(t);var r;try{r=JSON.parse(t)}catch(e){r=t}return Promise.reject(r)})}catch(e){return Promise.reject(e)}},h.prototype.getBearerToken=function(){try{var e={Authorization:"Basic "+Buffer.from(this.config.consumer_key+":"+this.config.consumer_secret).toString("base64"),"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"};return Promise.resolve(r("https://api.twitter.com/oauth2/token",{method:"POST",body:"grant_type=client_credentials",headers:e}).then(h._handleResponse))}catch(e){return Promise.reject(e)}},h.prototype.getRequestToken=function(e){try{var t={url:this.oauth+"/request_token",method:"POST"},s={};e&&(s={oauth_callback:e}),s&&(t.url+="?"+n.stringify(s));var o=this.client.toHeader(this.client.authorize(t,{}));return Promise.resolve(r(t.url,{method:"POST",headers:Object.assign({},u,o)}).then(h._handleResponseTextOrJson))}catch(e){return Promise.reject(e)}},h.prototype.getAccessToken=function(e){try{var t={url:this.oauth+"/access_token",method:"POST"},s={oauth_verifier:e.oauth_verifier,oauth_token:e.oauth_token};s.oauth_verifier&&s.oauth_token&&(t.url+="?"+n.stringify(s));var o=this.client.toHeader(this.client.authorize(t));return Promise.resolve(r(t.url,{method:"POST",headers:Object.assign({},u,o)}).then(h._handleResponseTextOrJson))}catch(e){return Promise.reject(e)}},h.prototype._makeRequest=function(e,t,r){var s={url:this.url+"/"+t+".json",method:e};return r&&("POST"===e?s.data=r:s.url+="?"+n.stringify(r)),{requestData:s,headers:"User"===this.authType?this.client.toHeader(this.client.authorize(s,this.token)):{Authorization:"Bearer "+this.config.bearer_token}}},h.prototype.get=function(e,t){var n=this._makeRequest("GET",e,t);return r(n.requestData.url,{headers:n.headers}).then(h._handleResponse)},h.prototype.post=function(e,t){var s=this._makeRequest("POST",e,i.includes(e)?null:t),o=s.requestData,a=Object.assign({},u,s.headers);return i.includes(e)?t=JSON.stringify(t):(t=c(n.stringify(t)),a["Content-Type"]="application/x-www-form-urlencoded"),r(o.url,{method:"POST",headers:a,body:t}).then(h._handleResponse)},h.prototype.put=function(e,t,n){var s=this._makeRequest("PUT",e,t),o=s.requestData,a=Object.assign({},u,s.headers);return n=JSON.stringify(n),r(o.url,{method:"PUT",headers:a,body:n}).then(h._handleResponse)},h.prototype.stream=function(e,t){var a=this;if("User"!==this.authType)throw new Error("Streams require user context authentication");var i=new s,u={url:o("stream")+"/"+e+".json",method:"POST"};t&&(u.data=t);var h=this.client.toHeader(this.client.authorize(u,this.token));return r(u.url,{method:"POST",headers:Object.assign({},h,{"Content-Type":"application/x-www-form-urlencoded"}),body:c(n.stringify(t))}).then(function(e){i.destroy=a.stream.destroy=function(){return e.body.destroy()},e.ok?i.emit("start",e):(e._headers=e.headers,i.emit("error",e)),e.body.on("data",function(e){return i.parse(e)}).on("error",function(e){return i.emit("error",e)}).on("end",function(){return i.emit("end",e)})}).catch(function(e){return i.emit("error",e)}),i},module.exports=h;
 
 
 }).call(this,require("buffer").Buffer)
