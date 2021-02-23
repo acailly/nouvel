@@ -15,6 +15,10 @@ const parser = new Parser({
   },
 });
 
+const removeArrayItem = (arr, value) => {
+  return arr.filter((item) => item !== value);
+};
+
 module.exports = async function (req, res) {
   const feedIds = await listKeys(`news/feeds`);
 
@@ -24,15 +28,51 @@ module.exports = async function (req, res) {
     })
   );
 
+  // Update status
+  let queued = feeds;
+  let started = [];
+  let finished = [];
+  let failed = [];
+  await write("_local/feed_status", {
+    queued,
+    started,
+    finished,
+    failed,
+  });
+
+  res.redirect(302, "/fetch-feeds-status");
+
   for (const feed of feeds) {
     // Fetch feed content
     let items;
     try {
+      // Update status
+      started.push(feed);
+      queued = removeArrayItem(queued, feed);
+      await write("_local/feed_status", {
+        queued,
+        started,
+        finished,
+        failed,
+      });
+
       items = await fetchFeedContent(feed);
     } catch (e) {
       console.error("[ERROR] Error with feed", feed.title);
+
+      // Update status
+      failed.push(feed);
+      started = removeArrayItem(started, feed);
+      await write("_local/feed_status", {
+        queued,
+        started,
+        finished,
+        failed,
+      });
+
       // DEBUG
       console.error(e);
+
       continue;
     }
 
@@ -64,9 +104,17 @@ module.exports = async function (req, res) {
       };
       await write(itemKey, newItem);
     }
-  }
 
-  res.redirect("back");
+    // Update status
+    finished.push(feed);
+    started = removeArrayItem(started, feed);
+    await write("_local/feed_status", {
+      queued,
+      started,
+      finished,
+      failed,
+    });
+  }
 };
 
 //From https://stackoverflow.com/a/7616484

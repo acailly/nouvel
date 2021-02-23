@@ -18,6 +18,7 @@ module.exports = function (app) {
   const viewLogin = require("./views/login");
   const viewNews = require("./views/news");
   const viewFeeds = require("./views/feeds");
+  const viewFetchFeedsStatus = require("./views/fetchFeedsStatus");
   const viewRemotes = require("./views/remotes");
   const viewDev = require("./views/dev");
   const view404 = require("./views/404");
@@ -28,6 +29,7 @@ module.exports = function (app) {
   const actionNewRemote = require("./actions/newRemote");
   const actionRemoveRemote = require("./actions/removeRemote");
   const actionFetchFeeds = require("./actions/fetchFeeds");
+  const actionFetchFeedsStatus = require("./actions/fetchFeedsStatus");
   const removeNewsItem = require("./actions/removeNewsItem");
   const removeAllNewsItem = require("./actions/removeAllNewsItem");
   const actionEditDoc = require("./actions/editDoc");
@@ -46,6 +48,8 @@ module.exports = function (app) {
   app.get("/feeds", viewFeeds);
   app.post("/new-feed", actionNewFeed);
   app.post("/fetch-feeds", actionFetchFeeds);
+  app.get("/fetch-feeds-status", viewFetchFeedsStatus);
+  app.post("/fetch-feeds-status", actionFetchFeedsStatus);
 
   app.get("/remotes", viewRemotes);
   app.post("/new-remote", actionNewRemote);

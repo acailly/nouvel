@@ -36,6 +36,7 @@ const nodeServerPort = 8093;
 // DISTRIB BROWSER
 const deployBaseURL = "/nouvel";
 const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
+const serviceWorkerVersion = "v1-alpha02";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
@@ -59,6 +60,7 @@ const configuration = {
   tunnellingLocalPort,
   deployBaseURL,
   corsProxyURL,
+  serviceWorkerVersion,
   capacitorBaseURL,
 };
 

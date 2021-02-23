@@ -1518,9 +1518,15 @@ TOTAL : 8H45
 
 # 59 : Affichage du suivi du téléchargement des feeds - ???
 
-TODO Gérer le feedback pendant le téléchargement des feeds : navigue vers une page qui affiche en temps réel les feeds qui sont terminés (via une iframe ?) avec en haut un bouton "Retourner aux news") + dans news.html, quand le téléchargement de news est en cours, remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
+Je modifie l'app pour que le bouton "Télécharger les feeds" renvoie vers une page dédiée qui affiche la liste des feeds et leur état : ✅ 📡 ⏳
 
-TODO XXmin+
+Cette page est mise à jour dynamiquement avec la même technique JS que pour le status de synchro
+
+Au bout d'1H45 j'arrive à un résultat pas trop mal
+
+TODO remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
+
+TODO 1H45min+
 
 # NEXT
 
