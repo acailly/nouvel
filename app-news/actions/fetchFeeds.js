@@ -20,6 +20,17 @@ const removeArrayItem = (arr, value) => {
 };
 
 module.exports = async function (req, res) {
+  const fetchFeedStatus = await read("_local/feed_status");
+  if (
+    fetchFeedStatus &&
+    fetchFeedStatus.queued &&
+    fetchFeedStatus.queued.length
+  ) {
+    console.log("Already fetching feed, redirect to status page");
+    res.redirect(302, "/fetch-feeds-status");
+    return;
+  }
+
   const feedIds = await listKeys(`news/feeds`);
 
   const feeds = await Promise.all(

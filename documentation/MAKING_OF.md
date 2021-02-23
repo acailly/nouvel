@@ -1516,17 +1516,22 @@ Ouf! maintenant place à la page de suivi du téléchargement des feeds :-p
 
 TOTAL : 8H45
 
-# 59 : Affichage du suivi du téléchargement des feeds - ???
+# 59 : Affichage du suivi du téléchargement des feeds - 2H
 
 Je modifie l'app pour que le bouton "Télécharger les feeds" renvoie vers une page dédiée qui affiche la liste des feeds et leur état : ✅ 📡 ⏳
 
 Cette page est mise à jour dynamiquement avec la même technique JS que pour le status de synchro
 
-Au bout d'1H45 j'arrive à un résultat pas trop mal
+Au bout de 2H j'arrive à un résultat pas trop mal
 
-TODO remplacer le bouton "Telecharger les news" par "Téléchargement des news en cours..." qui renvoie vers la page mentionnée précédement
+Total : 2H
 
-TODO 1H45min+
+# 60 : Ajout de feeds spéciaux - ???
+
+TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
+TODO Pouvoir ajouter un feed twitter directement dans l'UI
+
+TODO XXmin+
 
 # NEXT
 
@@ -1550,9 +1555,7 @@ TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
 TODO Faire un design system classless pour remplacer Tacit
 TODO Ajouter une vague en SVG parce que c'est joli (avec https://getwaves.io/)
-TODO Trouver un moyen (si possible sans JS) d'indiquer quand les données d'une page doivent être rafraichies (si la récupération des news est terminée par exemple)
 TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
-TODO Faire une page affichant en live l'avancement de la récupération des feeds, en utilisant une iframe qui affiche les données que renvoie le serveur progressivement avec res.write
 
 ## configuration
 
