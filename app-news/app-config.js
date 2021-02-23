@@ -32,7 +32,7 @@ module.exports = function (app) {
   const removeAllNewsItem = require("./actions/removeAllNewsItem");
   const actionEditDoc = require("./actions/editDoc");
   const actionRemoveDoc = require("./actions/removeDoc");
-  const actionFetchStatus = require("./actions/fetchStatus");
+  const actionFetchSyncStatus = require("./actions/fetchSyncStatus");
   const actionReloadPage = require("./actions/reloadPage");
 
   // ROUTES
@@ -55,7 +55,7 @@ module.exports = function (app) {
   app.post("/edit-doc", actionEditDoc);
   app.post("/remove-doc", actionRemoveDoc);
 
-  app.post("/fetch-status", actionFetchStatus);
+  app.post("/fetch-sync-status", actionFetchSyncStatus);
   app.post("/reload-page", actionReloadPage);
 
   app.use(view404);

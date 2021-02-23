@@ -7,6 +7,7 @@ module.exports = async function (req, res) {
   );
   const lastSync = syncInfo ? syncInfo.lastSync : null;
   const failedRemotes = syncInfo ? syncInfo.failedRemotes : [];
+  const skippedRemotes = syncInfo ? syncInfo.skippedRemotes : [];
 
   let message = "";
   if (lastSync === 0) {
@@ -28,16 +29,26 @@ module.exports = async function (req, res) {
     );
     message = `Dernière synchronisation le ${lastSyncHumanReadable}`;
 
-    if (failedRemotes.length) {
-      message += ` (erreurs avec : ${failedRemotes.join(",")})`;
-    } else {
+    if (!failedRemotes.length && !skippedRemotes.length) {
       message += ` (ok)`;
+    } else {
+      message += ` (`;
+      if (failedRemotes.length) {
+        message += `en erreur : ${failedRemotes.join(",")}`;
+      }
+      if (failedRemotes.length && skippedRemotes.length) {
+        message += `; `;
+      }
+      if (skippedRemotes.length) {
+        message += `ignorés : ${skippedRemotes.join(",")}`;
+      }
+      message += `)`;
     }
   } else {
     message = `Les données n'ont pas été synchronisées`;
   }
 
-  res.render("partials/status.html", {
+  res.render("partials/syncStatus.html", {
     message,
   });
 };

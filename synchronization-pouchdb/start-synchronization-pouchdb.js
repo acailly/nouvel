@@ -34,6 +34,7 @@ async function nextIteration() {
   // const remotes = ["http://localhost:5984/db/storage"];
 
   let failedRemotes = [];
+  let skippedRemotes = [];
 
   for (const remote of remotes) {
     console.log(
@@ -51,6 +52,7 @@ async function nextIteration() {
           remote.name,
           "- Skipped, app is locked"
         );
+        skippedRemotes.push(remote.name);
         continue;
       }
       const encryptedPassword = remote.password;
@@ -77,6 +79,7 @@ async function nextIteration() {
   await write(configuration.distrib.pouchdb.synchronizationStatusKey, {
     lastSync: Date.now(),
     failedRemotes,
+    skippedRemotes,
   });
 
   setTimeout(
