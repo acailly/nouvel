@@ -1,21 +1,21 @@
-<div id="status">...</div>
+<div id="fetch-sync-status">...</div>
 <script>
-  function refresh() {
-    fetch("<%= locals.baseURL || '' %>/fetch-status", {
+  function refreshSyncStatus() {
+    fetch("<%= locals.baseURL || '' %>/fetch-sync-status", {
       method: "POST",
       body: JSON.stringify({}),
     })
       .then((response) => response.text())
       .then((html) => {
-        document.getElementById("status").innerHTML = html;
-        setTimeout(refresh, 1000);
+        document.getElementById("fetch-sync-status").innerHTML = html;
+        setTimeout(refreshSyncStatus, 1000);
       })
       .catch((error) => {
-        document.getElementById("status").innerHTML = error;
-        setTimeout(refresh, 1000);
+        document.getElementById("fetch-sync-status").innerHTML = error;
+        setTimeout(refreshSyncStatus, 1000);
       });
   }
-  refresh();
+  refreshSyncStatus();
 </script>
 <nav>
   <ul>

@@ -1,0 +1,9 @@
+<ul>
+  <% finished.forEach(function(feed){ %>
+  <li>✅ <%= feed.title%></li>
+  <% }); %> <% started.forEach(function(feed){ %>
+  <li>📡 <%= feed.title%></li>
+  <% }); %> <% queued.forEach(function(feed){ %>
+  <li>⏳<%= feed.title%></li>
+  <% }); %>
+</ul>

@@ -1,6 +1,3 @@
-// TODO ACY Il serait bon de pouvoir modifier cette version
-// quand l'app change afin que le cache soit mis à jour
-const version = "v1";
 const OFFLINE_URL = "index.html";
 
 // Declare filesToCache variable
@@ -8,6 +5,8 @@ self.importScripts("./filesToCache.js");
 
 // Declare serviceWorkerConfiguration variable
 self.importScripts("./serviceworker-configuration.js");
+
+const version = serviceWorkerConfiguration.serviceWorkerVersion;
 
 const baseURL = serviceWorkerConfiguration.baseURL;
 console.log("[service-worker] base URL is", baseURL);
