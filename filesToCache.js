@@ -1,6 +1,10 @@
 var filesToCache = [
   "index.html",
   "views/404.html",
+  "views/addFeed.html",
+  "views/addRSSFeed.html",
+  "views/addTwitterHomeTimelineFeed.html",
+  "views/addYoutubeFeed.html",
   "views/dev.html",
   "views/feeds.html",
   "views/fetchFeedsStatus.html",

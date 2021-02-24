@@ -10,4 +10,9 @@ section h1 {
 
 form fieldset {
   margin-bottom: 0px;
+  align-items: baseline;
+}
+
+form fieldset label {
+  margin-right: 15px;
 }

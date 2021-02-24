@@ -7,16 +7,8 @@
     <header><%- await include('partials/header.html'); %></header>
     <section>
       <h1>Abonnements</h1>
-      <form method="POST" action="<%= locals.baseURL || '' %>/new-feed">
-        <fieldset>
-          <label for="title">Nom</label>
-          <input type="text" id="title" name="title" />
-        </fieldset>
-        <fieldset>
-          <label for="url">Adresse</label>
-          <input type="text" id="url" name="url" />
-        </fieldset>
-        <input type="submit" value="Ajouter cet abonnement" />
+      <form method="GET" action="<%= locals.baseURL || '' %>/add-feed">
+        <input type="submit" value="Ajouter un abonnement" />
       </form>
       <ul>
         <% feeds.forEach(function(feed){ %>
@@ -24,6 +16,10 @@
           <%= feed.title%> (<a href="<%= feed.url%>" target="_blank"
             ><%= feed.url%></a
           >)
+          <form method="POST" action="<%= locals.baseURL || '' %>/remove-feed">
+            <input type="hidden" name="id" value="<%- feed.id%>" />
+            <input type="submit" value="Supprimer" />
+          </form>
         </li>
         <% }); %>
       </ul>
