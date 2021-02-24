@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>Ajouter une chaine Youtube</h1>
+      <form method="POST" action="<%= locals.baseURL || '' %>/new-youtube-feed">
+        <fieldset>
+          <label for="title">Nom de la chaîne</label>
+          <input type="text" id="title" name="title" />
+        </fieldset>
+        <fieldset>
+          <label for="url">Adresse ou identifiant de la chaine Youtube</label>
+          <input type="text" id="url" name="url" />
+        </fieldset>
+        <p>
+          <small
+            >💡 L'identifiant d'une chaine Youtube se trouve à la fin de
+            l'adresse de la chaine, par exemple l'identifiant de la chaine
+            <code
+              >https://www.youtube.com/channel/UCu6mFdACj_quODcUujiT62Q</code
+            >
+            est <code>UCu6mFdACj_quODcUujiT62Q</code></small
+          >
+        </p>
+        <input type="submit" value="Ajouter cet abonnement" />
+      </form>
+    </section>
+    <footer><%- await include('partials/footer.html'); %></footer>
+  </body>
+</html>

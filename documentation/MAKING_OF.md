@@ -1526,12 +1526,17 @@ Au bout de 2H j'arrive à un résultat pas trop mal
 
 Total : 2H
 
-# 60 : Ajout de feeds spéciaux - ???
+# 60 : Ajout de feeds spéciaux - 1H30
 
-TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
-TODO Pouvoir ajouter un feed twitter directement dans l'UI
+J'ajoute
 
-TODO XXmin+
+- la possibilité d'ajouter le flux d'une chaine Youtube
+- la possibilité de supprimer un abonnement
+- la possibilité d'ajouter un fil personnalisé Twitter
+
+Ca me prend 1H30 sans aucun blocage, ca fait du bien pour une fois
+
+Total : 1H30
 
 # NEXT
 
@@ -1550,8 +1555,6 @@ TODO Tester les différents modes de distribution sur mon vieux HTC Desire
 
 ## app-news
 
-TODO Pouvoir ajouter un feed twitter directement dans l'UI
-TODO Pouvoir ajouter directement le flux associé à une chaine Youtube
 TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les flux associés
 TODO Faire un design system classless pour remplacer Tacit
 TODO Ajouter une vague en SVG parce que c'est joli (avec https://getwaves.io/)
@@ -1561,7 +1564,7 @@ TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de c
 
 TODO Faire en sorte qu'on puisse plus facilement distinguer à quel module appartiennent les clés de configuration (utilisation d'un prefixe, séparation en sous objets...)
 
-## distrib-browser
+## distrib-nexe
 
 TODO Sortir l'export exe dans un module `distrib-nexe`
 

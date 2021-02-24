@@ -14,53 +14,61 @@ module.exports = function (app) {
     next();
   });
 
-  // VIEWS
-  const viewLogin = require("./views/login");
-  const viewNews = require("./views/news");
-  const viewFeeds = require("./views/feeds");
-  const viewFetchFeedsStatus = require("./views/fetchFeedsStatus");
-  const viewRemotes = require("./views/remotes");
-  const viewDev = require("./views/dev");
-  const view404 = require("./views/404");
+  // LOGIN
+  // views
+  app.get("/", require("./views/login"));
+  // actions
+  app.post("/unlock", require("./actions/unlock"));
 
-  // ACTIONS
-  const actionUnlock = require("./actions/unlock");
-  const actionNewFeed = require("./actions/newFeed");
-  const actionNewRemote = require("./actions/newRemote");
-  const actionRemoveRemote = require("./actions/removeRemote");
-  const actionFetchFeeds = require("./actions/fetchFeeds");
-  const actionFetchFeedsStatus = require("./actions/fetchFeedsStatus");
-  const removeNewsItem = require("./actions/removeNewsItem");
-  const removeAllNewsItem = require("./actions/removeAllNewsItem");
-  const actionEditDoc = require("./actions/editDoc");
-  const actionRemoveDoc = require("./actions/removeDoc");
-  const actionFetchSyncStatus = require("./actions/fetchSyncStatus");
-  const actionReloadPage = require("./actions/reloadPage");
+  // NEWS
+  // views
+  app.get("/news", require("./views/news"));
+  // actions
+  app.post("/remove-news-item", require("./actions/removeNewsItem"));
+  app.post("/remove-all-news-item", require("./actions/removeAllNewsItem"));
 
-  // ROUTES
-  app.get("/", viewLogin);
-  app.post("/unlock", actionUnlock);
+  // FEEDS
+  // views
+  app.get("/feeds", require("./views/feeds"));
+  app.get("/add-feed", require("./views/addFeed"));
+  app.get("/add-rss-feed", require("./views/addRSSFeed"));
+  app.get("/add-youtube-feed", require("./views/addYoutubeFeed"));
+  app.get(
+    "/add-twitter-home-timeline-feed",
+    require("./views/addTwitterHomeTimelineFeed")
+  );
+  app.get("/fetch-feeds-status", require("./views/fetchFeedsStatus"));
+  // actions
+  app.post("/new-rss-feed", require("./actions/newRSSFeed"));
+  app.post("/new-youtube-feed", require("./actions/newYoutubeFeed"));
+  app.post(
+    "/new-twitter-home-timeline-feed",
+    require("./actions/newTwitterHomeTimelineFeed")
+  );
+  app.post("/fetch-feeds", require("./actions/fetchFeeds"));
+  app.post("/fetch-feeds-status", require("./actions/fetchFeedsStatus"));
+  app.post("/remove-feed", require("./actions/removeFeed"));
 
-  app.get("/news", viewNews);
-  app.post("/remove-news-item", removeNewsItem);
-  app.post("/remove-all-news-item", removeAllNewsItem);
+  // REMOTES
+  // views
+  app.get("/remotes", require("./views/remotes"));
+  // actions
+  app.post("/new-remote", require("./actions/newRemote"));
+  app.post("/remove-remote", require("./actions/removeRemote"));
 
-  app.get("/feeds", viewFeeds);
-  app.post("/new-feed", actionNewFeed);
-  app.post("/fetch-feeds", actionFetchFeeds);
-  app.get("/fetch-feeds-status", viewFetchFeedsStatus);
-  app.post("/fetch-feeds-status", actionFetchFeedsStatus);
+  // DEV TOOLS
+  // views
+  app.get("/dev", require("./views/dev"));
+  // actions
+  app.post("/edit-doc", require("./actions/editDoc"));
+  app.post("/remove-doc", require("./actions/removeDoc"));
 
-  app.get("/remotes", viewRemotes);
-  app.post("/new-remote", actionNewRemote);
-  app.post("/remove-remote", actionRemoveRemote);
+  // SYNC STATUS
+  // actions
+  app.post("/fetch-sync-status", require("./actions/fetchSyncStatus"));
+  app.post("/reload-page", require("./actions/reloadPage"));
 
-  app.get("/dev", viewDev);
-  app.post("/edit-doc", actionEditDoc);
-  app.post("/remove-doc", actionRemoveDoc);
-
-  app.post("/fetch-sync-status", actionFetchSyncStatus);
-  app.post("/reload-page", actionReloadPage);
-
-  app.use(view404);
+  // 404
+  // views
+  app.use(require("./views/404"));
 };

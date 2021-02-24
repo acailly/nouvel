@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>Ajouter un abonnement</h1>
+      <ul>
+        <li>
+          <a href="<%= locals.baseURL || '' %>/add-rss-feed"> 📢 Flux RSS </a>
+        </li>
+        <li>
+          <a href="<%= locals.baseURL || '' %>/add-youtube-feed">
+            🎥 Chaine Youtube
+          </a>
+        </li>
+        <li>
+          <a href="<%= locals.baseURL || '' %>/add-twitter-home-timeline-feed">
+            🐤 Fil personnalisé Twitter
+          </a>
+        </li>
+      </ul>
+    </section>
+    <footer><%- await include('partials/footer.html'); %></footer>
+  </body>
+</html>

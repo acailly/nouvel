@@ -5,7 +5,8 @@ module.exports = async function (req, res) {
 
   const feeds = await Promise.all(
     feedIds.map(async (feedId) => {
-      return await read(`news/feeds/${feedId}`);
+      const feedContent = await read(`news/feeds/${feedId}`);
+      return { id: feedId, ...feedContent };
     })
   );
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>Ajouter un flux RSS</h1>
+      <form method="POST" action="<%= locals.baseURL || '' %>/new-rss-feed">
+        <fieldset>
+          <label for="title">Nom</label>
+          <input type="text" id="title" name="title" />
+        </fieldset>
+        <fieldset>
+          <label for="url">Adresse</label>
+          <input type="text" id="url" name="url" />
+        </fieldset>
+        <input type="submit" value="Ajouter cet abonnement" />
+      </form>
+    </section>
+    <footer><%- await include('partials/footer.html'); %></footer>
+  </body>
+</html>

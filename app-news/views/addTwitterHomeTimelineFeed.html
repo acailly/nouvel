@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- await include('partials/head.html'); %>
+  </head>
+  <body>
+    <header><%- await include('partials/header.html'); %></header>
+    <section>
+      <h1>Ajouter un fil personnalisé Twitter</h1>
+      <form
+        method="POST"
+        action="<%= locals.baseURL || '' %>/new-twitter-home-timeline-feed"
+      >
+        <fieldset>
+          <label for="title">Nom du fil</label>
+          <input type="text" id="title" name="title" />
+        </fieldset>
+        <fieldset>
+          <label for="consumerKey">Consumer Key</label>
+          <input type="password" id="consumerKey" name="consumerKey" />
+        </fieldset>
+        <fieldset>
+          <label for="consumerSecret">Consumer Secret</label>
+          <input type="password" id="consumerSecret" name="consumerSecret" />
+        </fieldset>
+        <fieldset>
+          <label for="accessTokenKey">Access Token Key</label>
+          <input type="password" id="accessTokenKey" name="accessTokenKey" />
+        </fieldset>
+        <fieldset>
+          <label for="accessTokenSecret">Access Token Secret</label>
+          <input
+            type="password"
+            id="accessTokenSecret"
+            name="accessTokenSecret"
+          />
+        </fieldset>
+        <p>
+          <small>
+            💡 Pour récupérer tous ces identifiants, vous pouvez créer une
+            nouvelle application sur
+            <a
+              href="https://developer.twitter.com/en/portal/projects-and-apps"
+              target="_blank"
+            >
+              le portail développeur de Twitter
+            </a>
+            en suivant
+            <a
+              href="https://developer.twitter.com/en/docs/apps/overview"
+              target="_blank"
+            >
+              la documentation associée
+            </a>
+          </small>
+        </p>
+        <input type="submit" value="Ajouter cet abonnement" />
+      </form>
+    </section>
+    <footer><%- await include('partials/footer.html'); %></footer>
+  </body>
+</html>
