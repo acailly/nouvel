@@ -3,6 +3,8 @@
 const EventEmitter = require("events");
 const inherits = require("inherits");
 const url = require("url");
+// EDITED CODE : add useMorphdom feature
+const morphdom = require("morphdom");
 
 const supported = require("./supports-push-state");
 
@@ -92,10 +94,15 @@ Response.prototype.send = function send(content) {
   }
 
   if (content) {
-    // ORIGINAL CODE
-    // document.body.innerHTML = content;
-    // EDITED CODE
-    document.documentElement.innerHTML = content;
+    // EDITED CODE : add useMorphdom feature
+    if (this.app.useMorphdom) {
+      morphdom(document.documentElement, content);
+    } else {
+      // ORIGINAL CODE
+      // document.body.innerHTML = content;
+      // EDITED CODE
+      document.documentElement.innerHTML = content;
+    }
     // EDITED CODE
     // The property innerHTML does not execute <script> tags
     // See https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML

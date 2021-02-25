@@ -1538,6 +1538,10 @@ Ca me prend 1H30 sans aucun blocage, ca fait du bien pour une fois
 
 Total : 1H30
 
+# 61 : Utilisation de morphdom - 15min
+
+Je prends 15min pour ajouter un paramètre `useMorphdom` dans `browser-express`, ca se fait sans soucis et fait disparaitre les effets de clignotements à chaque changement de page :-)
+
 # NEXT
 
 ## Général
@@ -1618,7 +1622,6 @@ TODO Documenter les différents choix techniques, s'inspirer des ADR (Architectu
 
 TODO Ajouter une commande pour lancer l'appli via webopen
 TODO Tester Turbolinks (ou autre techno dans le même style) pour ajouter un côté plus réactif ? (par exemple HTMX boost semble faire ca : https://htmx.org/docs/#boosting)
-TODO Faire en sorte que `browser-express` utilise `morphdom` pour mettre à jour le DOM au lieu de `innerHTML=xxx` (exemple ici : https://htmx.org/extensions/morphdom-swap/)
 TODO Essayer d'implémenter un systeme d'authentification à base de certificat self signed ? type mTLS (voir https://drewdevault.com/2020/06/12/Can-we-talk-about-client-side-certs.html)
 TODO Tester le plugin capacitor-tor (https://github.com/Start9Labs/capacitor-tor)
 TODO Tester PouchDB over WebRTC (PeerPouch, pouch-replicate-webrtc)

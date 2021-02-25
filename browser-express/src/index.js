@@ -43,6 +43,10 @@ function Router(options) {
   // Replace and reload on unhandled request
   this.reloadOnUnhandled = !!opts.reloadOnUnhandled;
 
+  // EDITED CODE : add useMorphdom feature
+  // Use morphdom lib to update HTML
+  this.useMorphdom = !!opts.useMorphdom;
+
   if (opts.interceptLinks) {
     catchLinks(window, (href) => {
       r.navigate(href);

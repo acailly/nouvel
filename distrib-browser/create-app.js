@@ -33,6 +33,8 @@ module.exports = function () {
     interceptFormSubmit: true,
     // EDITED CODE : add interceptPostFetch feature
     interceptPostFetch: true,
+    // EDITED CODE : add useMorphdom feature
+    useMorphdom: true,
     // Set base path for deploy
     base: configuration.deployBaseURL,
   });
