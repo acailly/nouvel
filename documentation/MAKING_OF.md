@@ -1542,6 +1542,14 @@ Total : 1H30
 
 Je prends 15min pour ajouter un paramètre `useMorphdom` dans `browser-express`, ca se fait sans soucis et fait disparaitre les effets de clignotements à chaque changement de page :-)
 
+# 62 : Activation du compactage automatique - 15min
+
+L'application commence à devenir lente, et je me rends compte que j'ai moins envie de travailler dessus quand c'est le cas.
+
+Ca me rappelle cet article : https://bdickason.com/posts/speed-is-the-killer-feature/
+
+Comme j'ai d'autres chantiers en cours (le webRTC), je prends juste 15min pour activer la compaction automatique : https://pouchdb.com/guides/compact-and-destroy.html#auto-compaction
+
 # NEXT
 
 ## Général
@@ -1563,6 +1571,7 @@ TODO Pouvoir entrer l'adresse d'un site web et que l'app cherche toute seule les
 TODO Faire un design system classless pour remplacer Tacit
 TODO Ajouter une vague en SVG parce que c'est joli (avec https://getwaves.io/)
 TODO Ajouter une section `Need help?` ou `How to use this page?` en dessous de chaque page qui tiendrait le rôle de manuel utilisateur (et pourquoi pas de specs)
+TODO Ajouter un bouton de nettoyage qui supprime les items supprimés il y a plus de XX jours (puis en faire un traitement auto)
 
 ## configuration
 

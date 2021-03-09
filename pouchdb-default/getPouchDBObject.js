@@ -10,6 +10,7 @@ if (fs.existsSync && !fs.existsSync(configuration.localDatabaseFolder)) {
 
 const LocalPouchDB = PouchDB.defaults({
   prefix: `${configuration.localDatabaseFolder}/`,
+  auto_compaction: true,
 });
 LocalPouchDB.plugin(require("pouchdb-upsert"));
 
