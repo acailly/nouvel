@@ -1579,7 +1579,36 @@ Total : 6H30
 
 # 64 : PouchDB avec Git, premiers tests - ???
 
-TODO : XXmin+
+L'idée serait de faire un truc qui :
+
+- d'un côté parle le langage de PouchDB et stocke les données dans un repo Git
+- d'un autre côté parle le langage de Git et applique la résolution de conflit automatique de PouchDB
+
+Mon idée initiale est de :
+
+- repartir d'un vieux repo d'il y a 12 ans (!) qui essayait d'ajouter une couche PouchDB au dessus d'un repo Git, GitCouch : https://github.com/ivanstojic/GitCouch
+- tester avec Futon si les tests de compliance passent
+- implémenter ce qui manque
+- peut être revoir le stockage dans Git en utilisant une des approches qu'avait étudié Benoit Averty dans sa prez : https://gitlab.com/BenoitAverty/git-key-value-store et https://gitlab.com/BenoitAverty/talk-write-better-tests (la prez est dedans)
+- implémenter la résolution de conflit de PouchDB en créant un custom merge driver : https://www.julianburr.de/til/custom-git-merge-drivers/ et https://gregmicek.com/software-coding/2020/01/13/how-to-write-a-custom-git-merge-driver/
+- si j'ai un truc qui marche, proposer ca au gars qui fait offPIM pour voir si c'est digne d'intérêt à son avis : https://github.com/lybekk/offPIM
+- packager tout ca et communiquer un peu partout (HN, devs PouchDB, etc.)
+
+Les autres ressources utiles identifiées sont :
+
+- L'API CouchDB : https://docs.couchdb.org/en/stable/api/index.html et https://docs.couchdb.org/en/1.6.0/http-api.html
+
+Pour mémoire, l'algo de résolution de conflit de PouchDB est le suivant :
+
+- Select revisions with the highest depth field that are not marked as deleted
+- If there is only 1 such field, treat it as the winner
+- If there are more than 1, sort the revision fields in descending order and pick the first.
+
+Ca m'a déjà pris 30min à regrouper toutes ces infos
+
+Je créé un dossier `poc-pouchdb-git` pour garder le code pas loin de l'appli
+
+TODO : 30min+
 
 # NEXT
 
