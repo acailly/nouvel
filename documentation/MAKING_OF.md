@@ -1591,8 +1591,10 @@ Mon idée initiale est de :
 - implémenter ce qui manque
 - peut être revoir le stockage dans Git en utilisant une des approches qu'avait étudié Benoit Averty dans sa prez : https://gitlab.com/BenoitAverty/git-key-value-store et https://gitlab.com/BenoitAverty/talk-write-better-tests (la prez est dedans)
 - implémenter la résolution de conflit de PouchDB en créant un custom merge driver : https://www.julianburr.de/til/custom-git-merge-drivers/ et https://gregmicek.com/software-coding/2020/01/13/how-to-write-a-custom-git-merge-driver/
-- si j'ai un truc qui marche, proposer ca au gars qui fait offPIM pour voir si c'est digne d'intérêt à son avis : https://github.com/lybekk/offPIM
+- si j'ai un truc qui marche :
+- parler de ca au gars qui fait offPIM pour avoir son avis : https://github.com/lybekk/offPIM
 - packager tout ca et communiquer un peu partout (HN, devs PouchDB, etc.)
+- contacter l'auteur initial de GitCouch, ca pourrait lui faire plaisir de voir que son idée n'est pas morte :-) : https://ordecon.com/
 
 Les autres ressources utiles identifiées sont :
 
@@ -1608,7 +1610,10 @@ Ca m'a déjà pris 30min à regrouper toutes ces infos
 
 Je créé un dossier `poc-pouchdb-git` pour garder le code pas loin de l'appli
 
-TODO : 30min+
+Je commence par récupérer le code de GitCouch pour le faire tourner.
+TODO 15min+
+
+TODO : 45min+
 
 # NEXT
 
