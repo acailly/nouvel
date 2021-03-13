@@ -1550,6 +1550,37 @@ Ca me rappelle cet article : https://bdickason.com/posts/speed-is-the-killer-fea
 
 Comme j'ai d'autres chantiers en cours (le webRTC), je prends juste 15min pour activer la compaction automatique : https://pouchdb.com/guides/compact-and-destroy.html#auto-compaction
 
+# 63 : Exploration du côté de WebRTC - 6H30
+
+Le fait de reposer sur l'instance Cloudant ne me rassure pas
+
+Idealement j'aimerais pouvoir stocker les données dans un repo Git, mais les travaux nécessaires me semblent très importants
+
+Une alternative moins coûteuse à développer pourrait être de synchroniser via WebRTC. De cette façon, même si mon instance cloudant vient à disparaître ou ne plus être fonctionnelle, je pourrais toujours synchroniser les données entre mon PC et mon téléphone.
+
+Mon point de départ est le projet `pouch-replicate-webrtc`, en particulier le fork de fiatjaf : https://github.com/fiatjaf/pouch-replicate-webrtc
+
+Je passe 2H pour faire marcher pouchdb avec simple-peer (https://github.com/feross/simple-peer) en utilisant ce projet
+
+Je passe 1H pour tester peerjs (https://github.com/peers/peerjs) qui met à disposition un signaling server, ce qui pourrait s'avérer indispensable
+Malheureusement, peerjs n'est pas supporté sur node contrairement à peerjs
+
+Il faut donc que j'utilise mon propre signaling server, je passe 1H à mettre en ligne une instance de https://github.com/t-mullen/simple-signal à l'adresse suivante : https://acailly-simple-signal.herokuapp.com/
+
+Après 2h30 de plus, j'arrive à faire fonctionner mon exemple avec pouchdb et simple-peer en utilisant mon instance de simple-signal, le concept est validé
+
+Je passe ensuite 1H de plus à essayer de trouver comment je pourrais intégrer ca dans le code de l'application existante, et au fur et à mesure de mes reflexions je me rend compte que ca va me prendre beaucoup de temps si je veux garder l'ensemble simple à utiliser et à maintenir
+
+J'en conclut qu'il vaut mieux s'arrêter là sur ce sujet et consacrer le peu de temps disponible à ce qui va vraiment apporter de la valeur à cette solution (à mon avis) : l'interfacage PouchDB <-> Git.
+
+J'ajoute tout de même le code au repo pour ne pas le perdre, dans le dossier `poc-pouchdb-webrtc`
+
+Total : 6H30
+
+# 64 : PouchDB avec Git, premiers tests - ???
+
+TODO : XXmin+
+
 # NEXT
 
 ## Général
@@ -1640,6 +1671,14 @@ TODO Tester d'ajouter de la reactivité avec des techniques old school type COME
 TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
 TODO Ajouter un menu accessible via TAB destiné à l'accessibilité comme sur https://www.pole-emploi.fr/accueil/
 TODO Tester de connecter les personnes entre elles via les réseaux mesh Yggdrasil (https://yggdrasil-network.github.io/) ou cjdns (https://github.com/cjdelisle/cjdns)
+TODO Tester un système d'écriture de scénario sous forme d'enchainement vue - action - vue - action - ... qui exporte à chaque étape l'HTML correspondant, ce qui permettrait de s'en servir pour :
+
+- faire des présentations sur le produit plus simplement
+- s'assurer rapidement de la non regression visuelle
+- faire du snapshoting
+- faire une sorte de doc d'utilisation automatique
+- passer les outils d'accessibilité et autre sur ces différentes pages
+- ...
 
 ## Idées d'autres apps qui pourraient être compatibles avec cette approche
 
