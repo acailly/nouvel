@@ -1721,6 +1721,8 @@ TODO Une appli type Anki pour mémoriser facilement des choses
 TODO Une appli de vote par scrutin majoritaire permettant également la délégation (démocratie liquide)
 TODO Des alternatives minimalistes aux outils de tous les jours (office, prise de note, etc.)
 TODO Un gestionnaire de favoris
+TODO Une présentation d'un catalogue de données à l'aide de cercles imbriquées, du genre https://labo.fnac.com/barometre-sav/ mais sans JS
+TODO Une appli qui vient présenter les données présentes dans un .CSV (inspiration du barometre sav fnac darty : https://www.suricats-consulting.com/replay-conference-low-tech-durable-fnac-darty/4/)
 
 ## Une approche de conception, différentes histoires
 
