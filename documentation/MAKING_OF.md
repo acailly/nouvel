@@ -1611,13 +1611,19 @@ Ca m'a déjà pris 30min à regrouper toutes ces infos
 Je créé un dossier `poc-pouchdb-git` pour garder le code pas loin de l'appli
 
 Je commence par récupérer le code de GitCouch pour le faire tourner.
-TODO 15min+
+J'essaie de le lancer sous forme de service mais ca me prend beaucoup de temps (1H) pour pas grand chose
+J'essaie à la place de créer un mini projet nodejs/expressjs qui fera le lien entre le navigateur et les scripts bash de gitcouch
+L'idée étant d'arriver à ouvrir l'interface Futon et d'explorer la base de données via cette interface
+Ensuite l'idée sera de transformer les scripts bash de gitcouch en code javascript, plus facile a maintenir et plus multiplateforme
+Ca me prend TODO 1H+ (non compté dans le temps plus bas) pour arriver à TODO (explorer la base ?)
 
-TODO : 45min+
+TODO : 1H30min+
 
 # NEXT
 
 ## Général
+
+TODO Afficher la version de l'application en bas de chaque page (en discret) 
 
 TODO Faire une commande qui génère d'un coup tous les artefacts :
 
@@ -1647,6 +1653,8 @@ TODO Faire en sorte qu'on puisse plus facilement distinguer à quel module appar
 TODO Sortir l'export exe dans un module `distrib-nexe`
 
 ## distrib-browser
+
+TODO Refaire un essai d'ajout de bouton "Une nouvelle version est disponible, mettre à jour" parce que la PWA ne semble jamais se mettre à jour
 
 ## distrib-capacitor
 
