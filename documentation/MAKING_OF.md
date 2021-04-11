@@ -1577,7 +1577,7 @@ J'ajoute tout de même le code au repo pour ne pas le perdre, dans le dossier `p
 
 Total : 6H30
 
-# 64 : PouchDB avec Git, premiers tests - ???
+# 64 : PouchDB avec Git, premiers tests - 4H30
 
 L'idée serait de faire un truc qui :
 
@@ -1608,22 +1608,36 @@ Pour mémoire, l'algo de résolution de conflit de PouchDB est le suivant :
 
 Ca m'a déjà pris 30min à regrouper toutes ces infos
 
-Je créé un dossier `poc-pouchdb-git` pour garder le code pas loin de l'appli
-
 Je commence par récupérer le code de GitCouch pour le faire tourner.
-J'essaie de le lancer sous forme de service mais ca me prend beaucoup de temps (1H) pour pas grand chose
-J'essaie à la place de créer un mini projet nodejs/expressjs qui fera le lien entre le navigateur et les scripts bash de gitcouch
+Il utilise un service xinetd, que j'essaie de convertir en service systemd en suivant cette explication : https://unix.stackexchange.com/a/441136
+Je teste un `systemd start gitcouch.socket` et un `systemd start gitcouch.service` : p\*\*\*\* systemd ne marche pas sur WSL2 !
+J'essaie de passer par xinetd en suivant ce tuto : https://linuxconfig.org/how-to-install-xinetd-service-in-redhat-8
+J'installe donc xinetd et je copie la description du service dans `/etc/xinetd.d/gitcouch`
+Je redémarre avec `sudo service xinetd restart` mais aucun signe qu'un gitcouch s'est lancé avec `sudo ps -A | grep gitcouch`...
+Après d'autres essais infructueux je tente une autre approche, je fait un petit serveur nodejs/expressjs qui écoute les requêtes et exécute le script bash de gitcouch. Ca remplace le service que je n'arrive pas à lancer.
 L'idée étant d'arriver à ouvrir l'interface Futon et d'explorer la base de données via cette interface
 Ensuite l'idée sera de transformer les scripts bash de gitcouch en code javascript, plus facile a maintenir et plus multiplateforme
-Ca me prend TODO 1H+ (non compté dans le temps plus bas) pour arriver à TODO (explorer la base ?)
 
-TODO : 1H30min+
+Au bout de 4H j'arrive donc à faire marcher la requête \_all_dbs, la route est longue.
+
+Mes modifs sont dans un fork perso du repo original : https://github.com/acailly/GitCouch
+
+Total : 4H30min
+
+# 65 : Mise à jour de l'appli - ???
+
+Je fais une pause sur la partie GitCouch, je me rend compte que ce chantier ma me prendre beaucoup de temps et je manque de temps en ce moment
+
+Je décide donc de corriger les trucs qui m'embêtent le plus en ce moment quand j'utilise l'appli.
+La première, c'est que je pense que l'appli mobile que j'utilise ne s'est pas mise à jour depuis très longtemps
+
+J'aimerais faire un outil de debug permettant de supprimer le cache du serviceworker histoire de forcer la mise à jour
 
 # NEXT
 
 ## Général
 
-TODO Afficher la version de l'application en bas de chaque page (en discret) 
+TODO Afficher la version de l'application en bas de chaque page (en discret)
 
 TODO Faire une commande qui génère d'un coup tous les artefacts :
 
