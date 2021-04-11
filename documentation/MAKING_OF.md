@@ -1682,13 +1682,29 @@ Ca m'a pris 1H au total, je n'ai pas encore le message pour forcer le rafraichis
 
 Total : 1H
 
-# 66 : Rechargement de la PWA - ???
+# 66 : Rechargement de la PWA - 30min
 
 Quand j'ouvre la PWA, que je me logue et que j'arrive sur les news, j'ai la possibilité de rafraichir la page en tirant l'écran vers le bas... et là j'ai une erreur 404 :-/
 
 Y a t'il moyen d'éviter ca ???
 
-TODO : 00min+
+D'autant que ca bloque le fait d'ajouter un bouton "une nouvelle version est disponible" qui recharge la page
+
+Quand on charge l'adresse : http://localhost:7777/nouvel/news
+
+Le log est le suivant :
+
+```
+[service-worker] http://localhost:7777/nouvel/news  - intercepted
+[service-worker] http://localhost:7777/nouvel/news - try to load from cache
+[service-worker] http://localhost:7777/nouvel/news - fallback to network
+```
+
+Je rajoute un mécanisme dans le service worker qui détecte si la page qu'on veut charger est une page qui fait partie de l'application. Dans ce cas, on recharge la page d'accueil, c'est mieux que rien
+
+Ca m'a pris 30min au total
+
+Total : 30min
 
 # NEXT
 

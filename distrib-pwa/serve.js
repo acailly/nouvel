@@ -10,9 +10,9 @@ async function serve() {
 
   app.use(express.static(outputPath));
 
-  const port = 9999;
+  const port = 7777;
 
-  app.listen(9999, () => {
+  app.listen(port, () => {
     const baseUrl = configuration.deployBaseURL || "";
     console.log(
       "APP STARTED ON PORT ",
