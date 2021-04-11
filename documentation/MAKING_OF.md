@@ -1624,16 +1624,63 @@ Mes modifs sont dans un fork perso du repo original : https://github.com/acailly
 
 Total : 4H30min
 
-# 65 : Mise à jour forcée de l'appli - ???
+# 65 : Mise à jour de la PWA - 1H
 
 Je fais une pause sur la partie GitCouch, je me rend compte que ce chantier ma me prendre beaucoup de temps et je manque de temps en ce moment
 
 Je décide donc de corriger les trucs qui m'embêtent le plus en ce moment quand j'utilise l'appli.
-La première, c'est que je pense que l'appli mobile que j'utilise ne s'est pas mise à jour depuis très longtemps
 
-J'aimerais faire un outil de debug permettant de supprimer le cache du serviceworker histoire de forcer la mise à jour.
+Je commence par renommer `distrib-browser` en `distrib-pwa`
 
-Mais avant ca je renomme `distrib-browser` en `distrib-pwa`
+Ensuite je pense que l'appli mobile que j'utilise ne s'est pas mise à jour depuis très longtemps
+
+J'aimerais faire en sorte que ce soit le cas, idéalement avec un message "une nouvelle version est disponible" qu'on voit parfois, comme sur l'attestation covid : https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/
+
+En fouillant dans les sources, je vois que c'est fait de la façon suivante :
+
+```javascript
+window.isUpdateAvailable = new Promise(function (resolve, reject) {
+  // lazy way of disabling service workers while developing
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register(swName, { scope: path })
+      .then((registration) => {
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          installingWorker.onstatechange = () => {
+            switch (installingWorker.state) {
+              case "installed":
+                if (navigator.serviceWorker.controller) {
+                  // new update available
+                  resolve(true);
+                } else {
+                  // no update available
+                  resolve(false);
+                }
+                break;
+            }
+          };
+        };
+      })
+      .catch((err) => console.error("[SW ERROR]", err)); // eslint-disable-line no-console
+  }
+});
+
+window.isUpdateAvailable.then((isAvailable) => {
+  $("#reload-btn").addEventListener("click", () => window.location.reload());
+  $("#update-alert").classList.remove("d-none");
+});
+```
+
+Mais avant de faire ca, je pense que la première étape est d'afficher la version de l'appli, comme ca on verra si elle a été mise à jour ou pas
+
+Pour ca je renomme la configuration `serviceWorkerVersion` en `applicationVersion` pour en faire un numéro de version plus général
+
+J'incrémente le numéro de version et je déploie pour voir si ca change côté PWA sur mon mobile... et ca marche !
+
+Ca m'a pris 1H au total, je n'ai pas encore le message pour forcer le rafraichissement lors d'une mise à jour, je garde ca pour plus tard, le code collé ci dessus devrait m'aider
+
+Total : 1H
 
 # NEXT
 

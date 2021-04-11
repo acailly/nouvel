@@ -3,6 +3,9 @@ const os = require("os");
 
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
+// VERSION
+const applicationVersion = "v1-alpha05";
+
 // IDENTITY UUID
 const identityKey = "_local/identity";
 
@@ -36,12 +39,12 @@ const nodeServerPort = 8093;
 // DISTRIB BROWSER
 const deployBaseURL = "/nouvel";
 const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
-const serviceWorkerVersion = "v1-alpha04";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
 
 const configuration = {
+  applicationVersion,
   identityKey,
   localStorageFolder,
   localDatabaseName,
@@ -60,7 +63,6 @@ const configuration = {
   tunnellingLocalPort,
   deployBaseURL,
   corsProxyURL,
-  serviceWorkerVersion,
   capacitorBaseURL,
 };
 

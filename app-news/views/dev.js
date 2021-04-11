@@ -1,3 +1,4 @@
+const configuration = require("../../@configuration");
 const { listKeys, listSubFolders, read } = require("../../@storage");
 
 module.exports = async function (req, res) {
@@ -40,5 +41,6 @@ module.exports = async function (req, res) {
     folders,
     currentPath,
     currentFullPath,
+    applicationVersion: configuration.applicationVersion,
   });
 };

@@ -91,7 +91,7 @@ function exportAssets(callback) {
   const serviceWorkerConfiguration = {
     baseURL: configuration.deployBaseURL,
     corsProxyURL: configuration.corsProxyURL,
-    serviceWorkerVersion: configuration.serviceWorkerVersion,
+    applicationVersion: configuration.applicationVersion,
   };
   const generatedConfigScript = `var serviceWorkerConfiguration = ${JSON.stringify(
     serviceWorkerConfiguration,
