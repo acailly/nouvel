@@ -1728,6 +1728,10 @@ TODO Pouvoir générer l'APK Android sans avoir à ouvrir l'IDE
 
 TODO Trouver un moyen de ne pas utiliser le champ "main" de package.json pour spécifier le script de lancement de l'application electron dans electron-forge
 
+## storage-pouchdb
+
+TODO Activer l'auto compaction : https://pouchdb.com/guides/compact-and-destroy.html#auto-compaction
+
 ## storage-file
 
 TODO Se servir du reliquat de persistence fichier `storage-file` pour faire une fonction d'export (et d'import) des données
