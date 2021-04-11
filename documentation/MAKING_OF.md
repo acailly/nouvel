@@ -1682,11 +1682,17 @@ Ca m'a pris 1H au total, je n'ai pas encore le message pour forcer le rafraichis
 
 Total : 1H
 
+# 66 : Rechargement de la PWA - ???
+
+Quand j'ouvre la PWA, que je me logue et que j'arrive sur les news, j'ai la possibilité de rafraichir la page en tirant l'écran vers le bas... et là j'ai une erreur 404 :-/
+
+Y a t'il moyen d'éviter ca ???
+
+TODO : 00min+
+
 # NEXT
 
 ## Général
-
-TODO Afficher la version de l'application en bas de chaque page (en discret)
 
 TODO Faire une commande qui génère d'un coup tous les artefacts :
 
@@ -1717,7 +1723,7 @@ TODO Sortir l'export exe dans un module `distrib-nexe`
 
 ## distrib-pwa
 
-TODO Refaire un essai d'ajout de bouton "Une nouvelle version est disponible, mettre à jour" parce que la PWA ne semble jamais se mettre à jour
+TODO Ajouter un bouton "Une nouvelle version est disponible, mettre à jour" pour lancer le rechargement de la page
 
 ## distrib-capacitor
 
