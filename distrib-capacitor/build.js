@@ -30,7 +30,7 @@ fs.writeFileSync(
 );
 
 console.log("[distrib-capacitor] Build app");
-execSync(`npm run browser:build`, {
+execSync(`npm run pwa:build`, {
   cwd: path.join(__dirname, ".."),
 });
 

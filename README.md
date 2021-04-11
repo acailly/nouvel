@@ -40,8 +40,8 @@ npm start
 ## Run the PWA
 
 ```bash
-npm run browser:build
-npm run browser:serve
+npm run pwa:build
+npm run pwa:serve
 ```
 
 ## Run the desktop app

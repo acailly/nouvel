@@ -1706,6 +1706,16 @@ Ca m'a pris 30min au total
 
 Total : 30min
 
+# 67 : Génération d'un APK pour HTC Desire (échec) - 1H
+
+L'idée étant que l'appli soit disponible sur un maximum de device, il serait bon de tester si l'APK généré avec Capacitor marche sur mon vieux HTC Desire
+
+Je répare le build, je teste sur mon smartphone récent : OK
+
+Je test sur le HTC Desire : KO. Il y a une erreur concernant un token "," innatendu... à creuser plus tard, je n'ai pas le temps maintenant
+
+Total : 1H
+
 # NEXT
 
 ## Général
