@@ -1,5 +1,5 @@
 var serviceWorkerConfiguration = {
   "baseURL": "/nouvel",
   "corsProxyURL": "https://acailly-cors-anywhere.herokuapp.com/",
-  "serviceWorkerVersion": "v1-alpha04"
+  "applicationVersion": "v1-alpha05"
 }

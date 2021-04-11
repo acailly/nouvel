@@ -6,7 +6,7 @@ self.importScripts("./filesToCache.js");
 // Declare serviceWorkerConfiguration variable
 self.importScripts("./serviceworker-configuration.js");
 
-const version = serviceWorkerConfiguration.serviceWorkerVersion;
+const version = serviceWorkerConfiguration.applicationVersion;
 
 const baseURL = serviceWorkerConfiguration.baseURL;
 console.log("[service-worker] base URL is", baseURL);
