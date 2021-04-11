@@ -7,7 +7,7 @@ const outputPath = path.join(
   __dirname,
   "..",
   "output",
-  "distrib-browser",
+  "distrib-pwa",
   baseUrlPath
 );
 

@@ -7,7 +7,7 @@ const rimraf = require("rimraf");
 const configuration = require("../@configuration");
 const application = require("../@application");
 
-const outputPathRoot = path.join(__dirname, "..", "output", "distrib-browser");
+const outputPathRoot = path.join(__dirname, "..", "output", "distrib-pwa");
 rimraf.sync(outputPathRoot);
 makeDir.sync(outputPathRoot);
 

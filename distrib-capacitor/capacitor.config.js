@@ -5,7 +5,7 @@ module.exports = {
   appName: "application",
   bundledWebRuntime: false,
   npmClient: "npm",
-  webDir: `../output/distrib-browser`,
+  webDir: `../output/distrib-pwa`,
   plugins: {
     SplashScreen: {
       launchShowDuration: 0,

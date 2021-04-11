@@ -1624,14 +1624,16 @@ Mes modifs sont dans un fork perso du repo original : https://github.com/acailly
 
 Total : 4H30min
 
-# 65 : Mise à jour de l'appli - ???
+# 65 : Mise à jour forcée de l'appli - ???
 
 Je fais une pause sur la partie GitCouch, je me rend compte que ce chantier ma me prendre beaucoup de temps et je manque de temps en ce moment
 
 Je décide donc de corriger les trucs qui m'embêtent le plus en ce moment quand j'utilise l'appli.
 La première, c'est que je pense que l'appli mobile que j'utilise ne s'est pas mise à jour depuis très longtemps
 
-J'aimerais faire un outil de debug permettant de supprimer le cache du serviceworker histoire de forcer la mise à jour
+J'aimerais faire un outil de debug permettant de supprimer le cache du serviceworker histoire de forcer la mise à jour.
+
+Mais avant ca je renomme `distrib-browser` en `distrib-pwa`
 
 # NEXT
 
@@ -1666,7 +1668,7 @@ TODO Faire en sorte qu'on puisse plus facilement distinguer à quel module appar
 
 TODO Sortir l'export exe dans un module `distrib-nexe`
 
-## distrib-browser
+## distrib-pwa
 
 TODO Refaire un essai d'ajout de bouton "Une nouvelle version est disponible, mettre à jour" parce que la PWA ne semble jamais se mettre à jour
 

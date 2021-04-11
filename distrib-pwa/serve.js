@@ -3,7 +3,7 @@ const express = require("express");
 const configuration = require("../@configuration");
 
 async function serve() {
-  const outputPath = path.join(__dirname, "..", "output", "distrib-browser");
+  const outputPath = path.join(__dirname, "..", "output", "distrib-pwa");
 
   const app = express();
   app.use(express.urlencoded({ extended: true }));
