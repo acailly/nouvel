@@ -11,6 +11,9 @@ const version = serviceWorkerConfiguration.applicationVersion;
 const baseURL = serviceWorkerConfiguration.baseURL;
 console.log("[service-worker] base URL is", baseURL);
 
+const rootURL = location.href.slice(0, -"serviceworker.js".length);
+console.log("[service-worker] root URL is", rootURL);
+
 self.addEventListener("install", function (event) {
   console.log("[service-worker] installation");
 
@@ -65,6 +68,28 @@ self.addEventListener("fetch", async function (event) {
         );
 
         return caches.match(event.request);
+      })
+      .then((response) => {
+        if (response) {
+          console.log(
+            "[service-worker]",
+            event.request.url,
+            "- loaded from cache!"
+          );
+          return response;
+        }
+
+        //... else look if it is an URL of an app page
+        if (event.request.url.startsWith(rootURL)) {
+          console.log(
+            "[service-worker]",
+            event.request.url,
+            "- it seems to be an app page, try to load app entry point from cache"
+          );
+          return caches.match(`${rootURL}${OFFLINE_URL}`);
+        }
+
+        return null;
       })
       .then((response) => {
         if (response) {
