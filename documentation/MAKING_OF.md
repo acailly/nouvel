@@ -1716,6 +1716,42 @@ Je test sur le HTC Desire : KO. Il y a une erreur concernant un token "," innate
 
 Total : 1H
 
+# 68 : Quelle direction prendre ? - 30min
+
+Ces dernières semaines je me suis dit que le plus important était de pouvoir offrir un produit utilisable, et que c'était déjà le cas (puisque je l'utilise) mais qu'il y avait quand même un point qui restait contraignant : le stockage
+
+La configuration du repo Cloundant n'est pas très pratique et en rebuterai plus d'un à mon avis, ce me rebuterai moi si je n'avais pas d'autres intérêt à le faire
+
+Du coup je me suis dit que la priorité était de faire marcher le bridge PouchDB-Git basé sur les travaux de GitCouch, afin de remplacer Cloudant par Git
+
+Avec Git on aurait un stockage gratuit et déjà utilisé par de nombreux devs
+
+Seulement le bridge PouchDB-Git ne pourrait fonctionner que sur Desktop, à moins d'embarquer Git sur mobile mais j'ai déjà essayé (chercher plus haut) et je ne suis pas certain que ce soit la voie à suivre...
+
+L'idéal serait d'avoir une sorte de easy-pouchdb-server qu'on puisse déployer sur un Heroku-like gratuit qui dispose d'un stockage non éphémère, mais je ne connais pas d'offre de cette sorte (creuser du côté de https://free-for.dev/#/ ?)
+
+Aujourd'hui je suis retombé sur Cozy Cloud (https://cozy.io/fr/) et j'ai appris qu'ils utilisaient PouchDB en interne. Ils encouragent même à faire des applis qui se connecte à Cozy via PouchDB (https://github.com/cozy/cozy-client-js)
+
+Peut être qu'une solution "facile et rapide" serait de faire un connecteur Cozy Cloud, laissant ainsi la possibilité aux utilisateurs d'utiliser un service plus orienté grand public que Cloudant ?
+
+Je prends le temps de chercher sur free-for.dev et je retombe sur Glitch (https://glitch.com/) que j'avais vu passer pas mal de fois
+En regardant mieux ce qu'ils font, j'ai l'impression que c'est une sorte de successeur de Heroku mais avec du stockage persistant \o/ (https://help.glitch.com/kb/article/22-do-you-have-built-in-persistence-or-a-database/)
+
+Je crois que la meilleure piste pour l'instant est de faire un projet `easy-pouchdb-server` avec un joli bouton "Remix on Glitch"
+
+Le souci qui va se poser est de contrôller l'accès à ce serveur et j'ai une idée :
+
+- un utilitaire dans le projet (type `node setPassword.js`) qui demande un mot de passe dans la console et le chiffre avec openpgp.js dans un fichier `password.txt`
+- une surcouche au dessus de pouchdb-server (je crois qu'il est facile de l'inclure dans une app express) qui vérifier d'une manière ou d'une autre si le bon password est bien transmis par l'app client (en l'occurence : nouvèl)
+
+Si j'arrive a faire ca, je pourrais envoyer ca au créateur de offPIM (https://github.com/lybekk/offPIM), ca pourrait être compatible avec son cas d'usage
+
+En tout cas c'est beaucoup plus simple à faire que le bridge PouchDB-Git et moins restrictif que d'utiliser une plateforme en particulier (Cozy Cloud) même si elle est open source
+
+Disons que Glitch c'est pour toucher les devs, Cozy ce sera pour toucher le grand public :-)
+
+TOTAL : 30min
+
 # NEXT
 
 ## Général
