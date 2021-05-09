@@ -1811,6 +1811,58 @@ A l'étape 56 on était à 114H15
 
 153H15, soit l'équivalent d'environ 19j de 8H de travail non stop
 
+# 71 : MVP terminé - 1H
+
+Ca y est, je crois que c'est bon :-)
+
+Le stockage était le dernier point qui m'embetait, je ne voyais pas demander aux gens de créer un compte chez IBM/Cloudant ou de self hoster un CouchDB pour utiliser l'application.
+La possibilité de monter une instance gratuite de PouchDB sur Glitch en 5 minutes me paraît convenable
+
+Il y a plein de choses qui ne me plaisent pas dans l'application mais elle est suffisament fonctionnelle pour être utile
+
+J'ajoute quand même un petit "beta" a coté du nom, pour bien indiquer que ce n'est pas un produit fini
+
+Reste maintenant à décider dans quelle direction je me dirige ensuite, cela dépend du but que je veux poursuivre
+
+**Prouver que c'est une bonne approche pour créer rapidement des outils ?**
+Dans ce cas il faut que je fasse du nettoyage dans le code et m'assure que tout est bien aussi modulaire que je le pense. Créer une deuxième app me semble un bon moyen de valider tout ca
+
+**Me prouver que je peux construire un produit qui serve à d'autre ?**
+Dans ce cas il faut que je fasse un site vitrine, de la pub, et que je commence à aller chercher les retours utilisateurs, et que je les traite
+
+**Valider mon idée de réunir les tests, specs, doc, audit, prez dans un même outil ?**
+Dans ce cas il faut que commence à créer ce système pour me rendre compte des limites de mon idée, aussi séduisante soit elle
+
+**Convaincre des clients que c'est une approche viable ?**
+Dans ce cas il va falloir rendre ca plus joli, il faut que ca brille !
+Ca veut dire faire un vrai design system classless qui soit joli.
+Et il va falloir stabiliser la génération multi-plateforme, c'est ca l'argument clé pour faire gagner du temps et des sous
+
+**Relier le monde PouchDB et Git ?**
+Dans ce cas il va falloir développer une nouvelle version de GitCouch (https://github.com/acailly/GitCouch)
+
+J'hésite
+
+En tout cas je penche sur le fait de ne pas faire d'autre outil pour l'instant, pour ne pas m'eparpiller
+
+Je prends le sujet à l'envers, qu'est ce que je voudrais d'ici le prochain talk parlant de Nouvèl ?
+**Je veux montrer quelque chose qui brille pour pas cher !**
+Je veux montrer qu'avec peux de moyen on peu avoir :
+
+- quelque chose de joli : améliorer le CSS classless
+- quelque chose de qualité : faire mon outil de test/doc/prez/audit/etc.
+- quelque chose de disponible : stabiliser le déploiement sur plusieurs plateformes
+
+Les choses cool mais pas essentielles :
+
+- qu'il y ait un vrai design system avec guidelines et docs
+- qu'il y ait un 2ème exemple d'app
+- que l'appli fonctionne sur mon HTC Desire
+
+Je me dis donc que dans un premier temps je vais explorer l'idée d'un outil de test/doc/prez/audit/etc.
+
+TOTAL : 1H
+
 # NEXT
 
 ## Général
@@ -1871,6 +1923,7 @@ TODO Tester expose-localtunnel avec expose-pouchdbserver (est ce trop lent ?)
 ## Sécurité
 
 TODO Regarder le reglage des CSP
+TODO Utiliser helmet ? (https://helmetjs.github.io/)
 
 ## Audit, benchmark et autres outils
 

@@ -1,4 +1,4 @@
-# Nouvèl
+# Nouvèl (beta version)
 
 This is a simple news reader (RSS, twitter, etc.)
 
@@ -28,29 +28,44 @@ Here are the current choices that have been done:
 
 Nothing is set, things will probably change
 
-## Getting started
+## Getting Started: use the PWA
+
+Go to https://acailly.github.io/nouvel/
+
+## Easily create your remote
+
+You can follow instructions on [easy-pouchdb-server](https://github.com/acailly/easy-pouchdb-server) repository to get your remote up and running on Glitch in 5 minutes and at no cost (with limitations, obviously)
+
+## Get the code
 
 ```bash
 git clone https://github.com/acailly/nouvel.git
 cd nouvel
 npm install
+```
+
+You can then run the app in many different ways :
+
+### Run the local server
+
+```bash
 npm start
 ```
 
-## Run the PWA
+### Run the PWA
 
 ```bash
 npm run pwa:build
 npm run pwa:serve
 ```
 
-## Run the desktop app
+### Run the desktop app
 
 ```bash
 npm run electron:serve
 ```
 
-## Run the android app
+### Run the android app
 
 ```bash
 npm run capacitor:build
