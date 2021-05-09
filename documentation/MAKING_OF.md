@@ -1752,6 +1752,42 @@ Disons que Glitch c'est pour toucher les devs, Cozy ce sera pour toucher le gran
 
 TOTAL : 30min
 
+# 69 : Glitch, successeur de Cloudant ? - 2H15
+
+Je pars de ce glitch existant qui a l'air très bien à première vue : https://glitch.com/edit/#!/pouchdb-server?path=README.md%3A1%3A0
+
+Je le remixe pour pouvoir le modifier. Je note au passage que la version d'express pouchdb est très vieille. Je me logue sur Fauxton (http://acailly-pouchdb-server.glitch.me/_utils) et je constate que l'admin party n'est pas activée
+J'imagine que c'est normal vu que j'ai remixé un projet qui l'avait sans doute déjà désactivé
+
+Je me dit qu'il faut que je fasse les choses correctement, je télécharge les sources dans un projet github que j'appelle `easy-pouchdb-server` : https://github.com/acailly/easy-pouchdb-server
+Au passage je met à jour toutes les dépendances
+
+Je l'importe ensuite dans glitch et renomme le projet `acailly-easy-pouchdb-server` (https://glitch.com/edit/#!/acailly-easy-pouchdb-server?path=README.md%3A1%3A0)
+
+Je me logue dessus (https://acailly-easy-pouchdb-server.glitch.me/) puis sur Fauxton (https://acailly-easy-pouchdb-server.glitch.me//_utils)
+
+Je desactive l'admin party et active les CORS
+
+Je teste ensuite la synchro avec Nouvèl, ca marche pas :-/
+
+```
+Access to fetch at 'https://acailly-easy-pouchdb-server.glitch.me/storage/' from origin 'https://acailly.github.io' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+```
+
+Encore ces CORS de m... Est ce que Glitch n'activerait pas les CORS ? Non en fait c'est surement parce que je ne les ai pas configuré :-)
+
+Je reteste et... ca plante au bout de 7 minutes avec le message `This project has received too many requests, please try again later.`, on dirait bien que j'ai dépassé la limite de Glitch (Limited to 4,000 requests per hour d'après https://glitch.happyfox.com/kb/article/73-glitch-pro-what-s-that/)
+
+Je surveillais Fauxton en parallèle et je voyais que la base avait dépasse les 9mo et les 15000 documents !
+
+La synchro se fait un peu plus tard et au total la base fait 21267 documents et prend 9.6Mo
+
+Je teste avec Nouvèl sur mobile (PWA) et il semblerait que même si les serveur contient déjà toutes les données, il resynchronise tout à la première connexion, ce qui fait encore dépasser le quota de requêtes. Ca finit par synchroniser, top !
+
+Fait intéressant, après la synchro avec le mobile (qui est donc le 2eme device à se synchroniser), le nombre de document reste le même mais l'espace occupé passe de 9.6Mo à 13.4Mo
+
+TOTAL : 2H15
+
 # NEXT
 
 ## Général
