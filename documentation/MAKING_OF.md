@@ -1365,7 +1365,7 @@ Je passe 2H15min à :
 - mettre à jour les dépendances avec des alertes de sécurité
 - changer le nom du repo et la base URL associée (nouveau nom : nouvèl, nouvelles en Gallo)
 
-# 56 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - ???
+# 56 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 15min
 
 A l'étape 53 on était à 98H30
 
@@ -1373,7 +1373,7 @@ A l'étape 53 on était à 98H30
 - 2H15 = 114H
 - 15min = 114H15
 
-114H15, soit l'équivalent d'environ 18j de 8H de travail non stop
+114H15, soit l'équivalent d'environ 14j de 8H de travail non stop
 
 # 57 : Peaufinement de la PWA - 9H30
 
@@ -1752,7 +1752,7 @@ Disons que Glitch c'est pour toucher les devs, Cozy ce sera pour toucher le gran
 
 TOTAL : 30min
 
-# 69 : Glitch, successeur de Cloudant ? - 2H15
+# 69 : Glitch, successeur de Cloudant ? - 2H30
 
 Je pars de ce glitch existant qui a l'air très bien à première vue : https://glitch.com/edit/#!/pouchdb-server?path=README.md%3A1%3A0
 
@@ -1786,7 +1786,30 @@ Je teste avec Nouvèl sur mobile (PWA) et il semblerait que même si les serveur
 
 Fait intéressant, après la synchro avec le mobile (qui est donc le 2eme device à se synchroniser), le nombre de document reste le même mais l'espace occupé passe de 9.6Mo à 13.4Mo
 
-TOTAL : 2H15
+Après tout ca, je prend le temps d'ajouter un bouton "Remix with Glitch" sur le repo et je poste une issue sur le repo d'offPIM : https://github.com/lybekk/offPIM/issues/38
+
+TOTAL : 2H30
+
+# 70 : BILAN INTERMEDIAIRE - Combien de temps passé jusqu'à maintenant ? - 15min
+
+A l'étape 56 on était à 114H15
+
+- 9H30 = 123H45
+- 8H45 = 132H30
+- 2H = 134H30
+- 1H30 = 136H
+- 15min = 136H15
+- 15min = 136H30
+- 6H30 = 143H
+- 4H30 = 147H30
+- 1H = 148H30
+- 30min = 149H
+- 1H = 150H
+- 30min = 150H30
+- 2H30 = 153H
+- 15min = 153H15
+
+153H15, soit l'équivalent d'environ 19j de 8H de travail non stop
 
 # NEXT
 
