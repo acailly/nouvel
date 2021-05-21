@@ -1863,6 +1863,45 @@ Je me dis donc que dans un premier temps je vais explorer l'idée d'un outil de 
 
 TOTAL : 1H
 
+# 72 : Outil de test/doc/prez/audit/etc. - 15min
+
+Reflexion sur le sujet de l'outil de test/doc/prez/audit/etc.
+
+Mon idée du moment est de tester un système d'écriture de scénario sous forme d'enchainement vue - action - vue - action - ... qui exporte à chaque étape l'HTML correspondant, ce qui permettrait de s'en servir pour :
+
+- faire des présentations sur le produit plus simplement
+- s'assurer rapidement de la non regression visuelle
+- faire du snapshoting
+- faire une sorte de doc d'utilisation automatique
+- passer les outils d'accessibilité et autre sur ces différentes pages
+- ...
+
+Sauf qu'en regardant les outils comme lighthouse, je me rend compte qu'il ne prennent pas de l'HTML en entrée mais une URL
+
+Idée, on part d'une base de données initiale en mémoire et une liste de requêtes HTTP
+
+Le premier mode est le mode test auto. Il consiste à lancer l'application sur la base de données initiale en mémoire, puis exécuter automatiquement les requêtes enregistrées. Après chaque requête, on peut lancer tout ce qu'on veut sur l'url courante de l'application : audit, tests de snapshot, etc.
+
+Le deuxième mode est le mode interactif. Il consiste à afficher la liste des étapes correspondant aux requêtes, sous forme compréhensible par un humain. Par exemple "cliquer sur ajouter un todo" plutot que "POST /newTodo".
+
+Dans ce second mode on peut cliquer sur chaque étape pour exécuter la requête correspondante. On est donc dans une version pas à pas du premier mode. Ca peut être utile pour les présentations.
+Dans ce second mode on peut également interagir avec l'application, et quand la requête correspondant à l'étape courante est détectée, elle est affichée comme validée.
+Ca peut servir à debugguer pourquoi un test a échoué.
+
+Pour ce deuxième usage du deuxième mode, et pour établir la liste de requêtes du départ, il serait utile d'avoir un truc dans l'application qui enregistre les requêtes effectuées.
+A voir où on peut facilement avoir accès aux requêtes qui passent, que ce soit en configuration client/serveur ou PWA.
+
+Mais... les reflexions s'arrêtent la parce que je constate que les perfs de l'appli se dégradent.
+Il va falloir que je diagnostic ca, peut être en essayant de construire un cas de test reproductible. Ca pourrait être un premier pas vers ce super outil :-)
+
+TOTAL : 15min
+
+# 73 : Améliorer les perfs - ???
+
+TODO Créer un cas de test reproductible
+
+TOTAL : ???
+
 # NEXT
 
 ## Général
