@@ -62,6 +62,10 @@ module.exports = function (app) {
   // actions
   app.post("/edit-doc", require("./actions/editDoc"));
   app.post("/remove-doc", require("./actions/removeDoc"));
+  app.post(
+    "/remove-fetch-feed-status",
+    require("./actions/removeFetchFeedStatus.js")
+  );
 
   // SYNC STATUS
   // actions

@@ -4,7 +4,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta01";
+const applicationVersion = "v1-beta02";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
