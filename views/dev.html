@@ -12,6 +12,11 @@
       </h1>
       <p><i>Version de l'application : <%= applicationVersion%></i></p>
       <p>
+        <form method="POST" action="<%= locals.baseURL || '' %>/remove-fetch-feed-status">
+          <input type="submit" value="Réinitialiser la récupération des news" />
+        </form>
+      </p>
+      <p>
         <%= folders.length || 0%> dossiers, <%= items.length || 0%> éléments
       </p>
       <ul>
