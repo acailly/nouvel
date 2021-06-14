@@ -2,6 +2,7 @@ const { isLocked } = require("../@secrets");
 
 module.exports = function (app) {
   // MIDDLEWARES
+  // Body parser
   const bodyParser = require("body-parser");
   app.use(bodyParser.urlencoded({ extended: false }));
   // Redirect to / if app is locked

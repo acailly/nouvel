@@ -1906,9 +1906,11 @@ Je ne vois pas ces boutons "Supprimer" quand je lance en client / serveur
 Il se trouve que les boutons "Supprimer" sont ceux de la page précédente et suppriment des feeds !!!
 Je met 30min à corriger le bug en ajoutant un id sur des éléments `li` de liste pour forcer `morphdom` à les rafraichir entièrement et ne pas laisser le bouton "Supprimer" qui s'y trouvait dans la page précédente
 
+Je prends ensuite 30min pour ajouter des mesures de temps sur la page des outils de developpement, c'est la page qui met le plus de temps à se charger dans l'application
+
 TODO Créer un cas de test reproductible
 
-TOTAL : 45min+
+TOTAL : 1H15min+
 
 # NEXT
 

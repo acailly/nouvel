@@ -1,4 +1,3 @@
-const ejs = require("ejs");
 const configuration = require("../@configuration");
 
 // TODO ACY Réintégrer dans browser-express ?
