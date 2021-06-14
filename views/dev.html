@@ -11,11 +11,13 @@
         <small><%= currentPath%></small>
       </h1>
       <p><i>Version de l'application : <%= applicationVersion%></i></p>
+      <h2>Actions spéciales</h2>
       <p>
         <form method="POST" action="<%= locals.baseURL || '' %>/remove-fetch-feed-status">
           <input type="submit" value="Réinitialiser la récupération des news" />
         </form>
       </p>
+      <h2>Dossiers et items</h2>
       <p>
         <%= folders.length || 0%> dossiers, <%= items.length || 0%> éléments
       </p>
@@ -50,6 +52,14 @@
         </li>
         <% }); %>
       </ul>
+      <h2>Profiling</h2>
+      <p>
+        Temps pour afficher la page : <%= timePage%>ms<br>
+        Temps pour lister les dossiers : <%= timeListSubfolders%>ms<br>
+        Temps pour compter le nombre d'items dans les dossiers : <%= timeCountSubfoldersItems%>ms<br>
+        Temps pour lister les items : <%= timeListItems%>ms<br>
+        Temps pour lire le contenu des items : <%= timeReadItems%>ms
+      </p>
     </section>
     <footer><%- await include('partials/footer.html'); %></footer>
   </body>

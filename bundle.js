@@ -528,6 +528,7 @@ const { isLocked } = require("../@secrets");
 
 module.exports = function (app) {
   // MIDDLEWARES
+  // Body parser
   const bodyParser = require("body-parser");
   app.use(bodyParser.urlencoded({ extended: false }));
   // Redirect to / if app is locked
@@ -668,6 +669,8 @@ const configuration = require("../../@configuration");
 const { listKeys, listSubFolders, read } = require("../../@storage");
 
 module.exports = async function (req, res) {
+  const tStart = new Date().getTime();
+
   const rootPath = ``;
   const currentPath = req.query.path || "";
   let currentFullPath = rootPath + currentPath;
@@ -676,6 +679,10 @@ module.exports = async function (req, res) {
   }
 
   const folderNames = await listSubFolders(currentFullPath);
+
+  const tListSubfolder = new Date().getTime();
+  const timeListSubfolders = tListSubfolder - tStart;
+
   const folders = await Promise.all(
     folderNames.map(async (folderName) => {
       const folderKeys = await listKeys(currentFullPath + "/" + folderName);
@@ -687,7 +694,13 @@ module.exports = async function (req, res) {
     })
   );
 
+  const tCountSubfolderItems = new Date().getTime();
+  const timeCountSubfoldersItems = tCountSubfolderItems - tListSubfolder;
+
   const itemIds = await listKeys(currentFullPath);
+
+  const tListKeys = new Date().getTime();
+  const timeListItems = tListKeys - tCountSubfolderItems;
 
   const items = await Promise.all(
     itemIds.map(async (itemId) => {
@@ -702,12 +715,21 @@ module.exports = async function (req, res) {
     })
   );
 
+  const tReadAllItems = new Date().getTime();
+  const timeReadItems = tReadAllItems - tListKeys;
+  const timePage = tReadAllItems - tStart;
+
   res.render("dev.html", {
     items,
     folders,
     currentPath,
     currentFullPath,
     applicationVersion: configuration.applicationVersion,
+    timePage,
+    timeListSubfolders,
+    timeCountSubfoldersItems,
+    timeListItems,
+    timeReadItems,
   });
 };
 
@@ -5387,7 +5409,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta03";
+const applicationVersion = "v1-beta04";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
@@ -5513,7 +5535,6 @@ module.exports = function () {
 };
 
 },{"../@application":1,"../@configuration":2,"../browser-express":59,"./redirect-with-base-url-middleware":65,"./universal-render-middleware":67}],65:[function(require,module,exports){
-const ejs = require("ejs");
 const configuration = require("../@configuration");
 
 // TODO ACY Réintégrer dans browser-express ?
@@ -5554,7 +5575,7 @@ function monkeyPatchRedirect(redirect) {
   };
 }
 
-},{"../@configuration":2,"ejs":203}],66:[function(require,module,exports){
+},{"../@configuration":2}],66:[function(require,module,exports){
 const createBrowserApp = require("./create-app");
 createBrowserApp();
 
@@ -86675,6 +86696,8 @@ module.exports = async function (key) {
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (keyFolder) {
+  const t0 = new Date().getTime();
+
   const db = getDatabase();
 
   const keyFolderPrefix = keyFolder ? `${keyFolder}/` : "";
@@ -86684,10 +86707,17 @@ module.exports = async function (keyFolder) {
     endkey: `${keyFolderPrefix}\uffff`,
   });
 
+  const t1 = new Date().getTime();
+
   const keys = searchResults.rows
     .map((searchResult) => searchResult.id)
     .map((id) => id.slice(keyFolderPrefix.length))
     .filter((relativeId) => relativeId.indexOf("/") === -1);
+
+  const t2 = new Date().getTime();
+
+  console.log("t1", t1 - t0);
+  console.log("t2", t2 - t1);
 
   return keys;
 };
