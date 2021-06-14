@@ -1901,9 +1901,14 @@ TOTAL : 15min
 Je commence par rajouter un bouton dans les outils de debug pour supprimer le fichier de suivi de la récupération des feeds, parce que j'ai remarqué que quand l'appli était rafraichie (ou bien arrêtée puis relancée) pendant la récupération des feeds, le fichier de status indiquait que la récupération était déjà en cours et celle ci ne se relançait pas.  
 Il faudra penser à gérer ce problème un peu mieux, mais dans un premier temps ca fera l'affaire. Ca me prend 15min.
 
+Je constate un bug sur la PWA (mobile et desktop) : quand on va dans abonnement / ajout d'un abonnement, on voit un bouton "Supprimer" en dessous de chaque choix
+Je ne vois pas ces boutons "Supprimer" quand je lance en client / serveur
+Il se trouve que les boutons "Supprimer" sont ceux de la page précédente et suppriment des feeds !!!
+Je met 30min à corriger le bug en ajoutant un id sur des éléments `li` de liste pour forcer `morphdom` à les rafraichir entièrement et ne pas laisser le bouton "Supprimer" qui s'y trouvait dans la page précédente
+
 TODO Créer un cas de test reproductible
 
-TOTAL : 15min+
+TOTAL : 45min+
 
 # NEXT
 
