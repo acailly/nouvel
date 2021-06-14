@@ -12,6 +12,10 @@ module.exports = async function (req, res) {
   }
 
   const folderNames = await listSubFolders(currentFullPath);
+
+  const tListSubfolder = new Date().getTime();
+  const timeListSubfolders = tListSubfolder - tStart;
+
   const folders = await Promise.all(
     folderNames.map(async (folderName) => {
       const folderKeys = await listKeys(currentFullPath + "/" + folderName);
@@ -23,13 +27,13 @@ module.exports = async function (req, res) {
     })
   );
 
-  const tListSubfolder = new Date().getTime();
-  const timeListSubfolders = tListSubfolder - tStart;
+  const tCountSubfolderItems = new Date().getTime();
+  const timeCountSubfoldersItems = tCountSubfolderItems - tListSubfolder;
 
   const itemIds = await listKeys(currentFullPath);
 
   const tListKeys = new Date().getTime();
-  const timeListItems = tListKeys - tListSubfolder;
+  const timeListItems = tListKeys - tCountSubfolderItems;
 
   const items = await Promise.all(
     itemIds.map(async (itemId) => {
@@ -56,6 +60,7 @@ module.exports = async function (req, res) {
     applicationVersion: configuration.applicationVersion,
     timePage,
     timeListSubfolders,
+    timeCountSubfoldersItems,
     timeListItems,
     timeReadItems,
   });

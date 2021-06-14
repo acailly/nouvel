@@ -1906,11 +1906,41 @@ Je ne vois pas ces boutons "Supprimer" quand je lance en client / serveur
 Il se trouve que les boutons "Supprimer" sont ceux de la page précédente et suppriment des feeds !!!
 Je met 30min à corriger le bug en ajoutant un id sur des éléments `li` de liste pour forcer `morphdom` à les rafraichir entièrement et ne pas laisser le bouton "Supprimer" qui s'y trouvait dans la page précédente
 
-Je prends ensuite 30min pour ajouter des mesures de temps sur la page des outils de developpement, c'est la page qui met le plus de temps à se charger dans l'application
+Je prends ensuite 45min pour ajouter des mesures de temps sur la page des outils de developpement, c'est la page qui met le plus de temps à se charger dans l'application
 
-TODO Créer un cas de test reproductible
+Je constate les résultats suivants :
 
-TOTAL : 1H15min+
+```
+Temps pour afficher la page : 1917ms
+Temps pour lister les dossiers : 1005ms
+Temps pour compter le nombre d'items dans les dossiers : 3ms
+Temps pour lister les items : 909ms
+Temps pour lire le contenu des items : 0ms
+```
+
+On voit que les deux opérations les plus coûteuses sont lister les dossiers (listSubFolders) et lister les items (listKeys)
+
+Je commence par regarder listKeys, et après un peu de profiling dans la fonction, j'identifie que la partie de code qui prend la quasi totalité du temps est la suivante :
+
+```
+const searchResults = await db.allDocs({
+  startkey: `${keyFolderPrefix}`,
+  endkey: `${keyFolderPrefix}\uffff`,
+});
+```
+
+Après 45min de recherche additionnelles, je ne vois pas comment améliorer ca :-/
+
+J'ai l'impression que j'utilise déjà la manière de faire la plus optimisée (`allDocs` avec `startkey/endkey`)
+La lenteur viendrait du nombre de documents dans la base de données
+Une option serait donc de supprimer des documents ? ou d'économiser de la place ?
+
+TODO Afficher le nombre de documents dans les outils de dev
+TODO Supprimer les documents dans `_deleted` qui datent de plus de 90 jours (comme Git)
+TODO Faire en sorte que tous les docs déjà supprimés soient vides pour économiser de la place
+TODO s'assurer que la compaction est active
+
+TOTAL : 2H15min+
 
 # NEXT
 
