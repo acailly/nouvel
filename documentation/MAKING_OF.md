@@ -1935,12 +1935,13 @@ J'ai l'impression que j'utilise déjà la manière de faire la plus optimisée (
 La lenteur viendrait du nombre de documents dans la base de données
 Une option serait donc de supprimer des documents ? ou d'économiser de la place ?
 
-TODO Afficher le nombre de documents dans les outils de dev
+Je passe 30min à afficher les informations techniques de la base de données dans les DevTools. Dans ces informations se trouve le nombre total de document, c'est lui qu'on va essayer de faire baisser :-)
+
 TODO Supprimer les documents dans `_deleted` qui datent de plus de 90 jours (comme Git)
 TODO Faire en sorte que tous les docs déjà supprimés soient vides pour économiser de la place
 TODO s'assurer que la compaction est active
 
-TOTAL : 2H15min+
+TOTAL : 2H45min+
 
 # NEXT
 

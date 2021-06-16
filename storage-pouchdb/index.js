@@ -5,4 +5,5 @@ module.exports = {
   listKeys: require("./listKeys"),
   listSubFolders: require("./listSubFolders"),
   keyExists: require("./keyExists"),
+  getStorageInfo: require("./info"),
 };

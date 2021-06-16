@@ -52,14 +52,17 @@
         </li>
         <% }); %>
       </ul>
+      <h2>Base de données</h2>
+      <pre><%= JSON.stringify(storageInfo, null, 2)%></pre>
       <h2>Profiling</h2>
-      <p>
-        Temps pour afficher la page : <%= timePage%>ms<br>
-        Temps pour lister les dossiers : <%= timeListSubfolders%>ms<br>
-        Temps pour compter le nombre d'items dans les dossiers : <%= timeCountSubfoldersItems%>ms<br>
-        Temps pour lister les items : <%= timeListItems%>ms<br>
-        Temps pour lire le contenu des items : <%= timeReadItems%>ms
-      </p>
+      <ul>
+        <li>Temps pour afficher la page : <%= timePage%>ms</li>
+        <li>Temps pour lister les dossiers : <%= timeListSubfolders%>ms</li>
+        <li>Temps pour compter le nombre d'items dans les dossiers : <%= timeCountSubfoldersItems%>ms</li>
+        <li>Temps pour lister les items : <%= timeListItems%>ms</li>
+        <li>Temps pour lire le contenu des items : <%= timeReadItems%>ms</li>
+        <li>Temps pour récupérer les informations de base de données : <%= timeStorageInfo%>ms</li>
+      </ul>
     </section>
     <footer><%- await include('partials/footer.html'); %></footer>
   </body>

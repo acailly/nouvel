@@ -1,5 +1,10 @@
 const configuration = require("../../@configuration");
-const { listKeys, listSubFolders, read } = require("../../@storage");
+const {
+  listKeys,
+  listSubFolders,
+  read,
+  getStorageInfo,
+} = require("../../@storage");
 
 module.exports = async function (req, res) {
   const tStart = new Date().getTime();
@@ -50,7 +55,13 @@ module.exports = async function (req, res) {
 
   const tReadAllItems = new Date().getTime();
   const timeReadItems = tReadAllItems - tListKeys;
-  const timePage = tReadAllItems - tStart;
+
+  const storageInfo = await getStorageInfo();
+
+  const tStorageInfo = new Date().getTime();
+  const timeStorageInfo = tStorageInfo - tReadAllItems;
+
+  const timePage = tStorageInfo - tStart;
 
   res.render("dev.html", {
     items,
@@ -63,5 +74,7 @@ module.exports = async function (req, res) {
     timeCountSubfoldersItems,
     timeListItems,
     timeReadItems,
+    timeStorageInfo,
+    storageInfo,
   });
 };
