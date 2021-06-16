@@ -666,7 +666,12 @@ module.exports = async function (req, res) {
 
 },{}],32:[function(require,module,exports){
 const configuration = require("../../@configuration");
-const { listKeys, listSubFolders, read } = require("../../@storage");
+const {
+  listKeys,
+  listSubFolders,
+  read,
+  getStorageInfo,
+} = require("../../@storage");
 
 module.exports = async function (req, res) {
   const tStart = new Date().getTime();
@@ -717,7 +722,13 @@ module.exports = async function (req, res) {
 
   const tReadAllItems = new Date().getTime();
   const timeReadItems = tReadAllItems - tListKeys;
-  const timePage = tReadAllItems - tStart;
+
+  const storageInfo = await getStorageInfo();
+
+  const tStorageInfo = new Date().getTime();
+  const timeStorageInfo = tStorageInfo - tReadAllItems;
+
+  const timePage = tStorageInfo - tStart;
 
   res.render("dev.html", {
     items,
@@ -730,6 +741,8 @@ module.exports = async function (req, res) {
     timeCountSubfoldersItems,
     timeListItems,
     timeReadItems,
+    timeStorageInfo,
+    storageInfo,
   });
 };
 
@@ -5409,7 +5422,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta04";
+const applicationVersion = "v1-beta05";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
@@ -5582,7 +5595,7 @@ createBrowserApp();
 const startSynchronizationPouchDB = require("../synchronization-pouchdb/start-synchronization-pouchdb");
 startSynchronizationPouchDB();
 
-},{"../synchronization-pouchdb/start-synchronization-pouchdb":498,"./create-app":64}],67:[function(require,module,exports){
+},{"../synchronization-pouchdb/start-synchronization-pouchdb":499,"./create-app":64}],67:[function(require,module,exports){
 const ejs = require("ejs");
 const configuration = require("../@configuration");
 
@@ -86673,9 +86686,20 @@ module.exports = {
   listKeys: require("./listKeys"),
   listSubFolders: require("./listSubFolders"),
   keyExists: require("./keyExists"),
+  getStorageInfo: require("./info"),
 };
 
-},{"./keyExists":492,"./listKeys":493,"./listSubFolders":494,"./read":495,"./remove":496,"./write":497}],492:[function(require,module,exports){
+},{"./info":492,"./keyExists":493,"./listKeys":494,"./listSubFolders":495,"./read":496,"./remove":497,"./write":498}],492:[function(require,module,exports){
+const { getDatabase } = require("../@pouchdb");
+
+module.exports = async function () {
+  const db = getDatabase();
+
+  const info = await db.info();
+  return info;
+};
+
+},{"../@pouchdb":3}],493:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (key) {
@@ -86692,12 +86716,10 @@ module.exports = async function (key) {
   }
 };
 
-},{"../@pouchdb":3}],493:[function(require,module,exports){
+},{"../@pouchdb":3}],494:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (keyFolder) {
-  const t0 = new Date().getTime();
-
   const db = getDatabase();
 
   const keyFolderPrefix = keyFolder ? `${keyFolder}/` : "";
@@ -86707,22 +86729,15 @@ module.exports = async function (keyFolder) {
     endkey: `${keyFolderPrefix}\uffff`,
   });
 
-  const t1 = new Date().getTime();
-
   const keys = searchResults.rows
     .map((searchResult) => searchResult.id)
     .map((id) => id.slice(keyFolderPrefix.length))
     .filter((relativeId) => relativeId.indexOf("/") === -1);
 
-  const t2 = new Date().getTime();
-
-  console.log("t1", t1 - t0);
-  console.log("t2", t2 - t1);
-
   return keys;
 };
 
-},{"../@pouchdb":3}],494:[function(require,module,exports){
+},{"../@pouchdb":3}],495:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (keyFolder) {
@@ -86748,7 +86763,7 @@ module.exports = async function (keyFolder) {
   return subFolders;
 };
 
-},{"../@pouchdb":3}],495:[function(require,module,exports){
+},{"../@pouchdb":3}],496:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (key) {
@@ -86766,7 +86781,7 @@ module.exports = async function (key) {
   }
 };
 
-},{"../@pouchdb":3}],496:[function(require,module,exports){
+},{"../@pouchdb":3}],497:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (key) {
@@ -86778,7 +86793,7 @@ module.exports = async function (key) {
   });
 };
 
-},{"../@pouchdb":3}],497:[function(require,module,exports){
+},{"../@pouchdb":3}],498:[function(require,module,exports){
 const { getDatabase } = require("../@pouchdb");
 
 module.exports = async function (key, value) {
@@ -86789,7 +86804,7 @@ module.exports = async function (key, value) {
   });
 };
 
-},{"../@pouchdb":3}],498:[function(require,module,exports){
+},{"../@pouchdb":3}],499:[function(require,module,exports){
 const PouchDB = require("pouchdb");
 const configuration = require("../@configuration");
 const { getDatabase } = require("../@pouchdb");
