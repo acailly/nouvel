@@ -2036,6 +2036,7 @@ TODO Tester d'ajouter de la reactivité avec des techniques old school type COME
 TODO Tester de créer un mini outil de BDD en se basant sur les views et les actions, éventuellement avec un rendu visuel inspiré de l'event modelling (https://eventmodeling.org/posts/what-is-event-modeling/)
 TODO Ajouter un menu accessible via TAB destiné à l'accessibilité comme sur https://www.pole-emploi.fr/accueil/
 TODO Tester de connecter les personnes entre elles via les réseaux mesh Yggdrasil (https://yggdrasil-network.github.io/) ou cjdns (https://github.com/cjdelisle/cjdns)
+TODO Tester de passer en P2P via hyperbee : https://github.com/RangerMauve/pouchdb-adapter-hyperbee
 TODO Tester un système d'écriture de scénario sous forme d'enchainement vue - action - vue - action - ... qui exporte à chaque étape l'HTML correspondant, ce qui permettrait de s'en servir pour :
 
 - faire des présentations sur le produit plus simplement
