@@ -27,6 +27,10 @@ module.exports = function (app) {
   // actions
   app.post("/remove-news-item", require("./actions/removeNewsItem"));
   app.post("/remove-all-news-item", require("./actions/removeAllNewsItem"));
+  app.post(
+    "/remove-deleted-news-items",
+    require("./actions/removeDeletedNewsItems")
+  );
 
   // FEEDS
   // views

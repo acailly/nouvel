@@ -1908,7 +1908,7 @@ Je met 30min à corriger le bug en ajoutant un id sur des éléments `li` de lis
 
 Je prends ensuite 45min pour ajouter des mesures de temps sur la page des outils de developpement, c'est la page qui met le plus de temps à se charger dans l'application
 
-Je constate les résultats suivants :
+Je constate les résultats suivants sur PC (oups j'ai oublié de noter sur quelle page, je suppose que c'est sur la racine ):
 
 ```
 Temps pour afficher la page : 1917ms
@@ -1937,11 +1937,36 @@ Une option serait donc de supprimer des documents ? ou d'économiser de la place
 
 Je passe 30min à afficher les informations techniques de la base de données dans les DevTools. Dans ces informations se trouve le nombre total de document, c'est lui qu'on va essayer de faire baisser :-)
 
-TODO Supprimer les documents dans `_deleted` qui datent de plus de 90 jours (comme Git)
-TODO Faire en sorte que tous les docs déjà supprimés soient vides pour économiser de la place
-TODO s'assurer que la compaction est active
+Je passe 1H30 à faire un bouton dans les dev tools pour supprimer tous les éléments du dossier `news/_deleted/items`
+Après avoir effectué la suppression, le nombre de documents est divisé par 2 (de 26000 à 13000) mais les performances n'ont pas l'air de s'améliorer.
 
-TOTAL : 2H45min+
+J'ai les résultats suivants sur PC sur la racine :
+
+```
+Temps pour afficher la page : 2173ms
+Temps pour lister les dossiers : 1124ms
+Temps pour compter le nombre d'items dans les dossiers : 2ms
+Temps pour lister les items : 1046ms
+Temps pour lire le contenu des items : 0ms
+Temps pour récupérer les informations de base de données : 1ms
+```
+
+et sur `news/items` après avoir récupéré les dernières news :
+
+```
+Temps pour afficher la page : 599ms
+Temps pour lister les dossiers : 367ms
+Temps pour compter le nombre d'items dans les dossiers : 227ms
+Temps pour lister les items : 5ms
+Temps pour lire le contenu des items : 0ms
+Temps pour récupérer les informations de base de données : 0ms
+```
+
+Pour l'instant je n'ai qu'une piste : tester le fait de supprimer la base et repartir d'une neuve, pour voir si les problèmes de perfs viennent des reliquats de documents supprimés mais non purgés (la purge n'est pas supportée par PouchDB)
+
+TODO Tester de repartir d'une base vierge pour voir si les perfs sont meilleures
+
+TOTAL : 4H15min+
 
 # NEXT
 

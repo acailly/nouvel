@@ -16,6 +16,9 @@
         <form method="POST" action="<%= locals.baseURL || '' %>/remove-fetch-feed-status">
           <input type="submit" value="Réinitialiser la récupération des news" />
         </form>
+        <form method="POST" action="<%= locals.baseURL || '' %>/remove-deleted-news-items">
+          <input type="submit" value="Effacer définitivement les news supprimées" />
+        </form>
       </p>
       <h2>Dossiers et items</h2>
       <p>
