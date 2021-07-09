@@ -1964,9 +1964,12 @@ Temps pour récupérer les informations de base de données : 0ms
 
 Pour l'instant je n'ai qu'une piste : tester le fait de supprimer la base et repartir d'une neuve, pour voir si les problèmes de perfs viennent des reliquats de documents supprimés mais non purgés (la purge n'est pas supportée par PouchDB)
 
-TODO Tester de repartir d'une base vierge pour voir si les perfs sont meilleures
+Je prends 15min pour supprimer la base sur la PWA sur smartphone et tout resynchroniser.
+Bilan : pas d'amélioration.
 
-TOTAL : 4H15min+
+TODO Piste suivante : gérer la gestion des items deja lus de façon à ne pas avoir a stocker la totalité des ids des items deja lus
+
+TOTAL : 4H30min+
 
 # NEXT
 
