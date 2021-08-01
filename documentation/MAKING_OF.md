@@ -1896,7 +1896,7 @@ Il va falloir que je diagnostic ca, peut être en essayant de construire un cas 
 
 TOTAL : 15min
 
-# 73 : Améliorer les perfs - ???
+# 73 : Améliorer les perfs - 4H30
 
 Je commence par rajouter un bouton dans les outils de debug pour supprimer le fichier de suivi de la récupération des feeds, parce que j'ai remarqué que quand l'appli était rafraichie (ou bien arrêtée puis relancée) pendant la récupération des feeds, le fichier de status indiquait que la récupération était déjà en cours et celle ci ne se relançait pas.  
 Il faudra penser à gérer ce problème un peu mieux, mais dans un premier temps ca fera l'affaire. Ca me prend 15min.
@@ -1967,9 +1967,28 @@ Pour l'instant je n'ai qu'une piste : tester le fait de supprimer la base et rep
 Je prends 15min pour supprimer la base sur la PWA sur smartphone et tout resynchroniser.
 Bilan : pas d'amélioration.
 
-TODO Piste suivante : gérer la gestion des items deja lus de façon à ne pas avoir a stocker la totalité des ids des items deja lus
+Piste suivante : gérer la gestion des items deja lus de façon à ne pas avoir a stocker la totalité des ids des items deja lus
 
-TOTAL : 4H30min+
+TOTAL : 4H30min
+
+# 74 : Ne pas stocker tous les éléments lus - ???
+
+Quelques observations en regardant les quelques premiers feeds de ma liste :
+
+- tous semblent avoir un id sous `guid` ou `id`
+- tous semblent avoir un `link`, c'est d'ailleurs le hash de celui qu'on considère comme id dans Nouvèl actuellement
+- tous semblend avec une date de publication sous `pubDate` ou `published`
+- tous semblent ordonner leurs items du plus récent au plus ancien
+
+J'avais dans un premier temps pensé supprimer tous les items dont les dates sont anterieures au plus ancien des items qui vient d'être récupéré
+
+Mais en fait il y a beaucoup plus simple : supprimer tous les items dont l'id ne se trouve pas dans les ids des items qui viennent d'être récupérés
+
+Après ce petit 15min de reflexion, il est temps de tester d'afficher combien d'items cela pourrait représenter
+
+TODO
+
+TOTAL : 15min+
 
 # NEXT
 
