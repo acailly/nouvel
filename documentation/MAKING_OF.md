@@ -1986,9 +1986,16 @@ Mais en fait il y a beaucoup plus simple : supprimer tous les items dont l'id ne
 
 Après ce petit 15min de reflexion, il est temps de tester d'afficher combien d'items cela pourrait représenter
 
-TODO
+2H après c'est poussé, on est passé de
+16.2 MB pour 16150 docs
+à
+20.4 MB pour 3272 docs
 
-TOTAL : 15min+
+... et ca n'a pas l'air plus rapide (je n'ai testé que sur PC)
+
+TODO tester une suppression de la base puis resynchro ?
+
+TOTAL : 2H15min+
 
 # NEXT
 
