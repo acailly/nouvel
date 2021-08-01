@@ -30,10 +30,11 @@ module.exports = async function (req, res) {
 const axios = require("axios");
 const Parser = require("rss-parser");
 const Twitter = require("twitter-lite");
-const { listKeys, read, write, keyExists } = require("../../@storage");
+const { listKeys, read, write, keyExists, remove } = require("../../@storage");
 const { isLocked, decrypt } = require("../../@secrets");
 const configuration = require("../../@configuration");
 const deletedFlagPathFromPath = require("../domain/deletedFlagPathFromPath");
+const deletedPathFromPath = require("../domain/deletedPathFromPath");
 
 const isBrowser =
   typeof window !== "undefined" && typeof window.document !== "undefined";
@@ -119,9 +120,12 @@ module.exports = async function (req, res) {
     const feedFolder = `news/items/${feed.title}`;
 
     // Process each feed item
+    const itemEntryHashes = [];
     for (const item of items) {
       const entryHash = fastHash(item.link);
       const itemKey = `${feedFolder}/${entryHash}`;
+
+      itemEntryHashes.push(entryHash);
 
       // Item already exists, skip
       const itemAlreadyExists = await keyExists(itemKey);
@@ -143,6 +147,28 @@ module.exports = async function (req, res) {
         timestamp: item.timestamp,
       };
       await write(itemKey, newItem);
+    }
+
+    // Remove previously fetched items that are not in the feed anymore
+    const deletedFeedFolder = deletedPathFromPath(`${feedFolder}`);
+    const deletedFlagFeedFolder = deletedFlagPathFromPath(`${feedFolder}`);
+    const deletedEntryHashes = await listKeys(`${deletedFlagFeedFolder}`);
+
+    for (const deletedEntryHash of deletedEntryHashes) {
+      if (itemEntryHashes.indexOf(deletedEntryHash) === -1) {
+        // Remove deleted content
+        const deletedContentKey = `${deletedFeedFolder}/${deletedEntryHash}`;
+        const deletedContentStilExists = await keyExists(deletedContentKey);
+        if (deletedContentStilExists) {
+          console.log("Removing outdated deleted content:", deletedContentKey);
+          await remove(deletedContentKey);
+        }
+
+        // Remove deleted flag
+        const deletedFlagKey = `${deletedFlagFeedFolder}/${deletedEntryHash}`;
+        console.log("Removing outdated deleted flag:", deletedFlagKey);
+        await remove(deletedFlagKey);
+      }
     }
 
     // Update status
@@ -264,7 +290,7 @@ async function fetchRSSFeedContent(feed) {
   return itemsWithTimestamp;
 }
 
-},{"../../@configuration":2,"../../@secrets":4,"../../@storage":5,"../domain/deletedFlagPathFromPath":24,"axios":89,"rss-parser":387,"twitter-lite":433}],8:[function(require,module,exports){
+},{"../../@configuration":2,"../../@secrets":4,"../../@storage":5,"../domain/deletedFlagPathFromPath":24,"../domain/deletedPathFromPath":25,"axios":89,"rss-parser":387,"twitter-lite":433}],8:[function(require,module,exports){
 const { read } = require("../../@storage");
 const configuration = require("../../@configuration");
 
@@ -5446,7 +5472,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta06";
+const applicationVersion = "v1-beta07";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
