@@ -1999,6 +1999,12 @@ TOTAL : 2H15min+
 
 # NEXT
 
+## Nouvelle direction
+  
+TODO Stocker les données dans un format simple style TOML (https://toml.io/en/)
+TODO Proposer d'envoyer la liste d'abonnement par email après un changement (via un lien mailto)
+TODO Supprimer la synchronisation continue sur un serveur tiers pouchdb ou autre, après tous, si les abonnements sont stockés via email, le reste est peut être facultatif si on lit toujours les news sur le même device
+  
 ## Général
 
 TODO Faire une commande qui génère d'un coup tous les artefacts :
