@@ -4,7 +4,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta07";
+const applicationVersion = "v1-beta08";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
@@ -36,7 +36,7 @@ const nodeServerPort = 8092;
 
 // DISTRIB BROWSER
 const deployBaseURL = "/nouvel";
-const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
+const corsProxyURL = "https://acailly-cors-anywhere.onrender.com/";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
