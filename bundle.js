@@ -5472,7 +5472,7 @@ const os = require("os");
 const homeDirectory = path.join(os.homedir(), ".nouvel");
 
 // VERSION
-const applicationVersion = "v1-beta07";
+const applicationVersion = "v1-beta08";
 
 // IDENTITY UUID
 const identityKey = "_local/identity";
@@ -5504,7 +5504,7 @@ const nodeServerPort = 8092;
 
 // DISTRIB BROWSER
 const deployBaseURL = "/nouvel";
-const corsProxyURL = "https://acailly-cors-anywhere.herokuapp.com/";
+const corsProxyURL = "https://acailly-cors-anywhere.onrender.com/";
 
 // DISTRIB CAPACITOR
 const capacitorBaseURL = "";
@@ -30314,49 +30314,31 @@ exports.cache = {
 
 },{}],206:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "ejs@3.1.3",
-      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
-    ]
+  "name": "ejs",
+  "description": "Embedded JavaScript templates",
+  "keywords": [
+    "template",
+    "engine",
+    "ejs"
   ],
-  "_from": "ejs@3.1.3",
-  "_id": "ejs@3.1.3",
-  "_inBundle": false,
-  "_integrity": "sha512-wmtrUGyfSC23GC/B1SMv2ogAUgbQEtDmTIhfqielrG5ExIM9TP4UoYdi90jLF1aTcsWCJNEO0UrgKzP0y3nTSg==",
-  "_location": "/ejs",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "ejs@3.1.3",
-    "name": "ejs",
-    "escapedName": "ejs",
-    "rawSpec": "3.1.3",
-    "saveSpec": null,
-    "fetchSpec": "3.1.3"
-  },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-3.1.3.tgz",
-  "_spec": "3.1.3",
-  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
-  "author": {
-    "name": "Matthew Eernisse",
-    "email": "mde@fleegix.org",
-    "url": "http://fleegix.org"
-  },
+  "version": "3.1.3",
+  "author": "Matthew Eernisse <mde@fleegix.org> (http://fleegix.org)",
+  "license": "Apache-2.0",
   "bin": {
-    "ejs": "bin/cli.js"
+    "ejs": "./bin/cli.js"
   },
-  "bugs": {
-    "url": "https://github.com/mde/ejs/issues"
+  "main": "./lib/ejs.js",
+  "jsdelivr": "ejs.min.js",
+  "unpkg": "ejs.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mde/ejs.git"
   },
+  "bugs": "https://github.com/mde/ejs/issues",
+  "homepage": "https://github.com/mde/ejs",
   "dependencies": {
     "jake": "^10.6.1"
   },
-  "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^16.5.1",
     "eslint": "^6.8.0",
@@ -30369,26 +30351,10 @@ module.exports={
   "engines": {
     "node": ">=0.10.0"
   },
-  "homepage": "https://github.com/mde/ejs",
-  "jsdelivr": "ejs.min.js",
-  "keywords": [
-    "template",
-    "engine",
-    "ejs"
-  ],
-  "license": "Apache-2.0",
-  "main": "./lib/ejs.js",
-  "name": "ejs",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/mde/ejs.git"
-  },
   "scripts": {
-    "postinstall": "node --harmony ./postinstall.js",
-    "test": "mocha"
-  },
-  "unpkg": "ejs.min.js",
-  "version": "3.1.3"
+    "test": "mocha",
+    "postinstall": "node --harmony ./postinstall.js"
+  }
 }
 
 },{}],207:[function(require,module,exports){
@@ -34277,53 +34243,37 @@ utils.intFromLE = intFromLE;
 arguments[4][84][0].apply(exports,arguments)
 },{"buffer":125,"dup":84}],223:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "elliptic@6.5.3",
-      "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech"
-    ]
+  "name": "elliptic",
+  "version": "6.5.3",
+  "description": "EC cryptography",
+  "main": "lib/elliptic.js",
+  "files": [
+    "lib"
   ],
-  "_development": true,
-  "_from": "elliptic@6.5.3",
-  "_id": "elliptic@6.5.3",
-  "_inBundle": false,
-  "_integrity": "sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==",
-  "_location": "/elliptic",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "elliptic@6.5.3",
-    "name": "elliptic",
-    "escapedName": "elliptic",
-    "rawSpec": "6.5.3",
-    "saveSpec": null,
-    "fetchSpec": "6.5.3"
+  "scripts": {
+    "jscs": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
+    "jshint": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
+    "lint": "npm run jscs && npm run jshint",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "test": "npm run lint && npm run unit",
+    "version": "grunt dist && git add dist/"
   },
-  "_requiredBy": [
-    "/browserify-sign",
-    "/create-ecdh"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:indutny/elliptic"
+  },
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
   ],
-  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.3.tgz",
-  "_spec": "6.5.3",
-  "_where": "C:\\_Projets\\Perso\\zDemocracy\\zDemocracy-lowtech",
-  "author": {
-    "name": "Fedor Indutny",
-    "email": "fedor@indutny.com"
-  },
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "dependencies": {
-    "bn.js": "^4.4.0",
-    "brorand": "^1.0.1",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.0",
-    "inherits": "^2.0.1",
-    "minimalistic-assert": "^1.0.0",
-    "minimalistic-crypto-utils": "^1.0.0"
-  },
-  "description": "EC cryptography",
+  "homepage": "https://github.com/indutny/elliptic",
   "devDependencies": {
     "brfs": "^1.4.3",
     "coveralls": "^3.0.8",
@@ -34340,32 +34290,15 @@ module.exports={
     "jshint": "^2.10.3",
     "mocha": "^6.2.2"
   },
-  "files": [
-    "lib"
-  ],
-  "homepage": "https://github.com/indutny/elliptic",
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
-  ],
-  "license": "MIT",
-  "main": "lib/elliptic.js",
-  "name": "elliptic",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/indutny/elliptic.git"
-  },
-  "scripts": {
-    "jscs": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
-    "jshint": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
-    "lint": "npm run jscs && npm run jshint",
-    "test": "npm run lint && npm run unit",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "version": "grunt dist && git add dist/"
-  },
-  "version": "6.5.3"
+  "dependencies": {
+    "bn.js": "^4.4.0",
+    "brorand": "^1.0.1",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.0",
+    "inherits": "^2.0.1",
+    "minimalistic-assert": "^1.0.0",
+    "minimalistic-crypto-utils": "^1.0.0"
+  }
 }
 
 },{}],224:[function(require,module,exports){
