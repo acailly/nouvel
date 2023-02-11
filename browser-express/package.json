@@ -36,6 +36,6 @@
   "devDependencies": {
     "jest": "^25.2.4",
     "mochify": "^6.6.0",
-    "npm-check-updates": "^4.1.1"
+    "npm-check-updates": "^16.7.4"
   }
 }
